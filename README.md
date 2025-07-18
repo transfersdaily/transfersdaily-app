@@ -192,4 +192,4 @@ The frontend is designed to integrate seamlessly with the AWS backend infrastruc
 - Maintain club and player databases
 - Configure system settings
 - Monitor site analytics and user engagement
-- Manage user access and permissions
+- Manage user access and permissions# transfersdaily-app
