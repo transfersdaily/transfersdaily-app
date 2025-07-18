@@ -1,0 +1,311 @@
+import { useState, useEffect } from 'react'
+import { adminApi } from '@/lib/api'
+
+// Generate real stats from articles data
+function generateStatsFromArticles(articles: any[]) {
+  console.log('Generating stats for articles:', articles.length)
+  
+  const now = new Date()
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+  const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+  
+  console.log('Date ranges:', { today, weekAgo, monthAgo })
+  
+  // Count articles by time periods with better date parsing
+  const createdToday = articles.filter(a => {
+    if (!a.created_at) return false
+    const created = new Date(a.created_at)
+    const isToday = created >= today && created < new Date(today.getTime() + 24 * 60 * 60 * 1000)
+    if (isToday) console.log('Article created today:', a.title, created)
+    return isToday
+  }).length
+  
+  const createdThisWeek = articles.filter(a => {
+    if (!a.created_at) return false
+    const created = new Date(a.created_at)
+    const isThisWeek = created >= weekAgo
+    return isThisWeek
+  }).length
+  
+  const createdThisMonth = articles.filter(a => {
+    if (!a.created_at) return false
+    const created = new Date(a.created_at)
+    const isThisMonth = created >= monthAgo
+    return isThisMonth
+  }).length
+  
+  console.log('Stats calculated:', { createdToday, createdThisWeek, createdThisMonth })
+  
+  // Count by category
+  const categoryCount: Record<string, number> = {}
+  articles.forEach(a => {
+    const category = a.category || 'Other'
+    categoryCount[category] = (categoryCount[category] || 0) + 1
+  })
+  
+  const byCategory = Object.entries(categoryCount).map(([name, value], index) => ({
+    name,
+    value,
+    color: ['hsl(330 81% 60%)', 'hsl(346 77% 49%)', 'hsl(351 83% 74%)'][index % 3]
+  }))
+  
+  // Count by league
+  const leagueCount: Record<string, number> = {}
+  articles.forEach(a => {
+    if (a.league) {
+      leagueCount[a.league] = (leagueCount[a.league] || 0) + 1
+    }
+  })
+  
+  const byLeague = Object.entries(leagueCount).map(([name, value]) => ({ name, value }))
+  
+  // Count by transfer status
+  const statusCount: Record<string, number> = {}
+  articles.forEach(a => {
+    const status = a.transfer_status || 'Unknown'
+    statusCount[status] = (statusCount[status] || 0) + 1
+  })
+  
+  const byStatus = Object.entries(statusCount).map(([name, value], index) => ({
+    name: name.charAt(0).toUpperCase() + name.slice(1),
+    value,
+    color: ['hsl(330 81% 60%)', 'hsl(346 77% 49%)', 'hsl(351 83% 74%)', 'hsl(338 71% 37%)'][index % 4]
+  }))
+  
+  // Generate daily creation data for last 7 days
+  const dailyCreation = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(today.getTime() - (6 - i) * 24 * 60 * 60 * 1000)
+    const dayArticles = articles.filter(a => {
+      const created = new Date(a.created_at)
+      return created.toDateString() === date.toDateString()
+    })
+    
+    return {
+      date: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      count: dayArticles.length
+    }
+  })
+  
+  return {
+    totalArticles: articles.length,
+    createdToday,
+    createdThisWeek,
+    createdThisMonth,
+    byCategory,
+    byLeague,
+    dailyCreation,
+    byStatus
+  }
+}
+
+export interface UseArticlesParams {
+  status: 'draft' | 'published' | 'scheduled'
+  initialSortBy?: string
+  initialSortOrder?: string
+}
+
+export function useArticles({ status, initialSortBy = 'created_at', initialSortOrder = 'asc' }: UseArticlesParams) {
+  const [articles, setArticles] = useState<any[]>([])
+  const [selectedArticles, setSelectedArticles] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalArticles, setTotalArticles] = useState(0)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [searchInput, setSearchInput] = useState("")
+  const [categoryFilter, setCategoryFilter] = useState("all")
+  const [leagueFilter, setLeagueFilter] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [sortBy, setSortBy] = useState(initialSortBy)
+  const [sortOrder, setSortOrder] = useState(initialSortOrder)
+  const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [isLoading, setIsLoading] = useState(true)
+  const [statsData, setStatsData] = useState<any>(null)
+
+  useEffect(() => {
+    loadArticles()
+  }, [currentPage, searchTerm, categoryFilter, leagueFilter, statusFilter, sortBy, sortOrder, itemsPerPage])
+
+  // Clear selections when articles change
+  useEffect(() => {
+    setSelectedArticles([])
+  }, [articles.length, currentPage])
+
+  const loadArticles = async () => {
+    try {
+      setIsLoading(true)
+      const response = await adminApi.getDraftArticles({
+        page: currentPage,
+        limit: itemsPerPage,
+        search: searchTerm || undefined,
+        category: categoryFilter !== 'all' ? categoryFilter : undefined,
+        league: leagueFilter !== 'all' ? leagueFilter : undefined,
+        status: status,
+        transfer_status: statusFilter !== 'all' ? statusFilter : undefined,
+        sortBy: sortBy,
+        sortOrder: sortOrder
+      })
+      
+      console.log('API Response:', response)
+      console.log('Articles received:', response.articles?.length || 0)
+      if (response.articles?.length > 0) {
+        console.log('Sample article:', response.articles[0])
+        console.log('Sample article date fields:', {
+          created_at: response.articles[0].created_at,
+          published_at: response.articles[0].published_at,
+          published_date: response.articles[0].published_date,
+          createdAt: response.articles[0].createdAt,
+          publishedAt: response.articles[0].publishedAt
+        })
+      }
+      
+      setArticles(response.articles)
+      setTotalArticles(response.pagination.total)
+      
+      // Use stats from API response if available, otherwise generate from articles
+      if (response.stats) {
+        console.log('Using API stats:', response.stats)
+        // Map API stats to expected format
+        const mappedStats = {
+          totalArticles: response.stats.totalArticles || response.articles.length,
+          createdToday: response.stats.createdToday || 0,
+          createdThisWeek: response.stats.createdThisWeek || 0,
+          createdThisMonth: response.stats.createdThisMonth || 0,
+          byCategory: response.stats.byCategory || [],
+          byLeague: response.stats.byLeague || [],
+          dailyCreation: response.stats.dailyCreation || [],
+          byStatus: response.stats.byStatus || []
+        }
+        console.log('Mapped stats:', mappedStats)
+        setStatsData(mappedStats)
+      } else {
+        console.log('Generating stats from articles')
+        const realStats = generateStatsFromArticles(response.articles)
+        console.log('Generated stats:', realStats)
+        setStatsData(realStats)
+      }
+    } catch (error) {
+      console.error('Error loading articles:', error)
+      setArticles([])
+      setTotalArticles(0)
+      setStatsData({
+        totalArticles: 0,
+        createdToday: 0,
+        createdThisWeek: 0,
+        createdThisMonth: 0,
+        byCategory: [],
+        byLeague: [],
+        dailyCreation: [],
+        byStatus: []
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedArticles(articles.map(article => article.id))
+    } else {
+      setSelectedArticles([])
+    }
+  }
+
+  const handleDeleteArticle = async (id: string) => {
+    try {
+      const success = await adminApi.deleteArticle(id)
+      if (success) {
+        setArticles(articles.filter(article => article.id !== id))
+        setSelectedArticles(selectedArticles.filter(articleId => articleId !== id))
+        setTotalArticles(prev => prev - 1)
+      }
+    } catch (error) {
+      console.error('Error deleting article:', error)
+    }
+  }
+
+  const handlePublishArticle = async (id: string) => {
+    try {
+      const success = await adminApi.updateArticleStatus(id, 'published')
+      if (success) {
+        setArticles(articles.filter(article => article.id !== id))
+        setSelectedArticles(selectedArticles.filter(articleId => articleId !== id))
+        setTotalArticles(prev => prev - 1)
+      }
+    } catch (error) {
+      console.error('Error publishing article:', error)
+    }
+  }
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(column)
+      setSortOrder('asc')
+    }
+    setCurrentPage(1)
+  }
+
+  const handleSearch = () => {
+    setSearchTerm(searchInput)
+    setCurrentPage(1)
+  }
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch()
+    }
+  }
+
+  const handleItemsPerPageChange = (items: number) => {
+    setItemsPerPage(items)
+    setCurrentPage(1)
+  }
+
+  const handleResetFilters = () => {
+    setSearchInput("")
+    setSearchTerm("")
+    setCategoryFilter("all")
+    setLeagueFilter("all")
+    setStatusFilter("all")
+    setCurrentPage(1)
+  }
+
+  return {
+    // State
+    articles,
+    selectedArticles,
+    currentPage,
+    totalArticles,
+    searchInput,
+    categoryFilter,
+    leagueFilter,
+    statusFilter,
+    sortBy,
+    sortOrder,
+    itemsPerPage,
+    isLoading,
+    statsData,
+    
+    // Setters
+    setSelectedArticles,
+    setCurrentPage,
+    setSearchInput,
+    setCategoryFilter,
+    setLeagueFilter,
+    setStatusFilter,
+    
+    // Handlers
+    handleSelectAll,
+    handleDeleteArticle,
+    handlePublishArticle,
+    handleSort,
+    handleSearch,
+    handleSearchKeyPress,
+    handleItemsPerPageChange,
+    handleResetFilters,
+    
+    // Actions
+    loadArticles
+  }
+}
