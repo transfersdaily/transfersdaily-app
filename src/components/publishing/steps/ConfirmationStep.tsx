@@ -14,6 +14,17 @@ import {
 import { API_CONFIG } from '@/lib/config';
 import ReactMarkdown from 'react-markdown';
 
+// Helper function to generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim() // Remove leading/trailing whitespace
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+
 interface ArticleData {
   uuid: string;
   title: string;
@@ -26,10 +37,13 @@ interface ArticleData {
   transfer_status?: string;
   image_url?: string;
   created_at: string;
+  slug?: string;
   translations: {
     [key: string]: {
       title: string;
       content: string;
+      slug?: string;
+      meta_description?: string;
     };
   };
 }
@@ -158,7 +172,21 @@ export default function ConfirmationStep({
   };
 
   const getArticleUrl = () => {
-    return `https://transfersdaily.com/articles/${articleId}`;
+    if (!article) return `https://transfersdaily.com/en/article/loading-${articleId}`;
+    
+    // Try to get slug from translations (English first, then any available)
+    let slug = '';
+    if (article.translations?.en?.slug) {
+      slug = article.translations.en.slug;
+    } else if (article.slug) {
+      slug = article.slug;
+    } else {
+      // Generate slug from title as fallback
+      slug = generateSlug(article.title);
+    }
+    
+    // Use slug instead of UUID for the URL
+    return `https://transfersdaily.com/en/article/${slug}`;
   };
 
   const generateHashtags = () => {

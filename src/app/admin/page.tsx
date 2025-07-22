@@ -6,13 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DashboardCard } from "@/components/ui/dashboard-card"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { 
   FileText, 
   Users, 
   Eye, 
-  TrendingUp,
   Plus,
   Edit,
   Upload,
@@ -25,7 +22,7 @@ import {
 } from "lucide-react"
 import { adminApi } from "@/lib/api"
 import { API_CONFIG } from "@/lib/config"
-import { ArticlesLineChart } from "@/components/ArticlesLineChart"
+import { DraftVsPublishedChart } from "@/components/DraftVsPublishedChart"
 
 interface DashboardStats {
   totalArticles: number
@@ -34,6 +31,22 @@ interface DashboardStats {
   totalClubs: number
   totalPlayers: number
   totalLeagues: number
+  createdToday?: number
+  createdThisWeek?: number
+  createdThisMonth?: number
+  byCategory?: Array<{
+    name: string
+    value: number
+    color: string
+  }>
+  byLeague?: Array<{
+    name: string
+    value: number
+  }>
+  dailyActivity?: Array<{
+    date: string
+    count: number
+  }>
 }
 
 interface RecentArticle {
@@ -44,16 +57,9 @@ interface RecentArticle {
   category: string
 }
 
-interface ChartData {
-  date: string
-  created: number
-  published: number
-}
-
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [recentArticles, setRecentArticles] = useState<RecentArticle[]>([])
-  const [chartData, setChartData] = useState<ChartData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -82,10 +88,16 @@ export default function AdminDashboard() {
           publishedArticles: dashboardStats.publishedArticles || 0,
           totalClubs: dashboardStats.totalClubs || 0,
           totalPlayers: dashboardStats.totalPlayers || 0,
-          totalLeagues: dashboardStats.totalLeagues || 5
+          totalLeagues: dashboardStats.totalLeagues || 5,
+          createdToday: dashboardStats.createdToday || 0,
+          createdThisWeek: dashboardStats.createdThisWeek || 0,
+          createdThisMonth: dashboardStats.createdThisMonth || 0,
+          byCategory: dashboardStats.byCategory || [],
+          byLeague: dashboardStats.byLeague || [],
+          dailyActivity: dashboardStats.dailyActivity || []
         })
         
-        // Fetch recent articles for display
+        // Only try to fetch recent articles if stats worked
         try {
           console.log('Dashboard: Calling getRecentArticles API')
           const recentArticles = await adminApi.getRecentArticles(5)
@@ -100,57 +112,24 @@ export default function AdminDashboard() {
           }))
           
           setRecentArticles(mappedArticles)
-          setChartData(generateChartData(recentArticles || []))
         } catch (articlesError) {
-          console.warn('Could not fetch recent articles:', articlesError)
+          console.warn('Could not fetch recent articles (CORS or API issue):', articlesError)
+          // Don't set error state, just leave recent articles empty
           setRecentArticles([])
-          setChartData([])
         }
         
       } catch (statsError) {
         console.error('Could not fetch dashboard stats:', statsError)
-        // Try fallback to articles API if stats endpoint fails
-        try {
-          console.log('Dashboard: Fallback to getDraftArticles with status=all')
-          const articlesData = await adminApi.getDraftArticles({ status: 'all', limit: 50 })
-          console.log('Dashboard fallback articlesData:', JSON.stringify(articlesData, null, 2))
-          const allArticles = articlesData.articles || articlesData.data?.articles || []
-          
-          const draftCount = allArticles.filter((a: any) => a.status === 'draft').length
-          const publishedCount = allArticles.filter((a: any) => a.status === 'published').length
-          
-          setStats({
-            totalArticles: allArticles.length || 0,
-            draftArticles: draftCount || 0,
-            publishedArticles: publishedCount || 0,
-            totalClubs: 0,
-            totalPlayers: 0,
-            totalLeagues: 5
-          })
-          
-          const mappedArticles = allArticles.slice(0, 5).map((article: any) => ({
-            id: article.uuid || article.id,
-            title: article.title,
-            status: article.status,
-            created_at: article.created_at,
-            category: article.category || 'Transfer'
-          }))
-          
-          setRecentArticles(mappedArticles)
-          setChartData(generateChartData(allArticles || []))
-        } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError)
-          setStats({
-            totalArticles: 0,
-            draftArticles: 0,
-            publishedArticles: 0,
-            totalClubs: 0,
-            totalPlayers: 0,
-            totalLeagues: 0
-          })
-          setRecentArticles([])
-          setChartData([])
-        }
+        setError('Failed to connect to dashboard API')
+        setStats({
+          totalArticles: 0,
+          draftArticles: 0,
+          publishedArticles: 0,
+          totalClubs: 0,
+          totalPlayers: 0,
+          totalLeagues: 0
+        })
+        setRecentArticles([])
       }
       
     } catch (err) {
@@ -165,7 +144,6 @@ export default function AdminDashboard() {
         totalLeagues: 0
       })
       setRecentArticles([])
-      setChartData([])
     } finally {
       setIsLoading(false)
     }
@@ -175,28 +153,28 @@ export default function AdminDashboard() {
     {
       title: "Total Articles",
       value: stats.totalArticles.toString(),
-      change: "",
-      trend: "neutral" as const,
+      change: stats.createdThisWeek ? `+${stats.createdThisWeek} this week` : "",
+      trend: (stats.createdThisWeek || 0) > 0 ? "up" as const : "neutral" as const,
       icon: FileText
     },
     {
       title: "Draft Articles",
       value: stats.draftArticles.toString(),
-      change: "",
-      trend: "neutral" as const,
+      change: stats.createdToday ? `+${stats.createdToday} today` : "",
+      trend: (stats.createdToday || 0) > 0 ? "up" as const : "neutral" as const,
       icon: Edit
     },
     {
       title: "Published Articles",
       value: stats.publishedArticles.toString(),
-      change: "",
+      change: `${Math.round((stats.publishedArticles / Math.max(stats.totalArticles, 1)) * 100)}% of total`,
       trend: "neutral" as const,
       icon: Eye
     },
     {
       title: "Total Leagues",
       value: stats.totalLeagues.toString(),
-      change: "",
+      change: stats.totalClubs ? `${stats.totalClubs} clubs, ${stats.totalPlayers} players` : "",
       trend: "neutral" as const,
       icon: Globe
     }
@@ -223,29 +201,6 @@ export default function AdminDashboard() {
     return date.toLocaleDateString()
   }
 
-  const generateChartData = (articles: any[]): ChartData[] => {
-    const last7Days = Array.from({ length: 7 }, (_, i) => {
-      const date = new Date()
-      date.setDate(date.getDate() - (6 - i))
-      return date.toISOString().split('T')[0]
-    })
-
-    return last7Days.map(date => {
-      const dayArticles = articles.filter(article => 
-        article.created_at?.startsWith(date)
-      )
-      
-      return {
-        date: new Date(date).toLocaleDateString('en-US', { 
-          month: 'short', 
-          day: 'numeric' 
-        }),
-        created: dayArticles.length,
-        published: dayArticles.filter(a => a.status === 'published').length
-      }
-    })
-  }
-
   const systemStatus = [
     { name: "Articles API", status: "healthy", value: "Connected", icon: FileText },
     { name: "Draft Articles", status: "healthy", value: `${stats?.draftArticles || 0} drafts`, icon: Edit },
@@ -255,6 +210,22 @@ export default function AdminDashboard() {
 
   return (
     <AdminPageLayout title="Dashboard">
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="flex items-center gap-2 text-red-800">
+            <Activity className="h-4 w-4" />
+            <span className="font-medium">Connection Error</span>
+          </div>
+          <p className="text-red-700 text-sm mt-1">{error}</p>
+          <button 
+            onClick={fetchDashboardData}
+            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+          >
+            Retry Connection
+          </button>
+        </div>
+      )}
+      
       <div className="space-y-8">
         {/* Hero Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -308,102 +279,13 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Weekly Articles Line Chart */}
-        <ArticlesLineChart 
-          data={chartData.map(item => ({
-            date: item.date,
-            count: item.created,
-            dayName: item.date,
-            fullDate: item.date
-          }))}
-          title="Articles Created This Week"
-          description="Daily article creation from Sunday to Saturday"
+        {/* Draft vs Published Articles Line Chart */}
+        <DraftVsPublishedChart 
+          dailyActivity={stats?.dailyActivity || []}
+          totalDrafts={stats?.draftArticles || 0}
+          totalPublished={stats?.publishedArticles || 0}
           isLoading={isLoading}
         />
-
-        {/* Articles Activity Chart */}
-        <div>
-          <Card className="overflow-hidden">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
-                Articles Activity
-              </CardTitle>
-              <CardDescription>Daily article creation and publishing over the last 7 days</CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              {isLoading ? (
-                <div className="h-80 flex items-center justify-center">
-                  <div className="space-y-3 w-full max-w-md">
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-4 w-1/2" />
-                    <Skeleton className="h-64 w-full" />
-                  </div>
-                </div>
-              ) : (
-                <div className="h-80 w-full p-4">
-                  <ChartContainer
-                    config={{
-                      created: {
-                        label: "Created",
-                        color: "hsl(var(--chart-1))",
-                      },
-                      published: {
-                        label: "Published",
-                        color: "hsl(var(--chart-2))",
-                      },
-                    }}
-                    className="h-full w-full"
-                  >
-                    <AreaChart
-                      data={chartData}
-                      margin={{
-                        left: 12,
-                        right: 12,
-                        top: 12,
-                        bottom: 12,
-                      }}
-                    >
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        dataKey="date"
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                        tickFormatter={(value) => value}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tickMargin={8}
-                      />
-                      <ChartTooltip
-                        cursor={false}
-                        content={<ChartTooltipContent />}
-                      />
-                      <Area
-                        dataKey="published"
-                        type="natural"
-                        fill="var(--color-published)"
-                        fillOpacity={0.4}
-                        stroke="var(--color-published)"
-                        stackId="a"
-                      />
-                      <Area
-                        dataKey="created"
-                        type="natural"
-                        fill="var(--color-created)"
-                        fillOpacity={0.4}
-                        stroke="var(--color-created)"
-                        stackId="a"
-                      />
-                    </AreaChart>
-                  </ChartContainer>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Content Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -479,6 +361,69 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Category and League Breakdown */}
+        {stats?.byCategory && stats.byCategory.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Articles by Category */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <Database className="h-5 w-5" />
+                  Articles by Category
+                </CardTitle>
+                <CardDescription>Distribution of articles across categories</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {stats.byCategory.map((category, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-3 h-3 rounded-full" 
+                        style={{ backgroundColor: category.color }}
+                      ></div>
+                      <span className="font-medium">{category.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-muted-foreground">{category.value} articles</span>
+                      <Badge variant="outline">
+                        {Math.round((category.value / Math.max(stats.totalArticles, 1)) * 100)}%
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Articles by League */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2">
+                  <Globe className="h-5 w-5" />
+                  Articles by League
+                </CardTitle>
+                <CardDescription>Top leagues by article count</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {stats.byLeague && stats.byLeague.length > 0 ? (
+                  stats.byLeague.map((league, index) => (
+                    <div key={index} className="flex items-center justify-between">
+                      <span className="font-medium">{league.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">{league.value} articles</span>
+                        <Badge variant="outline">
+                          {Math.round((league.value / Math.max(stats.totalArticles, 1)) * 100)}%
+                        </Badge>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-center text-muted-foreground py-4">No league data available</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </AdminPageLayout>
   )

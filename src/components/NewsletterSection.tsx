@@ -5,12 +5,21 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { newsletterApi } from "@/lib/api"
+import { trackNewsletterSignup } from "@/lib/analytics"
 import { Loader2, CheckCircle, Mail, Users } from "lucide-react"
+import { type Locale, type Dictionary, getTranslation } from "@/lib/i18n"
 
-export function NewsletterSection() {
+interface NewsletterSectionProps {
+  locale: Locale
+  dict: Dictionary
+}
+
+export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
   const [email, setEmail] = useState("")
   const [isSubscribing, setIsSubscribing] = useState(false)
   const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'success' | 'error'>('idle')
+
+  const t = (key: string) => getTranslation(dict, key)
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -29,6 +38,8 @@ export function NewsletterSection() {
       if (success) {
         setSubscriptionStatus('success')
         setEmail('')
+        // Track successful newsletter signup
+        trackNewsletterSignup(email)
       } else {
         setSubscriptionStatus('error')
       }
@@ -41,39 +52,39 @@ export function NewsletterSection() {
   }
 
   return (
-    <section className="py-20 bg-white dark:bg-slate-950 -mx-4 px-4">
+    <section className="py-20 bg-background -mx-4 px-4">
       <div className="max-w-full mx-auto">
-        <Card className="border-2 border-red-500 shadow-lg bg-white dark:bg-slate-800 focus:outline-none focus-within:outline-none focus-within:ring-0 focus-within:ring-offset-0">
+        <Card className="border-2 border-primary shadow-lg bg-card">
           <CardContent className="p-12 md:p-16">
             {subscriptionStatus === 'success' ? (
               <div className="text-center">
                 <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-green-600 dark:text-green-400 mb-2">
-                  Welcome to the Team!
+                <h3 className="text-xl font-bold text-green-600 mb-2">
+                  {t('newsletter.successTitle')}
                 </h3>
                 <p className="text-muted-foreground">
-                  Check your email for confirmation and get ready for the latest transfer news.
+                  {t('newsletter.successMessage')}
                 </p>
               </div>
             ) : (
               <div className="text-center">
                 <div className="flex items-center justify-center gap-3 mb-6">
-                  <div className="bg-red-500 p-3 rounded-full">
-                    <Mail className="h-7 w-7 text-white" />
+                  <div className="bg-primary p-3 rounded-full">
+                    <Mail className="h-7 w-7 text-primary-foreground" />
                   </div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Never Miss a Transfer!</h3>
+                  <h3 className="text-2xl font-bold">{t('newsletter.title')}</h3>
                 </div>
                 
-                <p className="text-slate-600 dark:text-slate-200 mb-6 text-sm max-w-2xl mx-auto">
-                  Get the latest transfer news, rumors, and done deals delivered straight to your inbox. Be the first to know when your favorite players make their moves across Europe's top leagues.
+                <p className="text-muted-foreground mb-6 text-sm max-w-2xl mx-auto">
+                  {t('newsletter.description')}
                 </p>
 
                 <form onSubmit={handleNewsletterSubmit} className="mb-6 max-w-md mx-auto">
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Input 
                       type="email" 
-                      placeholder="Enter your email address" 
-                      className="flex-1 h-11 border-red-500 focus:border-red-600 focus:ring-red-500 focus:outline-none"
+                      placeholder={t('newsletter.emailPlaceholder')}
+                      className="flex-1 h-11 focus:border-primary focus:ring-primary focus:outline-none"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={isSubscribing}
@@ -83,30 +94,30 @@ export function NewsletterSection() {
                     />
                     <Button 
                       type="submit" 
-                      className="h-11 px-6 bg-red-500 hover:bg-red-600 font-medium" 
+                      className="h-11 px-6 bg-primary hover:bg-primary/90 font-medium" 
                       disabled={isSubscribing || !email}
                     >
                       {isSubscribing ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Subscribing...
+                          {t('newsletter.subscribing')}
                         </>
                       ) : (
-                        'Subscribe'
+                        t('newsletter.subscribe')
                       )}
                     </Button>
                   </div>
                   
                   {subscriptionStatus === 'error' && (
-                    <p className="text-sm text-red-500 mt-3">
+                    <p className="text-sm text-destructive mt-3">
                       Please check your email and try again.
                     </p>
                   )}
                 </form>
 
-                <div className="flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                   <Users className="h-4 w-4" />
-                  <span>Join 25,000+ subscribers • No spam • Unsubscribe anytime</span>
+                  <span>{t('newsletter.joinSubscribers')} • No spam • Unsubscribe anytime</span>
                 </div>
               </div>
             )}

@@ -20,7 +20,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import { API_CONFIG } from '@/lib/config';
+import { API_CONFIG, getApiUrl } from '@/lib/config';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ArticleData {
@@ -84,7 +84,7 @@ export default function ContentEditingStep({
       setIsLoading(true);
       console.log('🔍 Loading article with ID:', articleId);
       
-      const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`;
+      const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       console.log('🔍 Loading article from URL:', url);
       
       const response = await fetch(url, {
@@ -222,14 +222,16 @@ export default function ContentEditingStep({
       formData.append('articleId', articleId);
       formData.append('type', 'featured');
       
-      console.log('📤 Uploading to:', `${API_CONFIG.baseUrl}/admin/media/upload`);
+      // Use the correct API endpoint
+      const uploadUrl = getApiUrl(API_CONFIG.endpoints.admin.media.upload);
+      console.log('📤 Uploading to:', uploadUrl);
       console.log('📦 FormData contents:', {
         file: file.name,
         articleId: articleId,
         type: 'featured'
       });
       
-      const uploadResponse = await fetch(`${API_CONFIG.baseUrl}/admin/media/upload`, {
+      const uploadResponse = await fetch(uploadUrl, {
         method: 'POST',
         body: formData
       });
@@ -253,6 +255,9 @@ export default function ContentEditingStep({
         
         // Update article in database with new image URL
         await updateArticleImage(uploadData.data.url);
+        
+        // Show success message
+        alert('Image uploaded successfully!');
       } else {
         throw new Error('Upload succeeded but no URL returned');
       }
@@ -262,12 +267,15 @@ export default function ContentEditingStep({
       alert(`Failed to upload image: ${err instanceof Error ? err.message : 'Unknown error'}`);
     } finally {
       setIsUploading(false);
+      // Clear the input so the same file can be selected again if needed
+      event.target.value = '';
     }
   };
 
   const updateArticleImage = async (imageUrl: string) => {
     try {
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`, {
+      const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
+      const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -293,7 +301,8 @@ export default function ContentEditingStep({
       console.log('💾 Saving article changes...');
       
       // Save article data
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`, {
+      const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
+      const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -494,14 +503,93 @@ export default function ContentEditingStep({
           </CardHeader>
           <CardContent className="space-y-4">
             {featuredImage && (
-              <div className="relative">
-                <img
-                  src={featuredImage}
-                  alt="Featured"
-                  className="w-full h-32 object-cover rounded-lg"
-                />
+              <div className="space-y-2">
+                <div className="relative">
+                  <img
+                    src={featuredImage}
+                    alt="Featured"
+                    className="w-full h-32 object-cover rounded-lg border"
+                    onError={(e) => {
+                      console.error('Failed to load featured image:', featuredImage);
+                      const img = e.currentTarget;
+                      
+                      // Try image proxy as fallback
+                      if (!img.src.includes('/api/image-proxy')) {
+                        console.log('🔄 Trying image proxy fallback...');
+                        img.src = `/api/image-proxy?url=${encodeURIComponent(featuredImage)}`;
+                        return;
+                      }
+                      
+                      // If proxy also fails, try placeholder
+                      if (!img.src.includes('placeholder')) {
+                        console.log('🔄 Trying placeholder fallback...');
+                        img.src = '/placeholder-image.svg';
+                        img.alt = 'Image not available';
+                        return;
+                      }
+                      
+                      // If everything fails, show error message
+                      console.error('❌ All image loading attempts failed');
+                      img.style.display = 'none';
+                      
+                      // Create error message
+                      const errorDiv = document.createElement('div');
+                      errorDiv.className = 'w-full h-32 bg-red-50 border border-red-200 rounded-lg flex items-center justify-center text-red-600';
+                      errorDiv.innerHTML = `
+                        <div class="text-center">
+                          <div class="text-2xl mb-2">⚠️</div>
+                          <div class="text-sm font-medium">Image failed to load</div>
+                          <div class="text-xs mt-1 opacity-75">Check console for details</div>
+                        </div>
+                      `;
+                      img.parentNode?.replaceChild(errorDiv, img);
+                    }}
+                    onLoad={() => {
+                      console.log('✅ Featured image loaded successfully:', featuredImage);
+                    }}
+                  />
+                  <div className="absolute top-2 right-2">
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Uploaded
+                    </Badge>
+                  </div>
+                </div>
+                
+                {/* Debug info */}
+                <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded border">
+                  <div className="font-medium mb-1">Image URL:</div>
+                  <div className="break-all font-mono">{featuredImage}</div>
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      onClick={() => window.open(featuredImage, '_blank')}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Open in new tab
+                    </button>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(featuredImage)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Copy URL
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
+            
+            {isUploading && (
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-sm text-blue-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  Uploading image...
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+                </div>
+              </div>
+            )}
+            
             <div>
               <input
                 type="file"
@@ -509,6 +597,7 @@ export default function ContentEditingStep({
                 onChange={handleImageUpload}
                 className="hidden"
                 id="image-upload"
+                disabled={isUploading}
               />
               <Button
                 onClick={() => document.getElementById('image-upload')?.click()}
@@ -518,7 +607,7 @@ export default function ContentEditingStep({
               >
                 {isUploading ? (
                   <>
-                    <Upload className="mr-2 h-4 w-4 animate-spin" />
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
                     Uploading...
                   </>
                 ) : (
@@ -528,6 +617,12 @@ export default function ContentEditingStep({
                   </>
                 )}
               </Button>
+              
+              {!featuredImage && !isUploading && (
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  Supported: JPG, PNG, GIF, WebP (max 5MB)
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

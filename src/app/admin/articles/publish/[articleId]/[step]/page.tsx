@@ -17,7 +17,8 @@ import {
   Share2,
   FileCheck
 } from 'lucide-react';
-import { API_CONFIG } from '@/lib/config';
+import { API_CONFIG, getApiUrl } from '@/lib/config';
+import { adminApi } from '@/lib/api';
 
 // Step Components
 import ContentEditingStep from '@/components/publishing/steps/ContentEditingStep';
@@ -119,27 +120,17 @@ export default function PublishingWizardPage({
     try {
       console.log('🚀 Publishing article:', articleId);
       
-      // Actually publish the article
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}/publish`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          status: 'published',
-          published_at: new Date().toISOString()
-        }),
-      });
+      // Use the existing updateArticleStatus function instead of custom publish endpoint
+      const success = await adminApi.updateArticleStatus(articleId, 'published');
       
-      if (!response.ok) {
-        throw new Error(`Failed to publish: ${response.status}`);
+      if (success) {
+        console.log('✅ Article published successfully');
+        
+        // Redirect to success page
+        router.push(`/admin/articles/publish/${articleId}/success`);
+      } else {
+        throw new Error('Failed to publish article');
       }
-      
-      const data = await response.json();
-      console.log('✅ Article published successfully:', data);
-      
-      // Redirect to success page with article data
-      router.push(`/admin/articles/publish/${articleId}/success`);
       
     } catch (err) {
       console.error('💥 Error publishing article:', err);

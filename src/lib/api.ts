@@ -1,5 +1,4 @@
 import { API_CONFIG, STORAGE_KEYS } from './config'
-import { mockTransfers, mockLeagues } from './mockData'
 
 // Types
 export interface Transfer {
@@ -56,11 +55,10 @@ function getAuthHeaders(): HeadersInit {
   return headers
 }
 
-// Generic fetch wrapper with fallback to mock data
+// Generic fetch wrapper - no fallback data
 async function apiRequest<T>(
   endpoint: string, 
-  options: RequestInit = {},
-  fallbackData?: T
+  options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_CONFIG.baseUrl}${endpoint}`
   
@@ -76,10 +74,7 @@ async function apiRequest<T>(
     const response = await fetch(url, config)
     
     if (!response.ok) {
-      if (fallbackData) {
-        console.warn(`API request failed for ${endpoint}, using fallback data`)
-        return fallbackData
-      }
+      console.error(`API request failed: ${response.status} ${response.statusText}`)
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     
@@ -87,16 +82,37 @@ async function apiRequest<T>(
     return data
   } catch (error) {
     console.error(`API request failed for ${endpoint}:`, error)
-    if (fallbackData) {
-      console.warn('Using fallback data due to API error')
-      return fallbackData
-    }
     throw error
   }
 }
 
+// Helper function to get current language
+function getCurrentLanguage(): string {
+  if (typeof window !== 'undefined') {
+    // Check URL for language prefix
+    const path = window.location.pathname
+    const langMatch = path.match(/^\/([a-z]{2})(\/|$)/)
+    if (langMatch) {
+      return langMatch[1]
+    }
+  }
+  return 'en' // Default to English
+}
+
+// Helper function to generate slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim()
+}
+
 // Helper function to transform article data to transfer format
 function transformArticleToTransfer(article: any): Transfer {
+  const slug = article.slug || generateSlug(article.title || '')
+  
   return {
     id: article.uuid || article.id,
     title: article.title,
@@ -109,33 +125,35 @@ function transformArticleToTransfer(article: any): Transfer {
     toClub: article.destinationClub || article.destination_club,
     status: (article.transferStatus || article.transfer_status || 'rumor') as 'confirmed' | 'rumor' | 'completed' | 'loan',
     publishedAt: article.publishedDate || article.published_date || article.createdAt || article.created_at,
-    imageUrl: article.images?.[0],
+    imageUrl: article.image_url || article.images?.[0],
     source: article.originalLink || article.original_link,
     tags: article.tags || [],
-    slug: article.slug
+    slug: slug
   }
 }
 
 // Helper function to transform article data to article format
 function transformArticleToArticle(article: any): Article {
+  const slug = article.slug || generateSlug(article.title || '')
+  
   return {
     id: article.uuid || article.id,
     title: article.title,
     excerpt: article.content ? article.content.substring(0, 200) + '...' : '',
     content: article.content,
-    publishedAt: article.publishedDate || article.published_date || article.createdAt || article.created_at,
-    imageUrl: article.images?.[0],
+    publishedAt: article.publishedDate || article.published_date || article.published_at || article.createdAt || article.created_at,
+    imageUrl: article.image_url,
     author: 'TransfersDaily',
     tags: article.tags || [],
     league: article.league,
-    slug: article.slug
+    slug: slug
   }
 }
 
 // Transfer API functions
 export const transfersApi = {
   // Get latest transfers with pagination info
-  async getLatestWithPagination(limit = 10, offset = 0): Promise<{
+  async getLatestWithPagination(limit = 10, offset = 0, language = 'en'): Promise<{
     transfers: Transfer[],
     pagination?: {
       page: number,
@@ -150,6 +168,7 @@ export const transfersApi = {
       const params = new URLSearchParams({
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
+        language: language,
         status: 'published'
       })
       
@@ -166,39 +185,35 @@ export const transfersApi = {
       }
     } catch (error) {
       console.error('Error fetching latest transfers with pagination:', error)
-      return { transfers: [] }
+      throw error
     }
   },
 
   // Get latest transfers
-  async getLatest(limit = 10, offset = 0, language = 'en'): Promise<Transfer[]> {
+  async getLatest(limit = 10, offset = 0, language?: string): Promise<Transfer[]> {
     try {
+      const currentLang = language || getCurrentLanguage()
       const params = new URLSearchParams({
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
         status: 'published',
-        lang: language
+        lang: currentLang
       })
       
-      const fallbackData = { articles: mockTransfers.slice(0, limit) }
-      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.transfers.latest}?${params}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.transfers.latest}?${params}`
       )
       
       const articles = response.data?.articles || response.articles || []
       return articles.map(transformArticleToTransfer)
     } catch (error) {
       console.error('Error fetching latest transfers:', error)
-      // Return mock data as final fallback
-      return mockTransfers.slice(0, limit).map(transformArticleToTransfer)
+      throw error
     }
   },
 
   // Get transfers by league with pagination info
-  async getByLeagueWithPagination(leagueSlug: string, limit = 10, offset = 0): Promise<{
+  async getByLeagueWithPagination(leagueSlug: string, limit = 10, offset = 0, language = 'en'): Promise<{
     transfers: Transfer[],
     pagination?: {
       page: number,
@@ -224,7 +239,8 @@ export const transfersApi = {
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
         status: 'published',
-        league: leagueName
+        league: leagueName,
+        language: language
       })
       
       const response = await apiRequest<{ success: boolean; data: { articles: any[], pagination: any } }>(
@@ -240,7 +256,7 @@ export const transfersApi = {
       }
     } catch (error) {
       console.error('Error fetching transfers by league with pagination:', error)
-      return { transfers: [] }
+      throw error
     }
   },
 
@@ -265,26 +281,15 @@ export const transfersApi = {
         league: leagueName
       })
       
-      const filteredMockData = mockTransfers.filter(t => 
-        t.league.toLowerCase().replace(/\s+/g, '-') === leagueSlug
-      )
-      const fallbackData = { articles: filteredMockData.slice(0, limit) }
-      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.transfers.byLeague}?${params}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.transfers.byLeague}?${params}`
       )
       
       const articles = response.data?.articles || response.articles || []
       return articles.map(transformArticleToTransfer)
     } catch (error) {
       console.error('Error fetching transfers by league:', error)
-      // Return filtered mock data as final fallback
-      const filteredMockData = mockTransfers.filter(t => 
-        t.league.toLowerCase().replace(/\s+/g, '-') === leagueSlug
-      )
-      return filteredMockData.slice(0, limit).map(transformArticleToTransfer)
+      throw error
     }
   },
 
@@ -321,29 +326,22 @@ export const transfersApi = {
       }
     } catch (error) {
       console.error('Error fetching transfers by status with pagination:', error)
-      return { transfers: [] }
+      throw error
     }
   },
 
   // Get transfer by ID
   async getById(id: string): Promise<Transfer | null> {
     try {
-      const mockTransfer = mockTransfers.find(t => t.uuid === id)
-      const fallbackData = mockTransfer ? { article: mockTransfer } : null
-      
       const response = await apiRequest<{ success: boolean; data: { article: any } }>(
-        `${API_CONFIG.endpoints.transfers.byId}/${id}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.transfers.byId}/${id}`
       )
       
       const article = response.data?.article || response.article
       return article ? transformArticleToTransfer(article) : null
     } catch (error) {
       console.error('Error fetching transfer by ID:', error)
-      // Return mock data as final fallback
-      const mockTransfer = mockTransfers.find(t => t.uuid === id)
-      return mockTransfer ? transformArticleToTransfer(mockTransfer) : null
+      return null
     }
   },
 
@@ -371,40 +369,15 @@ export const transfersApi = {
         }
       }
 
-      // Filter mock data for fallback
-      let filteredMockData = mockTransfers.filter(t => 
-        t.title.toLowerCase().includes(query.toLowerCase()) ||
-        t.player_name?.toLowerCase().includes(query.toLowerCase()) ||
-        t.current_club?.toLowerCase().includes(query.toLowerCase()) ||
-        t.destination_club?.toLowerCase().includes(query.toLowerCase())
-      )
-
-      if (filters?.league) {
-        filteredMockData = filteredMockData.filter(t => 
-          t.league.toLowerCase().replace(/\s+/g, '-') === filters.league
-        )
-      }
-
-      const fallbackData = { articles: filteredMockData }
-
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.transfers.search}?${params}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.transfers.search}?${params}`
       )
       
       const articles = response.data?.articles || response.articles || []
       return articles.map(transformArticleToTransfer)
     } catch (error) {
       console.error('Error searching transfers:', error)
-      // Return filtered mock data as final fallback
-      let filteredMockData = mockTransfers.filter(t => 
-        t.title.toLowerCase().includes(query.toLowerCase()) ||
-        t.player_name?.toLowerCase().includes(query.toLowerCase()) ||
-        t.current_club?.toLowerCase().includes(query.toLowerCase()) ||
-        t.destination_club?.toLowerCase().includes(query.toLowerCase())
-      )
-      return filteredMockData.map(transformArticleToTransfer)
+      throw error
     }
   }
 }
@@ -421,111 +394,185 @@ export const articlesApi = {
         lang: language
       })
       
-      const fallbackData = { articles: mockTransfers.slice(0, limit) }
-      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.articles.latest}?${params}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.articles.latest}?${params}`
       )
       
       const articles = response.data?.articles || response.articles || []
       return articles.map(transformArticleToArticle)
     } catch (error) {
       console.error('Error fetching latest articles:', error)
-      return mockTransfers.slice(0, limit).map(transformArticleToArticle)
+      throw error
     }
   },
 
   // Get article by ID
   async getById(id: string): Promise<Article | null> {
     try {
-      const mockArticle = mockTransfers.find(t => t.uuid === id)
-      const fallbackData = mockArticle ? { article: mockArticle } : null
-      
       const response = await apiRequest<{ success: boolean; data: { article: any } }>(
-        `${API_CONFIG.endpoints.articles.byId}/${id}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.articles.byId}/${id}`
       )
       
       const article = response.data?.article || response.article
       return article ? transformArticleToArticle(article) : null
     } catch (error) {
       console.error('Error fetching article by ID:', error)
-      const mockArticle = mockTransfers.find(t => t.uuid === id)
-      return mockArticle ? transformArticleToArticle(mockArticle) : null
+      return null
     }
   },
 
   // Get article by slug
-  async getBySlug(slug: string): Promise<Article | null> {
+  async getBySlug(slug: string, locale: string = 'en'): Promise<Article | null> {
     try {
-      const mockArticle = mockTransfers.find(t => t.slug === slug)
-      const fallbackData = mockArticle ? { article: mockArticle } : null
+      // Call backend API directly with language parameter
+      const response = await fetch(`${API_CONFIG.baseUrl}/public/articles/${slug}?language=${locale}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
       
-      const response = await apiRequest<{ success: boolean; data: { article: any } }>(
-        `${API_CONFIG.endpoints.articles.bySlug}/${slug}`,
-        {},
-        fallbackData
-      )
+      if (!response.ok) {
+        console.error(`Article API error: ${response.status} ${response.statusText}`)
+        
+        // If article not found by slug, try searching through latest articles
+        if (response.status === 404 || response.status === 500) {
+          console.log('Article not found by slug, trying fallback search...')
+          
+          const articles = await this.getLatest(100, 0, locale)
+          
+          // Try exact match first
+          let matchingArticle = articles.find(article => {
+            const articleSlug = generateSlug(article.title)
+            return articleSlug === slug
+          })
+          
+          // If no exact match, try partial matching
+          if (!matchingArticle) {
+            matchingArticle = articles.find(article => {
+              const articleSlug = generateSlug(article.title)
+              const slugWords = slug.split('-')
+              const articleWords = articleSlug.split('-')
+              
+              // Check if most words match
+              const matchingWords = slugWords.filter(word => 
+                articleWords.some(articleWord => 
+                  articleWord.includes(word) || word.includes(articleWord)
+                )
+              )
+              
+              return matchingWords.length >= Math.min(3, slugWords.length * 0.6)
+            })
+          }
+          
+          if (matchingArticle) {
+            console.log('Found matching article via fallback search:', matchingArticle.title)
+            return matchingArticle
+          }
+        }
+        
+        return null
+      }
       
-      const article = response.data?.article || response.article
+      const data = await response.json()
+      console.log('Article API response:', data)
+      
+      const article = data.data?.article || data.article || data
       return article ? transformArticleToArticle(article) : null
     } catch (error) {
       console.error('Error fetching article by slug:', error)
-      const mockArticle = mockTransfers.find(t => t.slug === slug)
-      return mockArticle ? transformArticleToArticle(mockArticle) : null
+      
+      // Fallback: try to find the article by searching through latest articles
+      try {
+        console.log('Network error, attempting fallback: searching articles for slug match')
+        const articles = await this.getLatest(100, 0, locale) // Get more articles to search through
+        
+        // Try to find an article that matches the slug exactly
+        let matchingArticle = articles.find(article => {
+          const articleSlug = generateSlug(article.title)
+          return articleSlug === slug
+        })
+        
+        // If no exact match, try partial matching
+        if (!matchingArticle) {
+          matchingArticle = articles.find(article => {
+            const articleSlug = generateSlug(article.title)
+            const slugWords = slug.split('-')
+            const articleWords = articleSlug.split('-')
+            
+            // Check if most words match
+            const matchingWords = slugWords.filter(word => 
+              articleWords.some(articleWord => 
+                articleWord.includes(word) || word.includes(articleWord)
+              )
+            )
+            
+            return matchingWords.length >= Math.min(3, slugWords.length * 0.6)
+          })
+        }
+        
+        if (matchingArticle) {
+          console.log('Found matching article via fallback search:', matchingArticle.title)
+          return matchingArticle
+        }
+        
+        console.log('No matching article found in fallback search')
+        return null
+      } catch (fallbackError) {
+        console.error('Fallback search also failed:', fallbackError)
+        return null
+      }
     }
   },
 
-  // Get recommended articles (random selection)
-  async getRecommended(limit = 5): Promise<Article[]> {
+  // Get recommended articles (random selection from latest articles)
+  async getRecommended(limit = 5, language = 'en'): Promise<Article[]> {
     try {
       const params = new URLSearchParams({
-        limit: limit.toString(),
+        limit: (limit * 3).toString(), // Get more articles to randomize from
         status: 'published',
-        random: 'true'
+        language: language // Add language parameter
       })
       
-      const fallbackData = { articles: mockTransfers.slice(0, limit) }
+      console.log('Fetching recommended articles for language:', language)
       
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.articles.latest}?${params}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.articles.latest}?${params}`
       )
       
       const articles = response.data?.articles || response.articles || []
-      return articles.slice(0, limit).map(transformArticleToArticle)
+      
+      // Randomize the articles client-side and return the requested limit
+      const shuffled = [...articles].sort(() => Math.random() - 0.5)
+      return shuffled.slice(0, limit).map(transformArticleToArticle)
     } catch (error) {
       console.error('Error fetching recommended articles:', error)
-      return mockTransfers.slice(0, limit).map(transformArticleToArticle)
+      throw error
     }
   },
 
   // Get trending articles (highest transfer fees)
-  async getTrending(limit = 5): Promise<Article[]> {
+  async getTrending(limit = 5, language = 'en'): Promise<Article[]> {
     try {
       const params = new URLSearchParams({
         limit: limit.toString(),
         status: 'published',
-        sort: 'trending' // Signal to backend to sort by transfer fee
+        sort: 'trending', // Signal to backend to sort by transfer fee
+        language: language // Add language parameter
       })
       
-      const fallbackData = { articles: mockTransfers.slice(0, limit) }
+      console.log('Fetching trending articles for language:', language)
       
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.articles.trending}?${params}`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.articles.trending}?${params}`
       )
       
       const articles = response.data?.articles || response.articles || []
       return articles.slice(0, limit).map(transformArticleToArticle)
     } catch (error) {
       console.error('Error fetching trending articles:', error)
-      return mockTransfers.slice(0, limit).map(transformArticleToArticle)
+      throw error
     }
   }
 }
@@ -535,12 +582,8 @@ export const leaguesApi = {
   // Get all leagues (extracted from articles)
   async getAll(): Promise<League[]> {
     try {
-      const fallbackData = { articles: mockTransfers }
-      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.leagues.all}?limit=100&status=published`,
-        {},
-        fallbackData
+        `${API_CONFIG.endpoints.leagues.all}?limit=100&status=published`
       )
       
       // Extract unique leagues from articles
@@ -571,11 +614,10 @@ export const leaguesApi = {
         }
       })
       
-      // Always return the full set of mock leagues to ensure we have all 5
-      return mockLeagues
+      return leagues
     } catch (error) {
       console.error('Error fetching leagues:', error)
-      return mockLeagues
+      throw error
     }
   },
 
@@ -586,7 +628,7 @@ export const leaguesApi = {
       return leagues.find(league => league.slug === slug) || null
     } catch (error) {
       console.error('Error fetching league by slug:', error)
-      return mockLeagues.find(league => league.slug === slug) || null
+      throw error
     }
   }
 }
@@ -687,7 +729,74 @@ export const adminApi = {
     }
   },
 
-  // Get draft articles
+  // Get articles (generic method for any status)
+  async getArticles(params?: {
+    page?: number
+    limit?: number
+    search?: string
+    category?: string
+    league?: string
+    status?: string
+    transfer_status?: string
+    sortBy?: string
+    sortOrder?: string
+  }): Promise<{
+    articles: any[]
+    pagination: {
+      page: number
+      limit: number
+      total: number
+      totalPages: number
+    }
+    stats: any
+  }> {
+    try {
+      const queryParams = new URLSearchParams({
+        status: params?.status || 'all',
+        page: (params?.page || 1).toString(),
+        limit: (params?.limit || 50).toString()
+      })
+      
+      if (params?.search) queryParams.append('search', params.search)
+      if (params?.category) queryParams.append('category', params.category)
+      if (params?.league) queryParams.append('league', params.league)
+      if (params?.transfer_status) queryParams.append('transfer_status', params.transfer_status)
+      if (params?.sortBy) queryParams.append('sortBy', params.sortBy)
+      if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder)
+
+      console.log('🔍 Fetching articles with params:', Object.fromEntries(queryParams))
+      
+      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}?${queryParams}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log('📊 Articles API response:', data)
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch articles')
+      }
+
+      return {
+        articles: data.data?.articles || [],
+        pagination: data.data?.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 },
+        stats: data.data?.stats || null
+      }
+    } catch (error) {
+      console.error('💥 Error fetching articles:', error)
+      throw error
+    }
+  },
+
+  // Get draft articles (legacy method - now uses getArticles)
   async getDraftArticles(params?: {
     page?: number
     limit?: number
@@ -1028,14 +1137,7 @@ export const searchApi = {
       return response.data?.trending || []
     } catch (error) {
       console.error('Error getting trending searches:', error)
-      // Return fallback data
-      return [
-        { name: "Kylian Mbappé", count: "2.3k searches", query: "Kylian Mbappé", search_count: 2300 },
-        { name: "Manchester United", count: "1.8k searches", query: "Manchester United", search_count: 1800 },
-        { name: "Real Madrid", count: "1.5k searches", query: "Real Madrid", search_count: 1500 },
-        { name: "Transfer Deadline", count: "1.2k searches", query: "Transfer Deadline", search_count: 1200 },
-        { name: "Premier League", count: "980 searches", query: "Premier League", search_count: 980 },
-      ]
+      throw error
     }
   },
 

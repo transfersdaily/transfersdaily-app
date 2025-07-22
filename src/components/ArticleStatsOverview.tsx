@@ -96,7 +96,7 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
         />
         
         <DashboardCard
-          title="Created Today"
+          title={pageType === "published" ? "Published Today" : "Created Today"}
           value={safeData.createdToday || 0}
           change={safeData.totalArticles ? `+${Math.round(((safeData.createdToday || 0) / safeData.totalArticles) * 100)}% of total` : ""}
           trend="up"
@@ -104,7 +104,7 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
         />
         
         <DashboardCard
-          title="This Week"
+          title={pageType === "published" ? "Published This Week" : "This Week"}
           value={safeData.createdThisWeek || 0}
           change={(safeData.createdThisWeek || 0) > (safeData.createdToday || 0) * 7 ? "↗ vs last week" : "↘ vs last week"}
           trend={(safeData.createdThisWeek || 0) > (safeData.createdToday || 0) * 7 ? "up" : "down"}
@@ -112,7 +112,7 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
         />
         
         <DashboardCard
-          title="This Month"
+          title={pageType === "published" ? "Published This Month" : "This Month"}
           value={safeData.createdThisMonth || 0}
           icon={Clock}
           description={`Avg ${Math.round((safeData.createdThisMonth || 0) / 30)} per day`}

@@ -17,7 +17,8 @@ import {
   User,
   Globe
 } from 'lucide-react';
-import { API_CONFIG } from '@/lib/config';
+import { API_CONFIG, getApiUrl } from '@/lib/config';
+import { ImageDebugger } from '@/components/ImageDebugger';
 
 interface ArticleData {
   id: string;
@@ -26,6 +27,7 @@ interface ArticleData {
   category: string;
   tags: string[];
   created_at: string;
+  image_url?: string; // Add image URL field
   translations: {
     [key: string]: {
       title: string;
@@ -62,7 +64,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
       setIsLoading(true);
       console.log('🔍 Loading article with ID:', articleId);
       
-      const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`;
+      const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       console.log('🔍 Loading article from URL:', url);
       
       const response = await fetch(url, {
@@ -101,6 +103,51 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
       
       const foundArticle = data.data.article;
       console.log('✅ Found article:', foundArticle.title);
+      console.log('🖼️ Image URL from backend:', foundArticle.image_url);
+      console.log('🖼️ Image URL type:', typeof foundArticle.image_url);
+      console.log('🖼️ Image URL length:', foundArticle.image_url?.length);
+      
+      // Test if the image URL is accessible
+      if (foundArticle.image_url) {
+        console.log('🔍 Testing image URL accessibility...');
+        
+        // Test with different methods
+        const testMethods = ['HEAD', 'GET'];
+        
+        for (const method of testMethods) {
+          try {
+            const response = await fetch(foundArticle.image_url, { 
+              method,
+              mode: 'cors',
+              cache: 'no-cache'
+            });
+            console.log(`🖼️ ${method} test - Status:`, response.status, response.statusText);
+            console.log(`🖼️ ${method} test - Headers:`, Object.fromEntries(response.headers.entries()));
+            
+            if (method === 'GET' && response.ok) {
+              const contentLength = response.headers.get('content-length');
+              console.log(`🖼️ Content length: ${contentLength} bytes`);
+            }
+          } catch (error) {
+            console.error(`❌ ${method} test failed:`, error);
+          }
+        }
+        
+        // Test with Image constructor
+        const testImg = new Image();
+        testImg.crossOrigin = 'anonymous';
+        testImg.onload = () => {
+          console.log('✅ Image constructor test passed:', {
+            width: testImg.naturalWidth,
+            height: testImg.naturalHeight,
+            complete: testImg.complete
+          });
+        };
+        testImg.onerror = (error) => {
+          console.error('❌ Image constructor test failed:', error);
+        };
+        testImg.src = foundArticle.image_url;
+      }
       
       // Initialize translations structure
       const translations: Record<string, any> = {
@@ -136,6 +183,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
         category: foundArticle.category || 'Transfer',
         tags: [], // Tags will be handled in social media step
         created_at: foundArticle.created_at,
+        image_url: foundArticle.image_url, // Include image URL
         translations: translations
       });
       
@@ -248,15 +296,54 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
           </div>
         </div>
 
-        {/* Featured Image Placeholder */}
-        <div className="bg-slate-100 h-64 flex items-center justify-center">
-          <div className="text-center text-slate-500">
-            <div className="w-16 h-16 bg-slate-200 rounded-lg mx-auto mb-2 flex items-center justify-center">
-              <Eye className="w-8 h-8" />
+        {/* Featured Image */}
+        {article?.image_url ? (
+          <div className="relative">
+            <img 
+              src={article.image_url} 
+              alt={previewData.title}
+              className="w-full h-64 object-cover"
+              onError={(e) => {
+                console.error('Failed to load featured image:', article.image_url);
+                const img = e.currentTarget;
+                
+                // Create a fallback div
+                const fallbackDiv = document.createElement('div');
+                fallbackDiv.className = 'w-full h-64 bg-slate-100 flex items-center justify-center';
+                fallbackDiv.innerHTML = `
+                  <div class="text-center text-slate-500">
+                    <div class="w-16 h-16 bg-slate-200 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                      <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <p>Image failed to load</p>
+                    <p class="text-sm">URL: ${article.image_url}</p>
+                  </div>
+                `;
+                img.parentNode?.replaceChild(fallbackDiv, img);
+              }}
+              onLoad={() => {
+                console.log('✅ Preview image loaded successfully:', article.image_url);
+              }}
+            />
+            <div className="absolute bottom-4 right-4">
+              <Badge className="bg-black/50 text-white">
+                Featured Image
+              </Badge>
             </div>
-            <p>Featured Image</p>
           </div>
-        </div>
+        ) : (
+          <div className="bg-slate-100 h-64 flex items-center justify-center">
+            <div className="text-center text-slate-500">
+              <div className="w-16 h-16 bg-slate-200 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                <Eye className="w-8 h-8" />
+              </div>
+              <p>No Featured Image</p>
+              <p className="text-sm">Upload an image in the Edit step</p>
+            </div>
+          </div>
+        )}
 
         {/* Article Content */}
         <div className="p-6">
@@ -342,7 +429,33 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
             
             {/* Link Preview Card */}
             <div className="border rounded-lg overflow-hidden">
-              <div className="bg-slate-100 h-32 flex items-center justify-center">
+              {article?.image_url ? (
+                <img 
+                  src={article.image_url} 
+                  alt={previewData.title}
+                  className="w-full h-32 object-cover"
+                  onError={(e) => {
+                    console.error('Failed to load social preview image:', article.image_url);
+                    const img = e.currentTarget;
+                    img.style.display = 'none';
+                    // Show the placeholder
+                    const placeholder = img.nextElementSibling as HTMLElement;
+                    if (placeholder) {
+                      placeholder.style.display = 'flex';
+                    }
+                  }}
+                  onLoad={() => {
+                    console.log('✅ Social preview image loaded successfully');
+                    // Hide the placeholder
+                    const img = e.currentTarget;
+                    const placeholder = img.nextElementSibling as HTMLElement;
+                    if (placeholder) {
+                      placeholder.style.display = 'none';
+                    }
+                  }}
+                />
+              ) : null}
+              <div className={`bg-slate-100 h-32 items-center justify-center ${article?.image_url ? 'hidden' : 'flex'}`}>
                 <Eye className="w-8 h-8 text-slate-400" />
               </div>
               <div className="p-3">
@@ -362,6 +475,18 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
 
   return (
     <div className="space-y-6">
+      {/* Debug Component - Remove in production */}
+      {article?.image_url && (
+        <Card className="border-yellow-200 bg-yellow-50">
+          <CardHeader>
+            <CardTitle className="text-yellow-800">🐛 Image Debug Info</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ImageDebugger imageUrl={article.image_url} />
+          </CardContent>
+        </Card>
+      )}
+      
       {/* Preview Controls */}
       <Card>
         <CardHeader>

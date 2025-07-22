@@ -47,13 +47,13 @@ export function TransferCard({
             priority={false}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900" />
+          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/80" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
       <CardContent className="p-4">
         <div className="flex items-center gap-2 mb-2">
-          <Badge variant="outline" className="text-xs bg-gray-100 text-gray-800 border-gray-200 hover:bg-gray-200 truncate inline-block">
+          <Badge variant="outline" className="text-xs bg-muted text-foreground border-border hover:bg-muted/80 truncate inline-block">
             {primaryBadge}
           </Badge>
         </div>

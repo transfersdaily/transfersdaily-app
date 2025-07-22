@@ -1,6 +1,12 @@
 // API Configuration
 export const API_CONFIG = {
   baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod',
+  // Use local API routes for client-side requests during development
+  localApiUrl: typeof window !== 'undefined' 
+    ? `${window.location.protocol}//${window.location.host}/api`
+    : '/api',
+  // Determine if we're in development mode
+  isDevelopment: typeof window !== 'undefined' && window.location.hostname === 'localhost',
   endpoints: {
     transfers: {
       latest: '/public/articles', // Transfers are handled by articles API
@@ -11,14 +17,14 @@ export const API_CONFIG = {
     articles: {
       latest: '/public/articles',
       byId: '/public/articles',
-      bySlug: '/public/articles',
+      bySlug: '/article', // This will use the local API route
       trending: '/public/articles'
     },
 
     newsletter: {
-      subscribe: '/user/newsletter',
-      list: '/user/newsletter',
-      unsubscribe: '/user/newsletter'
+      subscribe: '/newsletter',
+      list: '/newsletter',
+      unsubscribe: '/newsletter'
     },
     user: {
       profile: '/user/profile',
@@ -39,6 +45,9 @@ export const API_CONFIG = {
       recentArticles: '/admin/articles/recent',
       deleteArticle: '/admin/articles',
       updateStatus: '/admin/articles',
+      media: {
+        upload: '/admin/media/upload'
+      },
       clubs: {
         all: '/admin/clubs',
         byId: '/admin/clubs'
@@ -53,6 +62,14 @@ export const API_CONFIG = {
       }
     }
   }
+}
+
+// Helper function to get the correct API URL
+export function getApiUrl(endpoint: string): string {
+  if (API_CONFIG.isDevelopment && endpoint.startsWith('/admin')) {
+    return `${API_CONFIG.localApiUrl}${endpoint}`;
+  }
+  return `${API_CONFIG.baseUrl}${endpoint}`;
 }
 
 // Auth Configuration - Using Admin User Pool

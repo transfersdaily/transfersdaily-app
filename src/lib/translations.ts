@@ -53,6 +53,12 @@ export const commonTranslations: Translations = {
       terms: 'Terms of Service',
       newsletter: 'Newsletter',
       social: 'Follow Us'
+    },
+    sidebar: {
+      recommended: 'Recommended Articles',
+      trending: 'Most Searched',
+      recentSearches: 'Recent Searches',
+      noRecentSearches: 'No recent searches'
     }
   },
   es: {
@@ -98,6 +104,12 @@ export const commonTranslations: Translations = {
       terms: 'Términos de Servicio',
       newsletter: 'Boletín',
       social: 'Síguenos'
+    },
+    sidebar: {
+      recommended: 'Artículos Recomendados',
+      trending: 'Más Buscado',
+      recentSearches: 'Búsquedas Recientes',
+      noRecentSearches: 'No hay búsquedas recientes'
     }
   },
   fr: {
@@ -143,6 +155,12 @@ export const commonTranslations: Translations = {
       terms: 'Conditions d\'utilisation',
       newsletter: 'Newsletter',
       social: 'Nous suivre'
+    },
+    sidebar: {
+      recommended: 'Articles Recommandés',
+      trending: 'Plus Recherché',
+      recentSearches: 'Recherches Récentes',
+      noRecentSearches: 'Aucune recherche récente'
     }
   },
   de: {
@@ -188,6 +206,12 @@ export const commonTranslations: Translations = {
       terms: 'Nutzungsbedingungen',
       newsletter: 'Newsletter',
       social: 'Folgen Sie uns'
+    },
+    sidebar: {
+      recommended: 'Empfohlene Artikel',
+      trending: 'Meist Gesucht',
+      recentSearches: 'Letzte Suchen',
+      noRecentSearches: 'Keine letzten Suchen'
     }
   },
   it: {
@@ -233,6 +257,12 @@ export const commonTranslations: Translations = {
       terms: 'Termini di Servizio',
       newsletter: 'Newsletter',
       social: 'Seguici'
+    },
+    sidebar: {
+      recommended: 'Articoli Consigliati',
+      trending: 'Più Cercato',
+      recentSearches: 'Ricerche Recenti',
+      noRecentSearches: 'Nessuna ricerca recente'
     }
   }
 }

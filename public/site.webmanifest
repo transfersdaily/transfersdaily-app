@@ -1,0 +1,17 @@
+{
+  "name": "Transfer Daily",
+  "short_name": "TransferDaily",
+  "description": "Your trusted source for the latest football transfer news, rumors, and analysis from around the world.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#ef4444",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

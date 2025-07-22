@@ -18,16 +18,26 @@ import {
   Sun,
   Moon,
   X,
-  LogOut,
-  Settings
 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useAuth } from "@/lib/auth"
+import { useDictionary } from "@/lib/dictionary-provider"
+import { useParams } from "next/navigation"
+import { type Locale } from "@/lib/i18n"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 
-export function Navbar() {
+interface NavbarProps {
+  locale?: Locale
+  dict?: any
+}
+
+export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false)
   const { theme, setTheme } = useTheme()
-  const { user, signOut } = useAuth()
+  const { user, logout } = useAuth()
+  const params = useParams()
+  const locale = propLocale || (params?.locale as Locale) || 'en'
+  const { t } = useDictionary()
 
   const leagues = [
     { name: "Premier League", slug: "premier-league" },
@@ -38,44 +48,48 @@ export function Navbar() {
   ]
 
   const transferTypes = [
-    { name: "Confirmed", slug: "confirmed" },
+    { name: t("navigation.confirmed", "Confirmed"), slug: "confirmed" },
     { name: "Rumors", slug: "rumors" },
-    { name: "Completed", slug: "completed" },
-    { name: "Loan Moves", slug: "loan-moves" },
+    { name: t("navigation.completed", "Completed"), slug: "completed" },
+    { name: t("navigation.loanMoves", "Loan Moves"), slug: "loan-moves" },
   ]
 
+  const getLocalizedPath = (path: string) => {
+    return locale === 'en' ? path : `/${locale}${path}`
+  }
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-700 bg-slate-900">
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href={getLocalizedPath("/")} className="flex items-center space-x-2">
           <span className="text-2xl font-bold">
-            <span className="text-red-500">Transfers</span>
-            <span className="text-white">Daily</span>
+            <span className="text-primary">Transfers</span>
+            <span className="text-foreground">Daily</span>
           </span>
         </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center justify-center flex-1 space-x-8">
           <Link 
-            href="/latest" 
-            className="text-sm font-medium text-slate-300 px-3 py-2"
+            href={getLocalizedPath("/latest")} 
+            className="text-sm font-medium text-muted-foreground hover:text-rose-500 px-3 py-2 transition-colors"
           >
-            Latest
+            {t("navigation.latest", "Latest")}
           </Link>
 
           {/* Leagues Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-slate-300">
-                <span>Leagues</span>
+              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-muted-foreground hover:text-rose-500">
+                <span>{t("navigation.leagues", "Leagues")}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
               {leagues.map((league) => (
                 <DropdownMenuItem key={league.name} asChild>
-                  <Link href={`/league/${league.slug}`}>
+                  <Link href={getLocalizedPath(`/league/${league.slug}`)}>
                     {league.name}
                   </Link>
                 </DropdownMenuItem>
@@ -83,18 +97,18 @@ export function Navbar() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Transfer Types Dropdown */}
+          {/* Transfers Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-slate-300">
-                <span>Transfers</span>
+              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-muted-foreground hover:text-rose-500">
+                <span>{t("navigation.transfers", "Transfers")}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-48">
               {transferTypes.map((type) => (
                 <DropdownMenuItem key={type.name} asChild>
-                  <Link href={`/transfers/${type.slug}`}>
+                  <Link href={getLocalizedPath(`/transfers/${type.slug}`)}>
                     {type.name}
                   </Link>
                 </DropdownMenuItem>
@@ -103,25 +117,30 @@ export function Navbar() {
           </DropdownMenu>
 
           <Link 
-            href="/about" 
-            className="text-sm font-medium text-slate-300 px-3 py-2"
+            href={getLocalizedPath("/about")} 
+            className="text-sm font-medium text-muted-foreground hover:text-rose-500 px-3 py-2 transition-colors"
           >
-            About
+            {t("navigation.about", "About")}
           </Link>
 
           <Link 
-            href="/contact" 
-            className="text-sm font-medium text-slate-300 px-3 py-2"
+            href={getLocalizedPath("/contact")} 
+            className="text-sm font-medium text-muted-foreground hover:text-rose-500 px-3 py-2 transition-colors"
           >
-            Contact
+            {t("navigation.contact", "Contact")}
           </Link>
         </nav>
 
-        {/* Right Side Actions */}
+        {/* Right side - Actions */}
         <div className="flex items-center space-x-2">
+          {/* Language Switcher - Desktop */}
+          <div className="hidden sm:block">
+            <LanguageSwitcher variant="compact" currentLocale={locale} />
+          </div>
+
           {/* Search Button */}
-          <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-slate-300" asChild>
-            <Link href="/search">
+          <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-rose-500" asChild>
+            <Link href={getLocalizedPath("/search")}>
               <Search className="h-4 w-4" />
               <span className="sr-only">Search</span>
             </Link>
@@ -131,11 +150,10 @@ export function Navbar() {
           <Button
             variant="ghost"
             size="icon"
-            className="hidden sm:inline-flex text-slate-300"
+            className="hidden sm:inline-flex text-muted-foreground hover:text-rose-500"
             onClick={() => setTheme(theme === "light" ? "dark" : "light")}
           >
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             <span className="sr-only">Toggle theme</span>
           </Button>
 
@@ -143,26 +161,25 @@ export function Navbar() {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-slate-300">
+                <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-rose-500">
                   <User className="h-4 w-4" />
                   <span className="sr-only">User menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/admin">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Admin Dashboard
-                  </Link>
+                  <Link href="/admin">Admin Panel</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={signOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
+                <DropdownMenuItem asChild>
+                  <Link href="/profile">Profile</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={logout}>
+                  Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-slate-300" asChild>
+            <Button variant="ghost" size="icon" className="hidden sm:inline-flex text-muted-foreground hover:text-rose-500" asChild>
               <Link href="/login">
                 <User className="h-4 w-4" />
                 <span className="sr-only">Login</span>
@@ -173,44 +190,45 @@ export function Navbar() {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-slate-300">
+              <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-rose-500">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between pb-4 border-b border-border">
                 <span className="text-lg font-semibold">Menu</span>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  onClick={() => setIsOpen(false)}
-                  className="h-8 w-8"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
               </div>
+
               <div className="flex flex-col space-y-6 mt-6">
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+                {/* Language Switcher - Mobile */}
+                <div className="bg-muted rounded-lg p-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+                    Language
+                  </h3>
+                  <LanguageSwitcher variant="default" currentLocale={locale} />
+                </div>
+
+                <div className="bg-muted rounded-lg p-4">
                   <Link 
-                    href="/latest" 
-                    className="text-lg font-medium block"
+                    href={getLocalizedPath("/latest")}
+                    className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
                     onClick={() => setIsOpen(false)}
                   >
-                    Latest Transfers
+                    {t("navigation.latest", "Latest")}
                   </Link>
                 </div>
 
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                     Leagues
                   </h3>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2">
+                  <div className="bg-muted rounded-lg p-2">
                     {leagues.map((league) => (
                       <Link
                         key={league.name}
-                        href={`/league/${league.slug}`}
-                        className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                        href={getLocalizedPath(`/league/${league.slug}`)}
+                        className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         {league.name}
@@ -219,16 +237,16 @@ export function Navbar() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
-                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
                     Transfer Types
                   </h3>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2">
+                  <div className="bg-muted rounded-lg p-2">
                     {transferTypes.map((type) => (
                       <Link
                         key={type.name}
-                        href={`/transfers/${type.slug}`}
-                        className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                        href={getLocalizedPath(`/transfers/${type.slug}`)}
+                        className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         {type.name}
@@ -237,53 +255,24 @@ export function Navbar() {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 space-y-2">
+                <div className="pt-2 border-t border-border">
+                  <div className="bg-muted rounded-lg p-2 space-y-2">
                     <Link 
-                      href="/about" 
-                      className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                      href={getLocalizedPath("/about")}
+                      className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
-                      About
+                      {t("navigation.about", "About")}
                     </Link>
+                    
                     <Link 
-                      href="/contact" 
-                      className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                      href={getLocalizedPath("/contact")}
+                      className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
-                      Contact
+                      {t("navigation.contact", "Contact")}
                     </Link>
                   </div>
-                </div>
-
-                <div className="pt-4 border-t">
-                  <Button className="w-full mb-2" size="lg" asChild>
-                    <Link href="/search">
-                      <Search className="mr-2 h-4 w-4" />
-                      Search Transfers
-                    </Link>
-                  </Button>
-                  {user ? (
-                    <div className="space-y-2">
-                      <Button variant="outline" className="w-full" size="lg" asChild>
-                        <Link href="/admin" onClick={() => setIsOpen(false)}>
-                          <Settings className="mr-2 h-4 w-4" />
-                          Admin Dashboard
-                        </Link>
-                      </Button>
-                      <Button variant="outline" className="w-full" size="lg" onClick={() => { signOut(); setIsOpen(false); }}>
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Sign Out
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button variant="outline" className="w-full" size="lg" asChild>
-                      <Link href="/login" onClick={() => setIsOpen(false)}>
-                        <User className="mr-2 h-4 w-4" />
-                        Login
-                      </Link>
-                    </Button>
-                  )}
                 </div>
               </div>
             </SheetContent>

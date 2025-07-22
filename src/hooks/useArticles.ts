@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { adminApi } from '@/lib/api'
 
 // Generate real stats from articles data
-function generateStatsFromArticles(articles: any[]) {
-  console.log('Generating stats for articles:', articles.length)
+function generateStatsFromArticles(articles: any[], status: string = 'draft') {
+  console.log('Generating stats for articles:', articles.length, 'status:', status)
   
   const now = new Date()
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
@@ -12,25 +12,32 @@ function generateStatsFromArticles(articles: any[]) {
   
   console.log('Date ranges:', { today, weekAgo, monthAgo })
   
+  // Use published_at for published articles, created_at for others
+  const dateField = status === 'published' ? 'published_at' : 'created_at'
+  console.log('Using date field:', dateField)
+  
   // Count articles by time periods with better date parsing
   const createdToday = articles.filter(a => {
-    if (!a.created_at) return false
-    const created = new Date(a.created_at)
+    const dateValue = a[dateField]
+    if (!dateValue) return false
+    const created = new Date(dateValue)
     const isToday = created >= today && created < new Date(today.getTime() + 24 * 60 * 60 * 1000)
-    if (isToday) console.log('Article created today:', a.title, created)
+    if (isToday) console.log(`Article ${dateField} today:`, a.title, created)
     return isToday
   }).length
   
   const createdThisWeek = articles.filter(a => {
-    if (!a.created_at) return false
-    const created = new Date(a.created_at)
+    const dateValue = a[dateField]
+    if (!dateValue) return false
+    const created = new Date(dateValue)
     const isThisWeek = created >= weekAgo
     return isThisWeek
   }).length
   
   const createdThisMonth = articles.filter(a => {
-    if (!a.created_at) return false
-    const created = new Date(a.created_at)
+    const dateValue = a[dateField]
+    if (!dateValue) return false
+    const created = new Date(dateValue)
     const isThisMonth = created >= monthAgo
     return isThisMonth
   }).length
@@ -133,13 +140,13 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
   const loadArticles = async () => {
     try {
       setIsLoading(true)
-      const response = await adminApi.getDraftArticles({
+      const response = await adminApi.getArticles({
         page: currentPage,
         limit: itemsPerPage,
         search: searchTerm || undefined,
         category: categoryFilter !== 'all' ? categoryFilter : undefined,
         league: leagueFilter !== 'all' ? leagueFilter : undefined,
-        status: status,
+        status: status, // This will be 'draft', 'published', or 'scheduled'
         transfer_status: statusFilter !== 'all' ? statusFilter : undefined,
         sortBy: sortBy,
         sortOrder: sortOrder
@@ -179,7 +186,7 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
         setStatsData(mappedStats)
       } else {
         console.log('Generating stats from articles')
-        const realStats = generateStatsFromArticles(response.articles)
+        const realStats = generateStatsFromArticles(response.articles, status)
         console.log('Generated stats:', realStats)
         setStatsData(realStats)
       }

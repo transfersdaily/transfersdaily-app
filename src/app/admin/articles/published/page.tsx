@@ -8,7 +8,7 @@ export default function PublishedArticlesPage() {
       title="Published Articles"
       pageType="published"
       status="published"
-      initialSortBy="created_at"
+      initialSortBy="published_at"
       initialSortOrder="desc"
       showAddButton={false}
     />
