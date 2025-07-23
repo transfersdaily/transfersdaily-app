@@ -1,3 +1,5 @@
+"use client"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock } from "lucide-react"
@@ -25,12 +27,10 @@ export function TransferCard({
   timeAgo,
   onClick,
   href = "/article/sample-article",
-  accentColor,
-  gradientFrom,
-  gradientTo,
   imageUrl,
   imageAlt
 }: TransferCardProps) {
+  
   const cardContent = (
     <Card 
       className="overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer min-h-[44px]"
@@ -47,41 +47,45 @@ export function TransferCard({
             priority={false}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/80" />
+          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center">
+            <div className="text-muted-foreground text-sm">No Image</div>
+          </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
+      
       <CardContent className="p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Badge variant="outline" className="text-xs bg-muted text-foreground border-border hover:bg-muted/80 truncate inline-block">
-            {primaryBadge}
-          </Badge>
-        </div>
-        <h3 className="font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-          {title}
-        </h3>
-        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
-          {excerpt}
-        </p>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock className="h-3 w-3" aria-hidden="true" />
-          <span>{timeAgo}</span>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Badge variant="secondary" className="text-xs">
+              {primaryBadge}
+            </Badge>
+            <div className="flex items-center text-xs text-muted-foreground">
+              <Clock className="w-3 h-3 mr-1" />
+              {timeAgo}
+            </div>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-sm line-clamp-2 leading-tight mb-2">
+              {title}
+            </h3>
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+              {excerpt}
+            </p>
+          </div>
         </div>
       </CardContent>
     </Card>
   )
 
-  if (onClick) {
-    return cardContent
+  if (href) {
+    return (
+      <Link href={href} className="block">
+        {cardContent}
+      </Link>
+    )
   }
 
-  return (
-    <Link 
-      href={href}
-      className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
-      aria-label={`Read article: ${title}`}
-    >
-      {cardContent}
-    </Link>
-  )
+  return cardContent
 }

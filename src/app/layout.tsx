@@ -1,7 +1,7 @@
+import './globals.css'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/lib/auth'
-import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -43,20 +43,18 @@ export default function RootLayout({
           }}
         />
         
-        {/* Google Analytics */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-XXXXXXXXXX', {
-                page_title: document.title,
-                page_location: window.location.href,
-              });
-            `,
-          }}
+        {/* Plausible Analytics - Privacy-focused, GDPR compliant */}
+        <script 
+          defer 
+          data-domain="transferdaily.com" 
+          src="https://plausible.io/js/script.js"
+        />
+        
+        {/* Google AdSense */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6269937543968234"
+          crossOrigin="anonymous"
         />
       </head>
       <body className={inter.className}>

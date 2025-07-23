@@ -20,6 +20,9 @@ export const API_CONFIG = {
       bySlug: '/article', // This will use the local API route
       trending: '/public/articles'
     },
+    leagues: {
+      all: '/public/articles' // Extract leagues from articles
+    },
 
     newsletter: {
       subscribe: '/newsletter',

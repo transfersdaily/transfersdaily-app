@@ -28,15 +28,15 @@ export function ClientNavbar() {
   }
 
   if (!isLoaded) {
-    // Return a skeleton navbar while loading
+    // Return a skeleton navbar while loading - using theme-aware classes
     return (
-      <div className="h-16 bg-slate-900 border-b border-slate-800">
+      <div className="h-16 bg-background border-b border-border">
         <div className="container mx-auto px-4 h-full flex items-center justify-between">
-          <div className="h-8 w-32 bg-slate-700 rounded animate-pulse"></div>
+          <div className="h-8 w-32 bg-muted rounded animate-pulse"></div>
           <div className="flex gap-4">
-            <div className="h-6 w-16 bg-slate-700 rounded animate-pulse"></div>
-            <div className="h-6 w-16 bg-slate-700 rounded animate-pulse"></div>
-            <div className="h-6 w-16 bg-slate-700 rounded animate-pulse"></div>
+            <div className="h-6 w-16 bg-muted rounded animate-pulse"></div>
+            <div className="h-6 w-16 bg-muted rounded animate-pulse"></div>
+            <div className="h-6 w-16 bg-muted rounded animate-pulse"></div>
           </div>
         </div>
       </div>

@@ -158,25 +158,25 @@ export default function AdminDashboard() {
       icon: FileText
     },
     {
-      title: "Draft Articles",
-      value: stats.draftArticles.toString(),
-      change: stats.createdToday ? `+${stats.createdToday} today` : "",
+      title: "Published Today",
+      value: stats.createdToday.toString(),
+      change: stats.createdToday > 0 ? "Articles published today" : "No articles published today",
       trend: (stats.createdToday || 0) > 0 ? "up" as const : "neutral" as const,
-      icon: Edit
-    },
-    {
-      title: "Published Articles",
-      value: stats.publishedArticles.toString(),
-      change: `${Math.round((stats.publishedArticles / Math.max(stats.totalArticles, 1)) * 100)}% of total`,
-      trend: "neutral" as const,
       icon: Eye
     },
     {
-      title: "Total Leagues",
-      value: stats.totalLeagues.toString(),
-      change: stats.totalClubs ? `${stats.totalClubs} clubs, ${stats.totalPlayers} players` : "",
+      title: "Published This Week",
+      value: stats.createdThisWeek.toString(),
+      change: stats.createdThisWeek > 0 ? "Articles published this week" : "No articles published this week",
+      trend: (stats.createdThisWeek || 0) > 0 ? "up" as const : "neutral" as const,
+      icon: Activity
+    },
+    {
+      title: "Draft Articles",
+      value: stats.draftArticles.toString(),
+      change: `${Math.round((stats.draftArticles / Math.max(stats.totalArticles, 1)) * 100)}% of total`,
       trend: "neutral" as const,
-      icon: Globe
+      icon: Edit
     }
   ] : []
 
@@ -244,6 +244,64 @@ export default function AdminDashboard() {
             ))
           ) : (
             kpis.map((kpi, index) => (
+              <DashboardCard
+                key={index}
+                title={kpi.title}
+                value={kpi.value}
+                change={kpi.change}
+                trend={kpi.trend}
+                icon={kpi.icon}
+              />
+            ))
+          )}
+        </div>
+
+        {/* Secondary Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {isLoading ? (
+            Array.from({ length: 4 }).map((_, index) => (
+              <Card key={index}>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-4" />
+                  </div>
+                  <Skeleton className="h-8 w-16 mb-1" />
+                  <Skeleton className="h-3 w-20" />
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            [
+              {
+                title: "Published Articles",
+                value: stats?.publishedArticles.toString() || "0",
+                change: `${Math.round((stats?.publishedArticles || 0) / Math.max(stats?.totalArticles || 1, 1) * 100)}% of total`,
+                trend: "neutral" as const,
+                icon: Globe
+              },
+              {
+                title: "Total Leagues",
+                value: stats?.totalLeagues.toString() || "0",
+                change: stats?.totalClubs ? `${stats.totalClubs} clubs, ${stats.totalPlayers} players` : "",
+                trend: "neutral" as const,
+                icon: Database
+              },
+              {
+                title: "This Month",
+                value: stats?.createdThisMonth.toString() || "0",
+                change: "Articles created this month",
+                trend: (stats?.createdThisMonth || 0) > 0 ? "up" as const : "neutral" as const,
+                icon: Clock
+              },
+              {
+                title: "System Status",
+                value: "Healthy",
+                change: "All systems operational",
+                trend: "up" as const,
+                icon: Activity
+              }
+            ].map((kpi, index) => (
               <DashboardCard
                 key={index}
                 title={kpi.title}

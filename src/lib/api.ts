@@ -1,4 +1,5 @@
 import { API_CONFIG, STORAGE_KEYS } from './config'
+import { processImageUrl } from './image-utils'
 
 // Types
 export interface Transfer {
@@ -113,6 +114,10 @@ function generateSlug(title: string): string {
 function transformArticleToTransfer(article: any): Transfer {
   const slug = article.slug || generateSlug(article.title || '')
   
+  // Process image URL with proper handling
+  const rawImageData = article.image_url || article.images || article.imageUrl
+  const imageUrl = processImageUrl(rawImageData)
+  
   return {
     id: article.uuid || article.id,
     title: article.title,
@@ -125,7 +130,7 @@ function transformArticleToTransfer(article: any): Transfer {
     toClub: article.destinationClub || article.destination_club,
     status: (article.transferStatus || article.transfer_status || 'rumor') as 'confirmed' | 'rumor' | 'completed' | 'loan',
     publishedAt: article.publishedDate || article.published_date || article.createdAt || article.created_at,
-    imageUrl: article.image_url || article.images?.[0],
+    imageUrl: imageUrl,
     source: article.originalLink || article.original_link,
     tags: article.tags || [],
     slug: slug
@@ -197,14 +202,14 @@ export const transfersApi = {
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
         status: 'published',
-        lang: currentLang
+        language: currentLang  // Changed from 'lang' to 'language' to match backend
       })
       
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.transfers.latest}?${params}`
       )
       
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       return articles.map(transformArticleToTransfer)
     } catch (error) {
       console.error('Error fetching latest transfers:', error)
@@ -261,8 +266,10 @@ export const transfersApi = {
   },
 
   // Get transfers by league
-  async getByLeague(leagueSlug: string, limit = 10, offset = 0): Promise<Transfer[]> {
+  async getByLeague(leagueSlug: string, limit = 10, offset = 0, language?: string): Promise<Transfer[]> {
     try {
+      const currentLang = language || getCurrentLanguage()
+      
       // Convert slug to proper league name
       const leagueNames: Record<string, string> = {
         'premier-league': 'Premier League',
@@ -278,14 +285,15 @@ export const transfersApi = {
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
         status: 'published',
-        league: leagueName
+        league: leagueName,
+        language: currentLang  // Added language parameter
       })
       
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.transfers.byLeague}?${params}`
       )
       
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       return articles.map(transformArticleToTransfer)
     } catch (error) {
       console.error('Error fetching transfers by league:', error)
@@ -337,7 +345,7 @@ export const transfersApi = {
         `${API_CONFIG.endpoints.transfers.byId}/${id}`
       )
       
-      const article = response.data?.article || response.article
+      const article = response.data?.article || (response as any).article
       return article ? transformArticleToTransfer(article) : null
     } catch (error) {
       console.error('Error fetching transfer by ID:', error)
@@ -351,11 +359,15 @@ export const transfersApi = {
     status?: string
     dateFrom?: string
     dateTo?: string
+    language?: string
   }): Promise<Transfer[]> {
     try {
+      const currentLang = filters?.language || getCurrentLanguage()
+      
       const params = new URLSearchParams({ 
         search: query,
-        status: 'published'
+        status: 'published',
+        language: currentLang  // Added language parameter
       })
       
       if (filters) {
@@ -373,7 +385,7 @@ export const transfersApi = {
         `${API_CONFIG.endpoints.transfers.search}?${params}`
       )
       
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       return articles.map(transformArticleToTransfer)
     } catch (error) {
       console.error('Error searching transfers:', error)
@@ -391,14 +403,14 @@ export const articlesApi = {
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
         status: 'published',
-        lang: language
+        language: language  // Changed from 'lang' to 'language' to match backend
       })
       
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.articles.latest}?${params}`
       )
       
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       return articles.map(transformArticleToArticle)
     } catch (error) {
       console.error('Error fetching latest articles:', error)
@@ -413,7 +425,7 @@ export const articlesApi = {
         `${API_CONFIG.endpoints.articles.byId}/${id}`
       )
       
-      const article = response.data?.article || response.article
+      const article = response.data?.article || (response as any).article
       return article ? transformArticleToArticle(article) : null
     } catch (error) {
       console.error('Error fetching article by ID:', error)
@@ -541,7 +553,7 @@ export const articlesApi = {
         `${API_CONFIG.endpoints.articles.latest}?${params}`
       )
       
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       
       // Randomize the articles client-side and return the requested limit
       const shuffled = [...articles].sort(() => Math.random() - 0.5)
@@ -568,7 +580,7 @@ export const articlesApi = {
         `${API_CONFIG.endpoints.articles.trending}?${params}`
       )
       
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       return articles.slice(0, limit).map(transformArticleToArticle)
     } catch (error) {
       console.error('Error fetching trending articles:', error)
@@ -589,7 +601,7 @@ export const leaguesApi = {
       // Extract unique leagues from articles
       const leaguesSet = new Set<string>()
       const leagues: League[] = []
-      const articles = response.data?.articles || response.articles || []
+      const articles = response.data?.articles || (response as any).articles || []
       
       // League mapping for logos and countries
       const leagueMapping: Record<string, { country: string; logoUrl: string }> = {
@@ -654,7 +666,7 @@ export const newsletterApi = {
           })
         }
       )
-      return response.success || true
+      return (response as any).success || true
     } catch (error) {
       console.error('Error subscribing to newsletter:', error)
       return false
@@ -683,7 +695,7 @@ export const newsletterApi = {
           method: 'DELETE'
         }
       )
-      return response.success || true
+      return (response as any).success || true
     } catch (error) {
       console.error('Error unsubscribing from newsletter:', error)
       return false
@@ -703,6 +715,22 @@ export const adminApi = {
     totalClubs: number
     totalPlayers: number
     totalLeagues: number
+    createdToday: number
+    createdThisWeek: number
+    createdThisMonth: number
+    byCategory: Array<{
+      name: string
+      value: number
+      color: string
+    }>
+    byLeague: Array<{
+      name: string
+      value: number
+    }>
+    dailyActivity: Array<{
+      date: string
+      count: number
+    }>
   }> {
     try {
       const response = await apiRequest<{ success: boolean; data: any }>(
@@ -714,7 +742,13 @@ export const adminApi = {
         publishedArticles: 0,
         totalClubs: 0,
         totalPlayers: 0,
-        totalLeagues: 0
+        totalLeagues: 0,
+        createdToday: 0,
+        createdThisWeek: 0,
+        createdThisMonth: 0,
+        byCategory: [],
+        byLeague: [],
+        dailyActivity: []
       }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error)
@@ -724,7 +758,13 @@ export const adminApi = {
         publishedArticles: 0,
         totalClubs: 0,
         totalPlayers: 0,
-        totalLeagues: 0
+        totalLeagues: 0,
+        createdToday: 0,
+        createdThisWeek: 0,
+        createdThisMonth: 0,
+        byCategory: [],
+        byLeague: [],
+        dailyActivity: []
       }
     }
   },
@@ -937,7 +977,7 @@ export const userApi = {
           body: JSON.stringify(profile)
         }
       )
-      return response.success || true
+      return (response as any).success || true
     } catch (error) {
       console.error('Error updating user profile:', error)
       return false
@@ -967,7 +1007,7 @@ export const userApi = {
           body: JSON.stringify({ preferences })
         }
       )
-      return response.success || true
+      return (response as any).success || true
     } catch (error) {
       console.error('Error updating user preferences:', error)
       return false
@@ -1063,7 +1103,7 @@ export const contactApi = {
           body: JSON.stringify(updates)
         }
       )
-      return response.success || true
+      return (response as any).success || true
     } catch (error) {
       console.error('Error updating contact submission:', error)
       return false
@@ -1098,7 +1138,7 @@ export const searchApi = {
           })
         }
       )
-      return response.success || true
+      return (response as any).success || true
     } catch (error) {
       console.error('Error tracking search:', error)
       return false // Don't let tracking failures affect search functionality

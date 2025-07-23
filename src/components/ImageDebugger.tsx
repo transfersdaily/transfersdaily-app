@@ -107,7 +107,7 @@ export function ImageDebugger({ imageUrl }: ImageDebuggerProps) {
         <div className="space-y-4">
           <div>
             <strong>Image URL:</strong>
-            <div className="bg-gray-100 p-2 rounded text-sm font-mono break-all">
+            <div className="bg-muted p-2 rounded text-sm font-mono break-all">
               {imageUrl || 'No URL provided'}
             </div>
           </div>
@@ -115,7 +115,7 @@ export function ImageDebugger({ imageUrl }: ImageDebuggerProps) {
           {testResults.headRequest && (
             <div>
               <strong>HEAD Request:</strong>
-              <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto">
+              <pre className="bg-muted p-2 rounded text-xs overflow-auto">
                 {JSON.stringify(testResults.headRequest, null, 2)}
               </pre>
             </div>
@@ -124,7 +124,7 @@ export function ImageDebugger({ imageUrl }: ImageDebuggerProps) {
           {testResults.getRequest && (
             <div>
               <strong>GET Request:</strong>
-              <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto">
+              <pre className="bg-muted p-2 rounded text-xs overflow-auto">
                 {JSON.stringify(testResults.getRequest, null, 2)}
               </pre>
             </div>
@@ -133,7 +133,7 @@ export function ImageDebugger({ imageUrl }: ImageDebuggerProps) {
           {testResults.imageLoad && (
             <div>
               <strong>Image Load Test:</strong>
-              <pre className="bg-gray-100 p-2 rounded text-xs overflow-auto">
+              <pre className="bg-muted p-2 rounded text-xs overflow-auto">
                 {JSON.stringify(testResults.imageLoad, null, 2)}
               </pre>
             </div>

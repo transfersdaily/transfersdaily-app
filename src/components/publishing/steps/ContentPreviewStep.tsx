@@ -18,7 +18,6 @@ import {
   Globe
 } from 'lucide-react';
 import { API_CONFIG, getApiUrl } from '@/lib/config';
-import { ImageDebugger } from '@/components/ImageDebugger';
 
 interface ArticleData {
   id: string;
@@ -102,46 +101,13 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
       }
       
       const foundArticle = data.data.article;
-      console.log('✅ Found article:', foundArticle.title);
-      console.log('🖼️ Image URL from backend:', foundArticle.image_url);
-      console.log('🖼️ Image URL type:', typeof foundArticle.image_url);
-      console.log('🖼️ Image URL length:', foundArticle.image_url?.length);
       
-      // Test if the image URL is accessible
+      // Test if the image URL is accessible with Image constructor
       if (foundArticle.image_url) {
-        console.log('🔍 Testing image URL accessibility...');
-        
-        // Test with different methods
-        const testMethods = ['HEAD', 'GET'];
-        
-        for (const method of testMethods) {
-          try {
-            const response = await fetch(foundArticle.image_url, { 
-              method,
-              mode: 'cors',
-              cache: 'no-cache'
-            });
-            console.log(`🖼️ ${method} test - Status:`, response.status, response.statusText);
-            console.log(`🖼️ ${method} test - Headers:`, Object.fromEntries(response.headers.entries()));
-            
-            if (method === 'GET' && response.ok) {
-              const contentLength = response.headers.get('content-length');
-              console.log(`🖼️ Content length: ${contentLength} bytes`);
-            }
-          } catch (error) {
-            console.error(`❌ ${method} test failed:`, error);
-          }
-        }
-        
-        // Test with Image constructor
         const testImg = new Image();
         testImg.crossOrigin = 'anonymous';
         testImg.onload = () => {
-          console.log('✅ Image constructor test passed:', {
-            width: testImg.naturalWidth,
-            height: testImg.naturalHeight,
-            complete: testImg.complete
-          });
+          // Image loaded successfully
         };
         testImg.onerror = (error) => {
           console.error('❌ Image constructor test failed:', error);
@@ -309,10 +275,10 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
                 
                 // Create a fallback div
                 const fallbackDiv = document.createElement('div');
-                fallbackDiv.className = 'w-full h-64 bg-slate-100 flex items-center justify-center';
+                fallbackDiv.className = 'w-full h-64 bg-muted flex items-center justify-center';
                 fallbackDiv.innerHTML = `
                   <div class="text-center text-slate-500">
-                    <div class="w-16 h-16 bg-slate-200 rounded-lg mx-auto mb-2 flex items-center justify-center">
+                    <div class="w-16 h-16 bg-muted rounded-lg mx-auto mb-2 flex items-center justify-center">
                       <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
                       </svg>
@@ -323,9 +289,6 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
                 `;
                 img.parentNode?.replaceChild(fallbackDiv, img);
               }}
-              onLoad={() => {
-                console.log('✅ Preview image loaded successfully:', article.image_url);
-              }}
             />
             <div className="absolute bottom-4 right-4">
               <Badge className="bg-black/50 text-white">
@@ -334,9 +297,9 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
             </div>
           </div>
         ) : (
-          <div className="bg-slate-100 h-64 flex items-center justify-center">
-            <div className="text-center text-slate-500">
-              <div className="w-16 h-16 bg-slate-200 rounded-lg mx-auto mb-2 flex items-center justify-center">
+          <div className="bg-muted h-64 flex items-center justify-center">
+            <div className="text-center text-muted-foreground">
+              <div className="w-16 h-16 bg-muted/80 rounded-lg mx-auto mb-2 flex items-center justify-center">
                 <Eye className="w-8 h-8" />
               </div>
               <p>No Featured Image</p>
@@ -386,7 +349,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
       twitter: {
         icon: <Twitter className="w-5 h-5 text-blue-500" />,
         name: 'Twitter/X',
-        bgColor: 'bg-slate-50',
+        bgColor: 'bg-muted',
         maxChars: 280
       },
       facebook: {
@@ -416,7 +379,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
           
           <div className="bg-white rounded-lg p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-slate-500" />
               </div>
               <div>
@@ -444,8 +407,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
                       placeholder.style.display = 'flex';
                     }
                   }}
-                  onLoad={() => {
-                    console.log('✅ Social preview image loaded successfully');
+                  onLoad={(e) => {
                     // Hide the placeholder
                     const img = e.currentTarget;
                     const placeholder = img.nextElementSibling as HTMLElement;
@@ -455,7 +417,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
                   }}
                 />
               ) : null}
-              <div className={`bg-slate-100 h-32 items-center justify-center ${article?.image_url ? 'hidden' : 'flex'}`}>
+              <div className={`bg-muted h-32 items-center justify-center ${article?.image_url ? 'hidden' : 'flex'}`}>
                 <Eye className="w-8 h-8 text-slate-400" />
               </div>
               <div className="p-3">
@@ -475,18 +437,6 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
 
   return (
     <div className="space-y-6">
-      {/* Debug Component - Remove in production */}
-      {article?.image_url && (
-        <Card className="border-yellow-200 bg-yellow-50">
-          <CardHeader>
-            <CardTitle className="text-yellow-800">🐛 Image Debug Info</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ImageDebugger imageUrl={article.image_url} />
-          </CardContent>
-        </Card>
-      )}
-      
       {/* Preview Controls */}
       <Card>
         <CardHeader>

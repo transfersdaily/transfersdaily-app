@@ -1,79 +1,104 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
 import { Target, Zap, Award } from "lucide-react"
 import { Sidebar } from "@/components/Sidebar"
-import { type Locale, getDictionary, getTranslation } from "@/lib/i18n"
+import { type Locale, getDictionary, locales } from "@/lib/i18n"
+import { createTranslator } from "@/lib/dictionary-server"
+import { notFound } from "next/navigation"
+import { Metadata } from "next"
 
-export default function AboutPage() {
-  const params = useParams()
-  const locale = params.locale as Locale
+interface AboutPageProps {
+  params: Promise<{ locale: Locale }>
+}
+
+// Generate metadata for SEO
+export async function generateMetadata({ params }: AboutPageProps): Promise<Metadata> {
+  const { locale } = await params
   
-  const [dict, setDict] = useState<any>({})
-  const [translationsLoaded, setTranslationsLoaded] = useState(false)
-
-  useEffect(() => {
-    loadDictionary()
-  }, [locale])
-
-  const loadDictionary = async () => {
-    try {
-      setTranslationsLoaded(false)
-      const dictionary = await getDictionary(locale)
-      setDict(dictionary)
-      setTranslationsLoaded(true)
-    } catch (error) {
-      console.error('Error loading dictionary:', error)
-      setTranslationsLoaded(true)
-    }
+  if (!locales.includes(locale)) {
+    notFound()
   }
 
-  const t = (key: string) => {
-    if (!translationsLoaded) return ''
-    return getTranslation(dict, key)
+  const titles = {
+    en: 'About Transfer Daily - Your Football Transfer News Source',
+    es: 'Acerca de Transfer Daily - Tu Fuente de Noticias de Fichajes',
+    it: 'Chi Siamo - Transfer Daily, Notizie di Calciomercato',
+    fr: 'À Propos de Transfer Daily - Actualités Transferts Football',
+    de: 'Über Transfer Daily - Fußball Transfer Nachrichten'
   }
 
-  if (!translationsLoaded) {
-    return (
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-            <div className="lg:col-span-7">
-              <div className="py-8">
-                <div className="h-8 w-64 bg-muted rounded animate-pulse mb-6"></div>
-                <div className="h-4 w-full bg-muted rounded animate-pulse mb-4"></div>
-                <div className="h-4 w-3/4 bg-muted rounded animate-pulse mb-4"></div>
-              </div>
-            </div>
-            <div className="hidden lg:block lg:col-span-3">
-              <div className="bg-muted/10 border-l -mr-4 pr-4">
-                <div className="p-4">
-                  <div className="h-6 w-32 bg-muted rounded animate-pulse mb-4"></div>
-                  <div className="space-y-3">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="h-4 w-full bg-muted rounded animate-pulse"></div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    )
+  const descriptions = {
+    en: 'Learn about Transfer Daily, your trusted source for the latest football transfer news, rumors, and confirmed deals from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1.',
+    es: 'Conoce Transfer Daily, tu fuente confiable de las últimas noticias de fichajes de fútbol, rumores y traspasos confirmados de las principales ligas europeas.',
+    it: 'Scopri Transfer Daily, la tua fonte affidabile per le ultime notizie di calciomercato, rumors e trasferimenti confermati dalle principali leghe europee.',
+    fr: 'Découvrez Transfer Daily, votre source fiable pour les dernières actualités des transferts de football, rumeurs et accords confirmés des principales ligues européennes.',
+    de: 'Erfahren Sie mehr über Transfer Daily, Ihre vertrauenswürdige Quelle für die neuesten Fußball-Transfer-Nachrichten, Gerüchte und bestätigte Deals aus den europäischen Top-Ligen.'
   }
+
+  return {
+    title: titles[locale],
+    description: descriptions[locale],
+    openGraph: {
+      title: titles[locale],
+      description: descriptions[locale],
+      url: `https://transferdaily.com/${locale}/about`,
+      siteName: 'Transfer Daily',
+      locale: locale,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: titles[locale],
+      description: descriptions[locale],
+    },
+    alternates: {
+      canonical: `/${locale}/about`,
+      languages: {
+        'en': '/en/about',
+        'es': '/es/about',
+        'it': '/it/about',
+        'fr': '/fr/about',
+        'de': '/de/about',
+      },
+    },
+  }
+}
+
+export default async function AboutPage({ params }: AboutPageProps) {
+  const { locale } = await params
+  
+  // Validate locale
+  if (!locales.includes(locale)) {
+    notFound()
+  }
+
+  // Load dictionary server-side
+  const dict = await getDictionary(locale)
+  const t = createTranslator(dict)
 
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           <div className="lg:col-span-7">
+            {/* Hero Section */}
+            <section className="py-16">
+              <div className="max-w-4xl mx-auto text-center">
+                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                  {t('about.title', 'About Transfer Daily')}
+                </h1>
+                <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8"></div>
+                <p className="text-xl text-muted-foreground leading-relaxed">
+                  {t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
+                </p>
+              </div>
+            </section>
+
             {/* Story Section */}
             <section className="py-16 bg-gradient-to-r from-muted/30 to-muted/10 -mx-4 px-4 rounded-3xl">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold mb-4">{t('about.ourStory')}</h2>
+                  <h2 className="text-3xl font-bold mb-4">
+                    {t('about.ourStory', 'Our Story')}
+                  </h2>
                   <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
                 </div>
                 
@@ -85,7 +110,7 @@ export default function AboutPage() {
                     <div>
                       <h3 className="text-lg font-semibold mb-3">The Problem</h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        {t('about.storyParagraph1')}
+                        {t('about.storyParagraph1', 'Football fans were struggling to find reliable, up-to-date transfer information in one place. News was scattered across multiple sources, often unreliable, and difficult to verify.')}
                       </p>
                     </div>
                   </div>
@@ -97,7 +122,7 @@ export default function AboutPage() {
                     <div>
                       <h3 className="text-lg font-semibold mb-3">The Solution</h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        {t('about.storyParagraph2')}
+                        {t('about.storyParagraph2', 'We created Transfer Daily to be the definitive source for transfer news. Our platform aggregates, verifies, and presents transfer information in a clean, easy-to-navigate format.')}
                       </p>
                     </div>
                   </div>
@@ -109,11 +134,23 @@ export default function AboutPage() {
                     <div>
                       <h3 className="text-lg font-semibold mb-3">Today</h3>
                       <p className="text-muted-foreground leading-relaxed">
-                        {t('about.storyParagraph3')}
+                        {t('about.storyParagraph3', 'Today, Transfer Daily serves thousands of football fans worldwide with the latest transfer news, rumors, and confirmed deals from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1.')}
                       </p>
                     </div>
                   </div>
                 </div>
+              </div>
+            </section>
+
+            {/* Mission Section */}
+            <section className="py-16">
+              <div className="max-w-4xl mx-auto text-center">
+                <h2 className="text-3xl font-bold mb-6">
+                  {t('about.mission', 'Our Mission')}
+                </h2>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                  {t('about.missionText', 'To provide football fans with accurate, timely, and comprehensive transfer information, helping them stay connected to the beautiful game they love.')}
+                </p>
               </div>
             </section>
           </div>
@@ -124,7 +161,6 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-
     </main>
   )
 }

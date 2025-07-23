@@ -13,15 +13,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { 
   Menu, 
   ChevronDown,
-  Sun,
-  Moon,
   X
 } from "lucide-react"
-import { useTheme } from "next-themes"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 export function AdminNavbar() {
   const [isOpen, setIsOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
 
   const leagues = [
     { name: "Premier League", slug: "premier-league" },
@@ -39,13 +36,13 @@ export function AdminNavbar() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-slate-700 bg-slate-900">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
       <div className="container flex h-16 items-center justify-between">
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center justify-center flex-1 space-x-8">
           <Link 
             href="/latest" 
-            className="text-sm font-medium text-slate-300 px-3 py-2"
+            className="text-sm font-medium text-muted-foreground px-3 py-2"
           >
             Latest
           </Link>
@@ -53,7 +50,7 @@ export function AdminNavbar() {
           {/* Leagues Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-slate-300">
+              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-muted-foreground">
                 <span>Leagues</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -72,7 +69,7 @@ export function AdminNavbar() {
           {/* Transfer Types Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-slate-300">
+              <Button variant="ghost" className="flex items-center space-x-1 px-3 py-2 text-muted-foreground">
                 <span>Transfers</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -90,14 +87,14 @@ export function AdminNavbar() {
 
           <Link 
             href="/about" 
-            className="text-sm font-medium text-slate-300 px-3 py-2"
+            className="text-sm font-medium text-muted-foreground px-3 py-2"
           >
             About
           </Link>
 
           <Link 
             href="/contact" 
-            className="text-sm font-medium text-slate-300 px-3 py-2"
+            className="text-sm font-medium text-muted-foreground px-3 py-2"
           >
             Contact
           </Link>
@@ -106,27 +103,18 @@ export function AdminNavbar() {
         {/* Right Side Actions */}
         <div className="flex items-center space-x-2">
           {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex text-slate-300"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-            <span className="sr-only">Toggle theme</span>
-          </Button>
+          <ThemeToggle className="hidden sm:inline-flex text-muted-foreground" />
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden text-slate-300">
+              <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700">
+              <div className="flex items-center justify-between pb-4 border-b border-border">
                 <span className="text-lg font-semibold">Menu</span>
                 <Button 
                   variant="ghost" 
@@ -138,7 +126,7 @@ export function AdminNavbar() {
                 </Button>
               </div>
               <div className="flex flex-col space-y-6 mt-6">
-                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-4">
+                <div className="bg-muted rounded-lg p-4">
                   <Link 
                     href="/latest" 
                     className="text-lg font-medium block"
@@ -152,12 +140,12 @@ export function AdminNavbar() {
                   <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-2">
                     Leagues
                   </h3>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2">
+                  <div className="bg-muted rounded-lg p-2">
                     {leagues.map((league) => (
                       <Link
                         key={league.name}
                         href={`/league/${league.slug}`}
-                        className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                        className="block text-sm py-2 px-2 rounded hover:bg-background transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         {league.name}
@@ -170,12 +158,12 @@ export function AdminNavbar() {
                   <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide px-2">
                     Transfer Types
                   </h3>
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2">
+                  <div className="bg-muted rounded-lg p-2">
                     {transferTypes.map((type) => (
                       <Link
                         key={type.name}
                         href={`/transfers/${type.slug}`}
-                        className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                        className="block text-sm py-2 px-2 rounded hover:bg-background transition-colors"
                         onClick={() => setIsOpen(false)}
                       >
                         {type.name}
@@ -184,18 +172,18 @@ export function AdminNavbar() {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-                  <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 space-y-2">
+                <div className="pt-2 border-t border-border">
+                  <div className="bg-muted rounded-lg p-2 space-y-2">
                     <Link 
                       href="/about" 
-                      className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                      className="block text-sm py-2 px-2 rounded hover:bg-background transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       About
                     </Link>
                     <Link 
                       href="/contact" 
-                      className="block text-sm py-2 px-2 rounded hover:bg-white dark:hover:bg-slate-700 transition-colors"
+                      className="block text-sm py-2 px-2 rounded hover:bg-background transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       Contact

@@ -34,16 +34,20 @@
   },
   "navigation": {
     "home": "Accueil",
-    "latest": "Dernières",
+    "latest": "Derniers Transferts",
     "leagues": "Ligues",
     "transfers": "Transferts",
     "about": "À Propos",
     "contact": "Contact",
-    "trending": "Tendances",
-    "browseByLeague": "Parcourir par Ligue",
     "confirmed": "Confirmés",
     "completed": "Terminés",
     "loanMoves": "Prêts"
+  },
+  "homepage": {
+    "featuredArticle": "Article en Vedette",
+    "latestTransfers": "Derniers Transferts",
+    "browseByLeague": "Parcourir par Ligue",
+    "trendingArticles": "Articles Tendance"
   },
   "search": {
     "title": "Rechercher des Nouvelles de Transferts",

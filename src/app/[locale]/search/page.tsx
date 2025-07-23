@@ -112,7 +112,7 @@ function SearchContent() {
       )
 
       // Call real API
-      let results = await transfersApi.search(searchTerm, filters)
+      const results = await transfersApi.search(searchTerm, filters)
       
       // Sort results on frontend since backend might not support all sort options
       if (sortBy === "newest") {

@@ -30,13 +30,13 @@ export function ClientFooter() {
   if (!isLoaded) {
     // Return a skeleton footer while loading
     return (
-      <footer className="bg-slate-900 text-white py-12">
+      <footer className="bg-card text-foreground py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="h-20 bg-slate-700 rounded animate-pulse"></div>
-            <div className="h-20 bg-slate-700 rounded animate-pulse"></div>
-            <div className="h-20 bg-slate-700 rounded animate-pulse"></div>
-            <div className="h-20 bg-slate-700 rounded animate-pulse"></div>
+            <div className="h-20 bg-muted rounded animate-pulse"></div>
+            <div className="h-20 bg-muted rounded animate-pulse"></div>
+            <div className="h-20 bg-muted rounded animate-pulse"></div>
+            <div className="h-20 bg-muted rounded animate-pulse"></div>
           </div>
         </div>
       </footer>

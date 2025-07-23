@@ -19,7 +19,14 @@ import { Filter, MessageCircle } from "lucide-react"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { ResultsInfo } from "@/components/ResultsInfo"
 
-export default function RumorsPage() {
+interface RumorsPageProps {
+  params: {
+    locale: string
+  }
+}
+
+export default function RumorsPage({ params }: RumorsPageProps) {
+  const { locale } = params
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedLeague, setSelectedLeague] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
@@ -131,9 +138,8 @@ export default function RumorsPage() {
                     title={transfer.title}
                     excerpt={transfer.excerpt}
                     primaryBadge="Rumor"
-                    secondaryBadge={transfer.league}
                     timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/article/${transfer.slug}`}
+                    href={`/${locale}/article/${transfer.slug}`}
                     imageUrl={transfer.imageUrl}
                     imageAlt={transfer.title}
                   />

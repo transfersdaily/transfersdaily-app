@@ -34,16 +34,26 @@
   },
   "navigation": {
     "home": "Inicio",
-    "latest": "Últimas",
+    "latest": "Últimos Fichajes",
     "leagues": "Ligas",
     "transfers": "Transferencias",
     "about": "Acerca de",
     "contact": "Contacto",
-    "trending": "Noticias Tendencia",
-    "browseByLeague": "Navegar por Liga",
     "confirmed": "Confirmadas",
     "completed": "Completadas",
     "loanMoves": "Préstamos"
+  },
+  "homepage": {
+    "featuredArticle": "Artículo Destacado",
+    "latestTransfers": "Últimos Fichajes",
+    "browseByLeague": "Navegar por Liga",
+    "trendingArticles": "Artículos Tendencia"
+  },
+  "homepage": {
+    "featuredArticle": "Artículo Destacado",
+    "latestTransfers": "Últimos Fichajes",
+    "browseByLeague": "Navegar por Liga", 
+    "trendingArticles": "Artículos Tendencia"
   },
   "search": {
     "title": "Buscar Noticias de Transferencias",

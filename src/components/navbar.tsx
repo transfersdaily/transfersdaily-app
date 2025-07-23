@@ -15,16 +15,14 @@ import {
   ChevronDown,
   Search,
   User,
-  Sun,
-  Moon,
   X,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { useAuth } from "@/lib/auth"
 import { useDictionary } from "@/lib/dictionary-provider"
 import { useParams } from "next/navigation"
 import { type Locale } from "@/lib/i18n"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
+import { ThemeToggle } from "@/components/ThemeToggle"
 
 interface NavbarProps {
   locale?: Locale
@@ -33,7 +31,6 @@ interface NavbarProps {
 
 export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
   const { user, logout } = useAuth()
   const params = useParams()
   const locale = propLocale || (params?.locale as Locale) || 'en'
@@ -147,15 +144,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
           </Button>
 
           {/* Theme Toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex text-muted-foreground hover:text-rose-500"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-          >
-            {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-            <span className="sr-only">Toggle theme</span>
-          </Button>
+          <ThemeToggle className="hidden sm:inline-flex text-muted-foreground hover:text-rose-500" />
 
           {/* User Menu */}
           {user ? (

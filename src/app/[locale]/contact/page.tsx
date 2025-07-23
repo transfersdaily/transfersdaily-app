@@ -1,317 +1,253 @@
-"use client"
+import { Metadata } from 'next'
+import { type Locale, getDictionary, locales } from "@/lib/i18n"
+import { ContactPageClient } from './ContactPageClient'
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Mail, MessageSquare, Phone, MapPin, Clock, CheckCircle, Loader2 } from "lucide-react"
-import { contactApi } from "@/lib/api"
-import { trackContactSubmission } from "@/lib/analytics"
+interface ContactPageProps {
+  params: Promise<{ locale: Locale }>
+}
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    subject: '',
-    message: ''
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+// Generate comprehensive metadata for contact page
+export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
+  const { locale } = await params
+  
+  // Get translations for metadata
+  const dict = await getDictionary(locale)
+  
+  // Helper function to get translation with fallback
+  function getTranslation(key: string, fallback: string): string {
+    const keys = key.split('.')
+    let result: any = dict
+    
+    for (const k of keys) {
+      if (result && typeof result === 'object' && k in result) {
+        result = result[k]
+      } else {
+        return fallback
+      }
+    }
+    
+    return typeof result === 'string' ? result : fallback
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  // Dynamic metadata based on language
+  const metaData = {
+    en: {
+      title: 'Contact Us - Transfer Daily | Get in Touch',
+      description: 'Contact Transfer Daily for questions, feedback, or collaboration opportunities. We respond within 24 hours to all inquiries about football transfer news.',
+      keywords: 'contact transfer daily, football news contact, soccer news feedback, transfer news inquiry, sports journalism contact'
+    },
+    es: {
+      title: 'Contáctanos - Transfer Daily | Ponte en Contacto',
+      description: 'Contacta con Transfer Daily para preguntas, comentarios u oportunidades de colaboración. Respondemos en 24 horas a todas las consultas sobre noticias de fichajes.',
+      keywords: 'contactar transfer daily, contacto noticias fútbol, comentarios noticias soccer, consulta noticias fichajes, contacto periodismo deportivo'
+    },
+    fr: {
+      title: 'Nous Contacter - Transfer Daily | Entrer en Contact',
+      description: 'Contactez Transfer Daily pour des questions, commentaires ou opportunités de collaboration. Nous répondons sous 24h à toutes les demandes sur les transferts.',
+      keywords: 'contacter transfer daily, contact actualités football, commentaires nouvelles soccer, demande nouvelles transferts, contact journalisme sportif'
+    },
+    it: {
+      title: 'Contattaci - Transfer Daily | Mettiti in Contatto',
+      description: 'Contatta Transfer Daily per domande, feedback o opportunità di collaborazione. Rispondiamo entro 24 ore a tutte le richieste sui trasferimenti calcistici.',
+      keywords: 'contattare transfer daily, contatto notizie calcio, feedback notizie soccer, richiesta notizie trasferimenti, contatto giornalismo sportivo'
+    },
+    de: {
+      title: 'Kontakt - Transfer Daily | Kontakt Aufnehmen',
+      description: 'Kontaktieren Sie Transfer Daily für Fragen, Feedback oder Kooperationsmöglichkeiten. Wir antworten innerhalb von 24 Stunden auf alle Transfer-Anfragen.',
+      keywords: 'transfer daily kontakt, fußball nachrichten kontakt, soccer news feedback, transfer nachrichten anfrage, sport journalismus kontakt'
+    }
+  }
+
+  const currentMeta = metaData[locale] || metaData.en
+
+  return {
+    title: currentMeta.title,
+    description: currentMeta.description,
+    keywords: currentMeta.keywords,
+    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }],
+    creator: 'Transfer Daily',
+    publisher: 'Transfer Daily',
     
-    // Basic validation
-    if (!formData.firstName || !formData.email || !formData.message) {
-      setErrorMessage('Please fill in all required fields')
-      setSubmitStatus('error')
-      return
-    }
-
-    if (!formData.email.includes('@')) {
-      setErrorMessage('Please enter a valid email address')
-      setSubmitStatus('error')
-      return
-    }
-
-    if (formData.message.length < 10) {
-      setErrorMessage('Message must be at least 10 characters long')
-      setSubmitStatus('error')
-      return
-    }
-
-    setIsSubmitting(true)
-    setSubmitStatus('idle')
-    setErrorMessage('')
-
-    try {
-      const result = await contactApi.submit({
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-        email: formData.email,
-        subject: formData.subject || 'General Inquiry',
-        message: formData.message
-      })
-
-      if (result.success) {
-        setSubmitStatus('success')
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          subject: '',
-          message: ''
-        })
-        // Track successful contact form submission
-        trackContactSubmission(formData.subject || 'General Inquiry')
-      } else {
-        setSubmitStatus('error')
-        setErrorMessage('Failed to send message. Please try again.')
+    // Robots and indexing
+    robots: { 
+      index: true, 
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       }
-    } catch (error) {
-      console.error('Contact form error:', error)
-      setSubmitStatus('error')
-      setErrorMessage('Failed to send message. Please try again.')
-    } finally {
-      setIsSubmitting(false)
-    }
+    },
+    
+    // Canonical URL and language alternates
+    alternates: {
+      canonical: `/${locale}/contact`,
+      languages: Object.fromEntries(
+        locales.map(lang => [lang, `/${lang}/contact`])
+      ),
+    },
+    
+    // Enhanced meta tags for contact page
+    other: {
+      'contact:email': 'contact@transfersdaily.com',
+      'contact:response_time': '24 hours',
+      'page:type': 'contact',
+      'business:hours': 'Monday-Friday: 24h response, Weekends: 48h response',
+      'geo.region': locale === 'en' ? 'GB' : locale === 'es' ? 'ES' : locale === 'it' ? 'IT' : locale === 'fr' ? 'FR' : 'DE',
+      'category': 'Contact',
+      'content:type': 'contact-form'
+    },
+    
+    // Open Graph metadata
+    openGraph: {
+      title: currentMeta.title,
+      description: currentMeta.description,
+      url: `https://transferdaily.com/${locale}/contact`,
+      siteName: 'Transfer Daily',
+      locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
+      type: 'website',
+      images: [
+        {
+          url: '/og-contact.jpg',
+          width: 1200,
+          height: 630,
+          alt: `${currentMeta.title} - Transfer Daily Contact`,
+          type: 'image/jpeg',
+        }
+      ],
+    },
+    
+    // Twitter metadata
+    twitter: {
+      card: 'summary_large_image',
+      site: '@transferdaily',
+      creator: '@transferdaily',
+      title: currentMeta.title,
+      description: currentMeta.description,
+      images: ['/og-contact.jpg'],
+    },
+    
+    // Additional metadata
+    category: 'Contact',
+    classification: 'Contact Page',
+  }
+}
+
+// Server-side rendered contact page
+export default async function ContactPage({ params }: ContactPageProps) {
+  const { locale } = await params
+  
+  // Validate locale
+  if (!locales.includes(locale)) {
+    return <div>Invalid locale</div>
+  }
+  
+  // Get translations server-side
+  const dict = await getDictionary(locale)
+  
+  // Generate structured data for contact page
+  const contactStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact Transfer Daily",
+    "description": "Contact page for Transfer Daily - Football transfer news and updates",
+    "url": `https://transferdaily.com/${locale}/contact`,
+    "mainEntity": {
+      "@type": "Organization",
+      "name": "Transfer Daily",
+      "url": "https://transferdaily.com",
+      "logo": "https://transferdaily.com/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "+44-XXX-XXX-XXXX",
+        "contactType": "customer service",
+        "email": "contact@transfersdaily.com",
+        "availableLanguage": ["English", "Spanish", "French", "Italian", "German"],
+        "hoursAvailable": {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+          "opens": "09:00",
+          "closes": "17:00"
+        }
+      },
+      "sameAs": [
+        "https://twitter.com/transferdaily",
+        "https://facebook.com/transferdaily",
+        "https://instagram.com/transferdaily"
+      ]
+    },
+    "breadcrumb": {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": `https://transferdaily.com/${locale}`
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Contact",
+          "item": `https://transferdaily.com/${locale}/contact`
+        }
+      ]
+    },
+    "inLanguage": locale,
+    "isAccessibleForFree": true
+  }
+
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How often is content updated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We update our transfer news multiple times daily during transfer windows and regularly throughout the season."
+        }
+      },
+      {
+        "@type": "Question", 
+        "name": "Can I submit transfer tips?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes! Use the contact form to share reliable transfer information with our editorial team."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Do you offer advertising opportunities?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We offer various advertising and partnership opportunities. Contact us for more information."
+        }
+      }
+    ]
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Get in Touch</h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Have a question, suggestion, or want to collaborate? We'd love to hear from you.
-          </p>
-        </div>
-
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Form */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
-              <Card>
-                <CardContent className="p-6">
-                  {submitStatus === 'success' ? (
-                    <div className="text-center py-8">
-                      <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                      <h3 className="text-xl font-bold text-green-600 mb-2">
-                        Message Sent Successfully!
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        Thank you for contacting us. We'll get back to you within 24 hours.
-                      </p>
-                      <Button 
-                        onClick={() => setSubmitStatus('idle')}
-                        variant="outline"
-                      >
-                        Send Another Message
-                      </Button>
-                    </div>
-                  ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="firstName" className="block text-sm font-medium mb-2">
-                            First Name *
-                          </label>
-                          <Input 
-                            id="firstName" 
-                            name="firstName"
-                            value={formData.firstName}
-                            onChange={handleInputChange}
-                            placeholder="Enter your first name" 
-                            required
-                            disabled={isSubmitting}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="lastName" className="block text-sm font-medium mb-2">
-                            Last Name
-                          </label>
-                          <Input 
-                            id="lastName" 
-                            name="lastName"
-                            value={formData.lastName}
-                            onChange={handleInputChange}
-                            placeholder="Enter your last name" 
-                            disabled={isSubmitting}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="email" className="block text-sm font-medium mb-2">
-                          Email Address *
-                        </label>
-                        <Input 
-                          id="email" 
-                          name="email"
-                          type="email" 
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          placeholder="Enter your email address" 
-                          required
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="subject" className="block text-sm font-medium mb-2">
-                          Subject
-                        </label>
-                        <Input 
-                          id="subject" 
-                          name="subject"
-                          value={formData.subject}
-                          onChange={handleInputChange}
-                          placeholder="What's this about?" 
-                          disabled={isSubmitting}
-                        />
-                      </div>
-                      
-                      <div>
-                        <label htmlFor="message" className="block text-sm font-medium mb-2">
-                          Message *
-                        </label>
-                        <Textarea 
-                          id="message" 
-                          name="message"
-                          value={formData.message}
-                          onChange={handleInputChange}
-                          placeholder="Tell us more about your inquiry..."
-                          rows={6}
-                          required
-                          disabled={isSubmitting}
-                        />
-                      </div>
-
-                      {submitStatus === 'error' && (
-                        <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                          <p className="text-destructive text-sm">{errorMessage}</p>
-                        </div>
-                      )}
-                      
-                      <Button 
-                        type="submit" 
-                        size="lg" 
-                        className="w-full"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Sending Message...
-                          </>
-                        ) : (
-                          'Send Message'
-                        )}
-                      </Button>
-                    </form>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Contact Information */}
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
-              <div className="space-y-6">
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <Mail className="h-6 w-6 text-primary mt-1" />
-                      <div>
-                        <h3 className="font-semibold mb-1">Email</h3>
-                        <p className="text-muted-foreground">contact@transfersdaily.com</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          We typically respond within 24 hours
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <MessageSquare className="h-6 w-6 text-primary mt-1" />
-                      <div>
-                        <h3 className="font-semibold mb-1">General Inquiries</h3>
-                        <p className="text-muted-foreground">
-                          Questions about our content, partnerships, or general feedback
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <Clock className="h-6 w-6 text-primary mt-1" />
-                      <div>
-                        <h3 className="font-semibold mb-1">Response Time</h3>
-                        <p className="text-muted-foreground">
-                          Monday - Friday: Within 24 hours<br />
-                          Weekends: Within 48 hours
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* FAQ Section */}
-              <div className="mt-8">
-                <h3 className="text-xl font-bold mb-4">Frequently Asked Questions</h3>
-                <div className="space-y-4">
-                  <Card>
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">How often is content updated?</h4>
-                      <p className="text-sm text-muted-foreground">
-                        We update our transfer news multiple times daily during transfer windows and regularly throughout the season.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">Can I submit transfer tips?</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Yes! Use the contact form above to share reliable transfer information with our editorial team.
-                      </p>
-                    </CardContent>
-                  </Card>
-                  
-                  <Card>
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold mb-2">Do you offer advertising opportunities?</h4>
-                      <p className="text-sm text-muted-foreground">
-                        We offer various advertising and partnership opportunities. Contact us for more information.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <main className="min-h-screen bg-background">
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(contactStructuredData)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(faqStructuredData)
+        }}
+      />
+      
+      {/* Client-side interactive component */}
+      <ContactPageClient locale={locale} dict={dict} />
+    </main>
   )
 }

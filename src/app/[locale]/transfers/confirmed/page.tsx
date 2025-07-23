@@ -19,7 +19,14 @@ import { Filter, CheckCircle } from "lucide-react"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { ResultsInfo } from "@/components/ResultsInfo"
 
-export default function ConfirmedTransfersPage() {
+interface ConfirmedTransfersPageProps {
+  params: {
+    locale: string
+  }
+}
+
+export default function ConfirmedTransfersPage({ params }: ConfirmedTransfersPageProps) {
+  const { locale } = params
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedLeague, setSelectedLeague] = useState("all")
   const [isLoading, setIsLoading] = useState(true)
@@ -131,9 +138,8 @@ export default function ConfirmedTransfersPage() {
                     title={transfer.title}
                     excerpt={transfer.excerpt}
                     primaryBadge="Confirmed"
-                    secondaryBadge={transfer.league}
                     timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/article/${transfer.slug}`}
+                    href={`/${locale}/article/${transfer.slug}`}
                     imageUrl={transfer.imageUrl}
                     imageAlt={transfer.title}
                   />

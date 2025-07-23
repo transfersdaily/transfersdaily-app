@@ -106,35 +106,35 @@ export function AdminSidebar() {
   const { user, signOut } = useAuth()
 
   return (
-    <Sidebar className="bg-slate-800 border-slate-700 shadow-lg rounded-r-lg">
-      <SidebarHeader className="bg-slate-800 border-slate-700 p-6">
+    <Sidebar className="bg-card border-border shadow-lg rounded-r-lg">
+      <SidebarHeader className="bg-card border-border p-6">
         <div className="flex items-center gap-3">
           <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
             <FileText className="size-5" />
           </div>
           <div className="grid flex-1 text-left leading-tight">
-            <span className="truncate font-semibold text-slate-100 text-base">TransfersDaily</span>
-            <span className="truncate text-sm text-slate-300">Admin Panel</span>
+            <span className="truncate font-semibold text-foreground text-base">TransfersDaily</span>
+            <span className="truncate text-sm text-muted-foreground">Admin Panel</span>
           </div>
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="bg-slate-800 px-3">
+      <SidebarContent className="bg-card px-3">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
               {/* Dashboard */}
               {mainMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
+                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-muted focus:bg-muted text-foreground hover:text-primary transition-all duration-200">
                     {item.title === "Back to Home" ? (
                       <a href={item.url}>
-                        <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
+                        <item.icon className="size-5 text-muted-foreground hover:text-primary" />
                         <span className="font-medium">{item.title}</span>
                       </a>
                     ) : (
                       <Link href={item.url}>
-                        <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
+                        <item.icon className="size-5 text-muted-foreground hover:text-primary" />
                         <span className="font-medium">{item.title}</span>
                       </Link>
                     )}
@@ -142,14 +142,14 @@ export function AdminSidebar() {
                 </SidebarMenuItem>
               ))}
               
-              <div className="h-px bg-slate-700 my-3" />
+              <div className="h-px bg-border my-3" />
               
               {/* Articles */}
               <Collapsible defaultOpen className="group/collapsible">
                 <SidebarMenuItem>
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="h-11 px-4 rounded-lg hover:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
-                      <FileText className="size-5 text-slate-300" />
+                    <SidebarMenuButton className="h-11 px-4 rounded-lg hover:bg-muted text-foreground hover:text-primary transition-all duration-200">
+                      <FileText className="size-5 text-muted-foreground" />
                       <span className="font-medium">Articles</span>
                       <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                     </SidebarMenuButton>
@@ -158,7 +158,7 @@ export function AdminSidebar() {
                     <SidebarMenu className="mt-2 space-y-1">
                       {articleMenuItems.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild className="h-10 pl-12 pr-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-300 hover:text-slate-100 transition-all duration-200">
+                          <SidebarMenuButton asChild className="h-10 pl-12 pr-4 rounded-lg hover:bg-muted focus:bg-muted text-muted-foreground hover:text-primary transition-all duration-200">
                             <Link href={item.url}>
                               <item.icon className="size-4" />
                               <span className="font-medium">{item.title}</span>
@@ -171,28 +171,28 @@ export function AdminSidebar() {
                 </SidebarMenuItem>
               </Collapsible>
               
-              <div className="h-px bg-slate-700 my-3" />
+              <div className="h-px bg-border my-3" />
               
               {/* Entity Management */}
               {entityMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
+                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-muted focus:bg-muted text-foreground hover:text-primary transition-all duration-200">
                     <Link href={item.url}>
-                      <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
+                      <item.icon className="size-5 text-muted-foreground hover:text-primary" />
                       <span className="font-medium">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
               
-              <div className="h-px bg-slate-700 my-3" />
+              <div className="h-px bg-border my-3" />
               
               {/* System */}
               {systemMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
+                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-muted focus:bg-muted text-foreground hover:text-primary transition-all duration-200">
                     <Link href={item.url}>
-                      <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
+                      <item.icon className="size-5 text-muted-foreground hover:text-primary" />
                       <span className="font-medium">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -203,23 +203,23 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className="bg-slate-800 p-4 border-t border-slate-700">
+      <SidebarFooter className="bg-card p-4 border-t border-border">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="h-14 px-4 rounded-lg hover:bg-slate-700 data-[state=open]:bg-slate-700 text-slate-200 transition-all duration-200"
+                  className="h-14 px-4 rounded-lg hover:bg-muted data-[state=open]:bg-muted text-foreground transition-all duration-200"
                 >
                   <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
                     <User2 className="size-5" />
                   </div>
                   <div className="grid flex-1 text-left leading-tight">
                     <span className="truncate font-semibold text-slate-100">Admin</span>
-                    <span className="truncate text-sm text-slate-300">{user?.email}</span>
+                    <span className="truncate text-sm text-muted-foreground">{user?.email}</span>
                   </div>
-                  <ChevronUp className="ml-auto size-4 text-slate-400" />
+                  <ChevronUp className="ml-auto size-4 text-muted-foreground" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -230,12 +230,12 @@ export function AdminSidebar() {
               >
                 <div className="p-2">
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/profile" className="flex items-center px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
-                      <User2 className="size-4 mr-3 text-slate-600" />
-                      <span className="font-medium text-slate-700">Profile</span>
+                    <Link href="/admin/profile" className="flex items-center px-3 py-2.5 rounded-lg hover:bg-muted transition-colors cursor-pointer">
+                      <User2 className="size-4 mr-3 text-muted-foreground" />
+                      <span className="font-medium text-foreground">Profile</span>
                     </Link>
                   </DropdownMenuItem>
-                  <div className="h-px bg-slate-200 my-2" />
+                  <div className="h-px bg-border my-2" />
                   <DropdownMenuItem 
                     onClick={() => signOut()} 
                     className="flex items-center px-3 py-2.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"

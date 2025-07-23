@@ -16,11 +16,10 @@ import { createTranslator } from '@/lib/dictionary-server'
 import { articlesApi, type Article } from "@/lib/api"
 import { 
   Trophy, 
-  TrendingUp, 
   Clock
 } from "lucide-react"
 
-// Generate metadata for SEO
+// Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
   params 
 }: { 
@@ -30,71 +29,141 @@ export async function generateMetadata({
   const dict = await getDictionary(locale)
   const t = createTranslator(dict)
   
-  const title = locale === 'en' 
-    ? 'Transfer Daily - Latest Football Transfer News & Rumors'
-    : `${t('navigation.home')} - Transfer Daily`
-    
-  const description = t('footer.description')
+  // Language-specific SEO titles and descriptions
+  const seoData = {
+    en: {
+      title: 'Transfer Daily - Latest Football Transfer News, Rumors & Updates',
+      description: 'Get the latest football transfer news, confirmed deals, and breaking rumors from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1. Updated daily with expert analysis.',
+      keywords: 'football transfers, soccer news, transfer rumors, Premier League transfers, La Liga transfers, Serie A transfers, Bundesliga transfers, Ligue 1 transfers, transfer window, football news today'
+    },
+    es: {
+      title: 'Transfer Daily - Últimas Noticias de Fichajes de Fútbol y Rumores',
+      description: 'Obtén las últimas noticias de fichajes de fútbol, traspasos confirmados y rumores de última hora de Premier League, La Liga, Serie A, Bundesliga y Ligue 1.',
+      keywords: 'fichajes fútbol, noticias fútbol, rumores traspasos, fichajes Premier League, fichajes La Liga, fichajes Serie A, fichajes Bundesliga, fichajes Ligue 1, mercado fichajes'
+    },
+    it: {
+      title: 'Transfer Daily - Ultime Notizie di Calciomercato e Rumors',
+      description: 'Scopri le ultime notizie di calciomercato, trasferimenti confermati e rumors da Premier League, La Liga, Serie A, Bundesliga e Ligue 1.',
+      keywords: 'calciomercato, notizie calcio, rumors trasferimenti, mercato Premier League, mercato La Liga, mercato Serie A, mercato Bundesliga, mercato Ligue 1'
+    },
+    fr: {
+      title: 'Transfer Daily - Dernières Actualités Transferts Football et Rumeurs',
+      description: 'Découvrez les dernières actualités des transferts de football, accords confirmés et rumeurs de Premier League, La Liga, Serie A, Bundesliga et Ligue 1.',
+      keywords: 'transferts football, actualités football, rumeurs transferts, transferts Premier League, transferts La Liga, transferts Serie A, transferts Bundesliga, transferts Ligue 1'
+    },
+    de: {
+      title: 'Transfer Daily - Neueste Fußball-Transfer-Nachrichten und Gerüchte',
+      description: 'Erhalten Sie die neuesten Fußball-Transfer-Nachrichten, bestätigte Deals und Gerüchte aus Premier League, La Liga, Serie A, Bundesliga und Ligue 1.',
+      keywords: 'Fußball Transfers, Fußball Nachrichten, Transfer Gerüchte, Premier League Transfers, La Liga Transfers, Serie A Transfers, Bundesliga Transfers, Ligue 1 Transfers'
+    }
+  }
+  
+  const currentSeo = seoData[locale]
+  const fallbackDescription = t('footer.description') || currentSeo.description
   
   return {
-    title,
-    description,
-    keywords: 'football transfers, soccer news, transfer rumors, Premier League, La Liga, Serie A, Bundesliga, Ligue 1',
-    authors: [{ name: 'Transfer Daily' }],
+    title: currentSeo.title,
+    description: fallbackDescription,
+    keywords: currentSeo.keywords,
+    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }],
     creator: 'Transfer Daily',
     publisher: 'Transfer Daily',
+    applicationName: 'Transfer Daily',
+    
+    // Enhanced format detection
     formatDetection: {
       email: false,
       address: false,
       telephone: false,
     },
+    
+    // Metadata base for relative URLs
     metadataBase: new URL('https://transferdaily.com'),
+    
+    // Canonical and alternate language URLs
     alternates: {
-      canonical: `/${locale}`,
+      canonical: locale === 'en' ? '/' : `/${locale}`,
       languages: {
-        'en': '/en',
+        'en': '/',
         'es': '/es',
         'it': '/it',
         'fr': '/fr',
         'de': '/de',
+        'x-default': '/'
       },
     },
+    
+    // Enhanced Open Graph metadata
     openGraph: {
-      title,
-      description,
-      url: `https://transferdaily.com/${locale}`,
+      title: currentSeo.title,
+      description: fallbackDescription,
+      url: locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`,
       siteName: 'Transfer Daily',
-      locale: locale,
+      locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
+      alternateLocale: locales.filter(l => l !== locale).map(l => 
+        l === 'en' ? 'en_US' : l === 'es' ? 'es_ES' : l === 'it' ? 'it_IT' : l === 'fr' ? 'fr_FR' : 'de_DE'
+      ),
       type: 'website',
       images: [
         {
           url: '/og-image.jpg',
           width: 1200,
           height: 630,
-          alt: 'Transfer Daily - Football Transfer News',
+          alt: 'Transfer Daily - Latest Football Transfer News',
+          type: 'image/jpeg',
         },
+        {
+          url: '/og-image-square.jpg',
+          width: 1200,
+          height: 1200,
+          alt: 'Transfer Daily - Football Transfer News',
+          type: 'image/jpeg',
+        }
       ],
     },
+    
+    // Enhanced Twitter metadata
     twitter: {
       card: 'summary_large_image',
-      title,
-      description,
-      images: ['/og-image.jpg'],
+      site: '@transferdaily',
+      creator: '@transferdaily',
+      title: currentSeo.title,
+      description: fallbackDescription,
+      images: {
+        url: '/og-image.jpg',
+        alt: 'Transfer Daily - Latest Football Transfer News',
+      },
     },
+    
+    // Enhanced robots configuration
     robots: {
       index: true,
       follow: true,
+      nocache: false,
       googleBot: {
         index: true,
         follow: true,
+        noimageindex: false,
         'max-video-preview': -1,
         'max-image-preview': 'large',
         'max-snippet': -1,
       },
     },
+    
+    // Verification tags (replace with actual codes)
     verification: {
       google: 'your-google-verification-code',
+      yandex: 'your-yandex-verification-code',
+      yahoo: 'your-yahoo-verification-code',
+      other: {
+        'msvalidate.01': 'your-bing-verification-code',
+      },
     },
+    
+    // Additional metadata
+    category: 'Sports',
+    classification: 'Football Transfer News',
+    referrer: 'origin-when-cross-origin',
   }
 }
 
@@ -123,25 +192,111 @@ export default async function HomePage({
   // Get initial data server-side (real API data) with language parameter
   const initialData = await getInitialData(locale)
   
+  // Generate comprehensive structured data
+  const websiteStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Transfer Daily",
+    "alternateName": "Transfer Daily - Football Transfer News",
+    "url": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`,
+    "description": t('footer.description') || "Latest football transfer news, rumors, and updates from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1",
+    "inLanguage": locale,
+    "isAccessibleForFree": true,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": `https://transferdaily.com/${locale}/search?q={search_term_string}`
+      },
+      "query-input": "required name=search_term_string"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Transfer Daily",
+      "url": "https://transferdaily.com",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://transferdaily.com/logo.png",
+        "width": 200,
+        "height": 60
+      },
+      "sameAs": [
+        "https://twitter.com/transferdaily",
+        "https://facebook.com/transferdaily",
+        "https://instagram.com/transferdaily"
+      ]
+    }
+  }
+
+  const organizationStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Transfer Daily",
+    "url": "https://transferdaily.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://transferdaily.com/logo.png",
+      "width": 200,
+      "height": 60
+    },
+    "description": "Leading source for football transfer news, rumors, and analysis covering Premier League, La Liga, Serie A, Bundesliga, and Ligue 1",
+    "foundingDate": "2024",
+    "sameAs": [
+      "https://twitter.com/transferdaily",
+      "https://facebook.com/transferdaily",
+      "https://instagram.com/transferdaily"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer service",
+      "url": `https://transferdaily.com/${locale}/contact`
+    },
+    "areaServed": "Worldwide",
+    "knowsAbout": [
+      "Football Transfers",
+      "Soccer News",
+      "Premier League",
+      "La Liga",
+      "Serie A",
+      "Bundesliga",
+      "Ligue 1",
+      "Transfer Window",
+      "Football Rumors"
+    ]
+  }
+
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": t('navigation.home') || "Home",
+        "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`
+      }
+    ]
+  }
+
   return (
     <main className="min-h-screen bg-background">
-      {/* JSON-LD Structured Data for SEO */}
+      {/* Enhanced JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "Transfer Daily",
-            "url": `https://transferdaily.com/${locale}`,
-            "description": t('footer.description'),
-            "inLanguage": locale,
-            "potentialAction": {
-              "@type": "SearchAction",
-              "target": `https://transferdaily.com/${locale}/search?q={search_term_string}`,
-              "query-input": "required name=search_term_string"
-            }
-          })
+          __html: JSON.stringify(websiteStructuredData)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(organizationStructuredData)
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(breadcrumbStructuredData)
         }}
       />
       
@@ -149,11 +304,14 @@ export default async function HomePage({
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Content - 70% */}
           <div className="col-span-1 lg:col-span-7">
-            {/* Hero Section - Featured Transfer */}
+            {/* Hero Section - Featured */}
             <section className="py-8" aria-labelledby="featured-transfer">
-              <h1 id="featured-transfer" className="sr-only">
-                {t('common.featuredTransferNews')}
-              </h1>
+              <div className="mb-6">
+                <h2 id="featured-transfer" className="text-2xl font-bold mb-3">
+                  {t('homepage.featuredArticle')}
+                </h2>
+                <div className="w-24 h-1 bg-primary rounded-full"></div>
+              </div>
               
               <Suspense fallback={
                 <Card className="overflow-hidden h-[500px] relative">
@@ -161,42 +319,48 @@ export default async function HomePage({
                 </Card>
               }>
                 {initialData.featuredTransfer ? (
-                  <Link 
-                    href={`/${locale}/article/${initialData.featuredTransfer.slug}?language=${locale}`}
-                    className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
-                    aria-label={`${t('common.readFullArticle')}: ${initialData.featuredTransfer.title}`}
-                  >
-                    <Card className="overflow-hidden h-[500px] relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
-                      <div className="h-full bg-muted relative">
-                        {initialData.featuredTransfer.imageUrl && (
-                          <img 
-                            src={initialData.featuredTransfer.imageUrl} 
-                            alt={`${t('common.featuredTransferNews')}: ${initialData.featuredTransfer.title} - ${initialData.featuredTransfer.league}`}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                          />
-                        )}
-                        {/* Overlay gradient */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
-                        
-                        {/* Content overlay */}
-                        <div className="absolute bottom-0 left-0 right-0 p-8 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-                          <Badge variant="outline" className="mb-4 bg-black/60 text-white border-white/50">
-                            {initialData.featuredTransfer.league?.toUpperCase()}
-                          </Badge>
-                          <h1 className="text-2xl font-bold mb-4 leading-tight text-white drop-shadow-lg">
-                            {initialData.featuredTransfer.title}
-                          </h1>
-                          <p className="text-white text-base leading-relaxed line-clamp-2 mb-6 drop-shadow-md">
-                            {initialData.featuredTransfer.excerpt}
-                          </p>
-                          <div className="flex items-center gap-2 text-sm text-white drop-shadow-md">
-                            <Clock className="h-4 w-4" />
-                            <span>{formatTimeAgo(initialData.featuredTransfer.publishedAt, t)}</span>
+                  <article>
+                    <Link 
+                      href={`/${locale}/article/${initialData.featuredTransfer.slug}?language=${locale}`}
+                      className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
+                      aria-label={`${t('common.readFullArticle')}: ${initialData.featuredTransfer.title}`}
+                    >
+                      <Card className="overflow-hidden h-[500px] relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group">
+                        <div className="h-full bg-muted relative">
+                          {initialData.featuredTransfer.imageUrl && (
+                            <img 
+                              src={initialData.featuredTransfer.imageUrl} 
+                              alt={`Featured: ${initialData.featuredTransfer.title} - ${initialData.featuredTransfer.league}`}
+                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                              loading="eager"
+                              fetchPriority="high"
+                            />
+                          )}
+                          {/* Overlay gradient */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+                          
+                          {/* Content overlay */}
+                          <div className="absolute bottom-0 left-0 right-0 p-8 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
+                            <Badge variant="outline" className="mb-4 bg-black/60 text-white border-white/50">
+                              {initialData.featuredTransfer.league?.toUpperCase()}
+                            </Badge>
+                            <h3 className="text-2xl font-bold mb-4 leading-tight text-white drop-shadow-lg">
+                              {initialData.featuredTransfer.title}
+                            </h3>
+                            <p className="text-white text-base leading-relaxed line-clamp-2 mb-6 drop-shadow-md">
+                              {initialData.featuredTransfer.excerpt}
+                            </p>
+                            <div className="flex items-center gap-2 text-sm text-white drop-shadow-md">
+                              <Clock className="h-4 w-4" />
+                              <time dateTime={initialData.featuredTransfer.publishedAt}>
+                                {formatTimeAgo(initialData.featuredTransfer.publishedAt, t)}
+                              </time>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Card>
-                  </Link>
+                      </Card>
+                    </Link>
+                  </article>
                 ) : (
                   <Card className="overflow-hidden h-[500px] relative">
                     <div className="h-full bg-muted flex items-center justify-center">
@@ -209,10 +373,13 @@ export default async function HomePage({
 
             {/* Latest Transfer News Section */}
             <section className="py-8" aria-labelledby="latest-transfers">
-              <div className="flex justify-between items-center mb-6">
-                <h2 id="latest-transfers" className="text-2xl font-bold">
-                  {t('navigation.latest')} {t('navigation.transfers')}
-                </h2>
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 id="latest-transfers" className="text-2xl font-bold mb-3">
+                    {t('homepage.latestTransfers')}
+                  </h2>
+                  <div className="w-24 h-1 bg-primary rounded-full"></div>
+                </div>
                 <ViewAllButton href={`/${locale}/latest`}>
                   {t('common.viewAll')}
                 </ViewAllButton>
@@ -229,10 +396,11 @@ export default async function HomePage({
 
             {/* Browse by League Section */}
             <section className="py-8" aria-labelledby="browse-leagues">
-              <div className="flex justify-between items-center mb-6">
-                <h2 id="browse-leagues" className="text-2xl font-bold">
-                  {t('navigation.browseByLeague')}
+              <div className="mb-6">
+                <h2 id="browse-leagues" className="text-2xl font-bold mb-3">
+                  {t('homepage.browseByLeague')}
                 </h2>
+                <div className="w-24 h-1 bg-primary rounded-full"></div>
               </div>
               
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -263,10 +431,13 @@ export default async function HomePage({
 
             {/* Trending Transfer News Section */}
             <section className="py-8" aria-labelledby="trending-transfers">
-              <div className="flex justify-between items-center mb-6">
-                <h2 id="trending-transfers" className="text-2xl font-bold">
-                  {t('navigation.trending')}
-                </h2>
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 id="trending-transfers" className="text-2xl font-bold mb-3">
+                    {t('homepage.trendingArticles')}
+                  </h2>
+                  <div className="w-24 h-1 bg-primary rounded-full"></div>
+                </div>
                 <ViewAllButton href={`/${locale}/trending`}>
                   {t('common.viewAll')}
                 </ViewAllButton>
@@ -386,7 +557,17 @@ async function getInitialData(language = 'en') {
       }
     } catch (apiError) {
       console.error('❌ Error fetching articles from API:', apiError.message)
+      console.error('❌ This is likely a CORS issue. The API is not accessible from localhost:3000')
     }
+    
+    // Log what we're returning
+    console.log('📋 Final data summary:', {
+      featuredTransfer: featuredTransfer ? `"${featuredTransfer.title}"` : 'None (API failed)',
+      latestTransfersCount: latestTransfers.length,
+      trendingTransfersCount: trendingTransfers.length,
+      leaguesCount: staticLeagues.length,
+      apiWorking: featuredTransfer !== null
+    })
     
     const finalData = {
       featuredTransfer,
@@ -395,16 +576,10 @@ async function getInitialData(language = 'en') {
       leagues: staticLeagues,
     }
     
-    console.log('🎯 Final data summary:', {
-      featuredTransfer: featuredTransfer ? `"${featuredTransfer.title}"` : 'None',
-      latestTransfersCount: latestTransfers.length,
-      trendingTransfersCount: trendingTransfers.length,
-      leaguesCount: staticLeagues.length
-    })
-    
     return finalData
   } catch (error) {
     console.error('💥 Error in getInitialData:', error)
+    console.error('💥 Returning empty data due to error')
     return {
       featuredTransfer: null,
       latestTransfers: [],

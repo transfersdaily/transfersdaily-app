@@ -32,12 +32,8 @@ interface DraftVsPublishedChartProps {
 }
 
 const chartConfig = {
-  drafts: {
-    label: "Drafts Created",
-    color: "#ef4444", // red-500
-  },
   published: {
-    label: "Articles Published", 
+    label: "Published Articles", 
     color: "#22c55e", // green-500
   },
 } satisfies ChartConfig
@@ -49,20 +45,14 @@ export function DraftVsPublishedChart({
   isLoading = false 
 }: DraftVsPublishedChartProps) {
   
-  // Transform the daily activity data to show drafts vs published
+  // Transform the daily activity data to show published articles
   const chartData = dailyActivity.map(day => {
     const date = new Date(day.date)
     const monthName = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
     
-    // Estimate drafts vs published based on total ratio
-    const publishedRatio = totalPublished / Math.max(totalDrafts + totalPublished, 1)
-    const estimatedPublished = Math.round(day.count * publishedRatio)
-    const estimatedDrafts = day.count - estimatedPublished
-    
     return {
       date: monthName,
-      drafts: Math.max(estimatedDrafts, 0),
-      published: Math.max(estimatedPublished, 0),
+      published: day.count, // This is already filtered to published articles from backend
       total: day.count
     }
   }).reverse() // Reverse to show chronological order
@@ -92,9 +82,9 @@ export function DraftVsPublishedChart({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Draft vs Published Articles</CardTitle>
+        <CardTitle>Published Articles Created This Week</CardTitle>
         <CardDescription>
-          Daily article creation and publishing activity over the last 7 days
+          Daily published article activity over the last 7 days
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -140,26 +130,12 @@ export function DraftVsPublishedChart({
                           </div>
                         ))}
                         <div className="text-xs text-muted-foreground mt-1">
-                          Total: {(payload[0]?.payload?.drafts || 0) + (payload[1]?.payload?.published || 0)} articles
+                          Total: {payload[0]?.payload?.published || 0} articles published
                         </div>
                       </div>
                     )
                   }
                   return null
-                }}
-              />
-              <Line
-                dataKey="drafts"
-                type="monotone"
-                stroke="#ef4444"
-                strokeWidth={2}
-                dot={{
-                  fill: "#ef4444",
-                  strokeWidth: 2,
-                  r: 4,
-                }}
-                activeDot={{
-                  r: 6,
                 }}
               />
               <Line
@@ -184,13 +160,13 @@ export function DraftVsPublishedChart({
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 leading-none font-medium">
-              {publishedPercentage}% articles published <TrendingUp className="h-4 w-4" />
+              {weeklyTotal} articles published this week <TrendingUp className="h-4 w-4" />
             </div>
             <div className="text-muted-foreground flex items-center gap-2 leading-none">
-              Showing {weeklyTotal} total articles created over the last 7 days
+              Daily trend showing published articles over the last 7 days
             </div>
             <div className="text-muted-foreground text-xs">
-              {totalDrafts} drafts • {totalPublished} published • {totalArticles} total
+              {totalPublished} total published • {totalDrafts} drafts • {totalArticles} total articles
             </div>
           </div>
         </div>

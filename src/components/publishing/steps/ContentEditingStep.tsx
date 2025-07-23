@@ -557,7 +557,7 @@ export default function ContentEditingStep({
                 </div>
                 
                 {/* Debug info */}
-                <div className="text-xs text-gray-500 p-2 bg-gray-50 rounded border">
+                <div className="text-xs text-muted-foreground p-2 bg-muted rounded border">
                   <div className="font-medium mb-1">Image URL:</div>
                   <div className="break-all font-mono">{featuredImage}</div>
                   <div className="mt-2 flex gap-2">
@@ -584,7 +584,7 @@ export default function ContentEditingStep({
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                   Uploading image...
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full bg-muted rounded-full h-2">
                   <div className="bg-blue-600 h-2 rounded-full animate-pulse" style={{ width: '60%' }}></div>
                 </div>
               </div>

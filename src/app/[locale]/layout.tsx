@@ -1,6 +1,5 @@
 import { Inter } from 'next/font/google'
 import { ConditionalLayout } from '@/components/ConditionalLayout'
-import { AuthProvider } from '@/lib/auth'
 import { locales, type Locale, getDictionary } from '@/lib/i18n'
 import { DictionaryProvider } from '@/lib/dictionary-provider'
 import { ServerNavbar } from '@/components/ServerNavbar'
@@ -34,17 +33,11 @@ export default async function LocaleLayout({
   const dictionary = await getDictionary(locale)
 
   return (
-    <html lang={locale} suppressHydrationWarning>
-      <body className={inter.className}>
-        <AuthProvider>
-          <DictionaryProvider dictionary={dictionary}>
-            <ConditionalLayout>
-              <ServerNavbar locale={locale} dictionary={dictionary} />
-              {children}
-            </ConditionalLayout>
-          </DictionaryProvider>
-        </AuthProvider>
-      </body>
-    </html>
+    <DictionaryProvider dictionary={dictionary}>
+      <ConditionalLayout>
+        <ServerNavbar locale={locale} dictionary={dictionary} />
+        {children}
+      </ConditionalLayout>
+    </DictionaryProvider>
   )
 }

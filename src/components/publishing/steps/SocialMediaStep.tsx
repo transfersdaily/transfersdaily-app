@@ -402,7 +402,7 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
                 </div>
 
                 {/* Single Combined Preview */}
-                <div className="border rounded-lg p-4 bg-gray-50">
+                <div className="border rounded-lg p-4 bg-muted">
                   <p className="text-sm font-medium mb-3">Social Media Preview:</p>
                   
                   {/* Twitter Post Preview */}

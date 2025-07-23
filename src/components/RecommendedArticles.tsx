@@ -16,6 +16,7 @@ interface RecommendedArticlesProps {
 export function RecommendedArticles({ locale = 'en', dict }: RecommendedArticlesProps) {
   const [articles, setArticles] = useState<Transfer[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
   // Enhanced translation function with fallbacks
   const t = (key: string, fallback?: string) => {
@@ -44,70 +45,18 @@ export function RecommendedArticles({ locale = 'en', dict }: RecommendedArticles
   const loadRecommendedArticles = async () => {
     try {
       setIsLoading(true)
+      setHasError(false)
       
       // Try to get recommended articles from API
-      try {
-        const transfers = await transfersApi.getLatest(5, 0, locale)
-        if (transfers && transfers.length > 0) {
-          setArticles(transfers)
-          return
-        }
-      } catch (apiError) {
-        console.warn('API recommended articles failed, using fallback data:', apiError)
+      const transfers = await transfersApi.getLatest(5, 0, locale)
+      if (transfers && transfers.length > 0) {
+        setArticles(transfers)
+      } else {
+        setArticles([])
       }
-      
-      // Fallback to sample articles if API fails
-      const fallbackArticles: Transfer[] = [
-        {
-          id: '1',
-          title: 'Transfer Window Update: Latest Moves Across Europe',
-          excerpt: 'Stay updated with the latest transfer news and rumors from top European leagues.',
-          league: 'Premier League',
-          publishedAt: new Date().toISOString(),
-          slug: 'transfer-window-update',
-          status: 'confirmed'
-        },
-        {
-          id: '2', 
-          title: 'Summer Transfer Roundup: Biggest Deals So Far',
-          excerpt: 'A comprehensive look at the biggest transfers of the summer window.',
-          league: 'La Liga',
-          publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          slug: 'summer-transfer-roundup',
-          status: 'confirmed'
-        },
-        {
-          id: '3',
-          title: 'Rising Stars to Watch This Season',
-          excerpt: 'Young talents making waves in the transfer market this season.',
-          league: 'Serie A',
-          publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          slug: 'rising-stars-to-watch',
-          status: 'confirmed'
-        },
-        {
-          id: '4',
-          title: 'January Window Preview: What to Expect',
-          excerpt: 'What to expect from the upcoming January transfer window.',
-          league: 'Bundesliga',
-          publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          slug: 'january-window-preview',
-          status: 'confirmed'
-        },
-        {
-          id: '5',
-          title: 'Record Breaking Deals That Shook Football',
-          excerpt: 'The most expensive transfers that shook the football world.',
-          league: 'Ligue 1',
-          publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-          slug: 'record-breaking-deals',
-          status: 'confirmed'
-        }
-      ]
-      
-      setArticles(fallbackArticles)
     } catch (error) {
       console.error('Error loading recommended articles:', error)
+      setHasError(true)
       setArticles([])
     } finally {
       setIsLoading(false)
@@ -127,18 +76,23 @@ export function RecommendedArticles({ locale = 'en', dict }: RecommendedArticles
     return `${diffInWeeks}w`
   }
 
+  // Don't render anything if there's an error or no articles
+  if (hasError || (!isLoading && articles.length === 0)) {
+    return null
+  }
+
   return (
     <Card className="shadow-sm border-border bg-card">
-      <CardContent className="p-6">
-        <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-6">
+      <CardContent className="p-5">
+        <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-5">
           {t('sidebar.recommended', 'Recommended Articles')}
         </h3>
         
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
-        ) : articles.length > 0 ? (
+        ) : (
           <div className="space-y-4">
             {articles.map((article) => (
               <SidebarArticleItem
@@ -148,10 +102,6 @@ export function RecommendedArticles({ locale = 'en', dict }: RecommendedArticles
                 formatTimeAgo={formatTimeAgo}
               />
             ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground text-sm">
-            {t('common.noResults', 'No articles found')}
           </div>
         )}
       </CardContent>
