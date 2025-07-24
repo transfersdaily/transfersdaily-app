@@ -5,6 +5,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Mail, MessageSquare, Clock, CheckCircle, Loader2 } from "lucide-react"
 import { contactApi } from "@/lib/api"
 import { trackContactSubmission } from "@/lib/analytics"
@@ -110,7 +116,7 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto py-12">
       {/* Header */}
       <header className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">
@@ -150,7 +156,7 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label htmlFor="firstName" className="block text-sm font-medium mb-2">
+                        <label htmlFor="firstName" className="block font-semibold mb-2">
                           {getTranslation(dict, 'contact.form.firstName', 'First Name')} *
                         </label>
                         <Input 
@@ -161,10 +167,11 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                           placeholder={getTranslation(dict, 'contact.form.firstNamePlaceholder', 'Enter your first name')}
                           required
                           disabled={isSubmitting}
+                          className="border-border focus:border-primary focus:ring-primary"
                         />
                       </div>
                       <div>
-                        <label htmlFor="lastName" className="block text-sm font-medium mb-2">
+                        <label htmlFor="lastName" className="block font-semibold mb-2">
                           {getTranslation(dict, 'contact.form.lastName', 'Last Name')}
                         </label>
                         <Input 
@@ -174,12 +181,13 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                           onChange={handleInputChange}
                           placeholder={getTranslation(dict, 'contact.form.lastNamePlaceholder', 'Enter your last name')}
                           disabled={isSubmitting}
+                          className="border-border focus:border-primary focus:ring-primary"
                         />
                       </div>
                     </div>
                     
                     <div>
-                      <label htmlFor="email" className="block text-sm font-medium mb-2">
+                      <label htmlFor="email" className="block font-semibold mb-2">
                         {getTranslation(dict, 'contact.form.email', 'Email Address')} *
                       </label>
                       <Input 
@@ -191,11 +199,12 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                         placeholder={getTranslation(dict, 'contact.form.emailPlaceholder', 'Enter your email address')}
                         required
                         disabled={isSubmitting}
+                        className="border-border focus:border-primary focus:ring-primary"
                       />
                     </div>
                     
                     <div>
-                      <label htmlFor="subject" className="block text-sm font-medium mb-2">
+                      <label htmlFor="subject" className="block font-semibold mb-2">
                         {getTranslation(dict, 'contact.form.subject', 'Subject')}
                       </label>
                       <Input 
@@ -205,11 +214,12 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                         onChange={handleInputChange}
                         placeholder={getTranslation(dict, 'contact.form.subjectPlaceholder', "What's this about?")}
                         disabled={isSubmitting}
+                        className="border-border focus:border-primary focus:ring-primary"
                       />
                     </div>
                     
                     <div>
-                      <label htmlFor="message" className="block text-sm font-medium mb-2">
+                      <label htmlFor="message" className="block font-semibold mb-2">
                         {getTranslation(dict, 'contact.form.message', 'Message')} *
                       </label>
                       <Textarea 
@@ -221,19 +231,20 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                         rows={6}
                         required
                         disabled={isSubmitting}
+                        className="border-border focus:border-primary focus:ring-primary resize-none"
                       />
                     </div>
 
                     {submitStatus === 'error' && (
                       <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-                        <p className="text-destructive text-sm">{errorMessage}</p>
+                        <p className="text-destructive font-medium">{errorMessage}</p>
                       </div>
                     )}
                     
                     <Button 
                       type="submit" 
                       size="lg" 
-                      className="w-full"
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
@@ -307,49 +318,122 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
                 </CardContent>
               </Card>
             </div>
-
-            {/* FAQ Section */}
-            <section className="mt-8" aria-labelledby="faq-heading">
-              <h3 id="faq-heading" className="text-xl font-bold mb-4">
-                {getTranslation(dict, 'contact.faq.title', 'Frequently Asked Questions')}
-              </h3>
-              <div className="space-y-4">
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-2">
-                      {getTranslation(dict, 'contact.faq.q1', 'How often is content updated?')}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {getTranslation(dict, 'contact.faq.a1', 'We update our transfer news multiple times daily during transfer windows and regularly throughout the season.')}
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-2">
-                      {getTranslation(dict, 'contact.faq.q2', 'Can I submit transfer tips?')}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {getTranslation(dict, 'contact.faq.a2', 'Yes! Use the contact form above to share reliable transfer information with our editorial team.')}
-                    </p>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardContent className="p-4">
-                    <h4 className="font-semibold mb-2">
-                      {getTranslation(dict, 'contact.faq.q3', 'Do you offer advertising opportunities?')}
-                    </h4>
-                    <p className="text-sm text-muted-foreground">
-                      {getTranslation(dict, 'contact.faq.a3', 'We offer various advertising and partnership opportunities. Contact us for more information.')}
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </section>
           </section>
         </div>
+
+        {/* FAQ Section - Moved below the contact form */}
+        <section className="mt-16" aria-labelledby="faq-heading">
+          <div className="max-w-4xl mx-auto">
+            <h2 id="faq-heading" className="text-2xl font-bold mb-6">
+              {getTranslation(dict, 'contact.faq.title', 'Frequently Asked Questions')}
+            </h2>
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              <AccordionItem value="item-1" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q1', 'How often is content updated?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a1', 'We update our transfer news multiple times daily during transfer windows and regularly throughout the season. Our team works around the clock to bring you the latest confirmed transfers, breaking rumors, and exclusive insights from the world of football.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-2" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q2', 'Can I submit transfer tips?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a2', 'Yes! We welcome reliable transfer information from our community. Use the contact form above to share tips with our editorial team. Please include as much detail as possible, including sources when available. All submissions are reviewed by our editorial team before publication.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-3" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q3', 'Do you offer advertising opportunities?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a3', 'We offer various advertising and partnership opportunities including banner ads, sponsored content, and newsletter placements. Our audience consists of passionate football fans interested in transfer news and club updates. Contact us for detailed media kit and pricing information.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-4" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q4', 'How can I report incorrect information?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a4', 'We take accuracy seriously. If you notice incorrect information in any of our articles, please contact us immediately using the form above. Include the article URL and details about the correction needed. We will investigate and update the content promptly.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-5" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q5', 'Can I republish your content?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a5', 'Our content is protected by copyright. For republishing requests, syndication opportunities, or content licensing, please contact us with details about your intended use. We offer various licensing options for media outlets, blogs, and commercial use.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-6" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q6', 'Do you have a mobile app?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a6', 'Currently, we focus on providing the best web experience across all devices. Our website is fully responsive and optimized for mobile browsers. We are considering a mobile app for the future - stay tuned for updates!')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-7" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q7', 'How do you verify transfer information?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a7', 'We use multiple reliable sources including official club announcements, trusted journalists, and verified social media accounts. All information is cross-referenced before publication. We clearly distinguish between confirmed transfers and rumors to maintain transparency.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-8" className="border rounded-lg">
+                <AccordionTrigger className="text-left px-6 py-4 hover:no-underline">
+                  <span className="font-semibold text-base">
+                    {getTranslation(dict, 'contact.faq.q8', 'Can I get notifications for specific clubs or players?')}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-6 pb-4">
+                  <p className="text-muted-foreground">
+                    {getTranslation(dict, 'contact.faq.a8', 'While we don\'t currently offer personalized notifications, you can follow specific leagues and clubs through our organized sections. We are working on implementing notification features for future updates.')}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </section>
       </div>
     </div>
   )

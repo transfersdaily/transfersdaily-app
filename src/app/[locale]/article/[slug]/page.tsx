@@ -15,6 +15,7 @@ import Link from "next/link"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ArticleClientComponents } from './ArticleClientComponents'
+import { typography, responsive } from "@/lib/typography"
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -192,9 +193,9 @@ export async function generateMetadata({
       
       // Enhanced with dynamic meta tags
       other: {
-        'news_keywords': dynamicMeta.newsKeywords,
-        'article:tag': dynamicMeta.articleTag,
-        'article:section': dynamicMeta.articleSection,
+        'news_keywords': dynamicMeta.newsKeywords || '',
+        'article:tag': dynamicMeta.articleTag || '',
+        'article:section': dynamicMeta.articleSection || '',
         'article:author': 'Transfer Daily',
         'article:published_time': publishedTime,
         ...(dynamicMeta.geoRegion && { 'geo.region': dynamicMeta.geoRegion }),
@@ -377,7 +378,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         }}
       />
       
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Article Content - 70% */}
           <article className="lg:col-span-7 bg-card">
@@ -402,16 +403,16 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
 
               {/* Article Header */}
               <header className="mb-8">
-                <Badge variant="outline" className="mb-4 bg-muted text-muted-foreground border-border">
+                <Badge variant="outline" className={`mb-4 bg-muted text-muted-foreground border-border ${typography.badge}`}>
                   {article.league || 'Transfer News'}
                 </Badge>
                 
-                <h1 className="text-4xl font-bold leading-tight mb-6 text-foreground">
+                <h1 className={`${typography.article.title} mb-6 text-foreground`}>
                   {article.title}
                 </h1>
 
                 {/* Article Meta */}
-                <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
+                <div className={`flex flex-wrap items-center gap-6 ${typography.article.meta} mb-6`}>
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
                     <time dateTime={article.published_at}>
@@ -454,19 +455,19 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
               </div>
 
               {/* Article Content */}
-              <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-p:leading-relaxed prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4">
+              <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4">
                 {article.content?.split('\n').map((paragraph, index) => (
-                  paragraph.trim() && <p key={index} className="mb-4 text-foreground">{paragraph}</p>
-                )) || <p className="text-muted-foreground">Content not available.</p>}
+                  paragraph.trim() && <p key={index} className={`mb-4 ${typography.article.body} text-foreground`}>{paragraph}</p>
+                )) || <p className={`${typography.body.base} text-muted-foreground`}>Content not available.</p>}
               </div>
 
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
                 <div className="mt-12 pt-8 border-t border-border">
-                  <h3 className="text-lg font-semibold mb-4 text-foreground">{getTranslation(dict, 'article.tags', 'Tags')}</h3>
+                  <h3 className={`${typography.heading.h4} mb-4 text-foreground`}>{getTranslation(dict, 'article.tags', 'Tags')}</h3>
                   <div className="flex flex-wrap gap-2">
                     {article.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="hover:bg-secondary/80 cursor-pointer">
+                      <Badge key={tag} variant="secondary" className={`hover:bg-secondary/80 cursor-pointer ${typography.badge}`}>
                         {tag}
                       </Badge>
                     ))}

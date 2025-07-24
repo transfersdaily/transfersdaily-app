@@ -41,9 +41,113 @@ export interface Article {
   slug?: string
 }
 
-// Helper function to get auth headers
-function getAuthHeaders(): HeadersInit {
-  const token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.accessToken) : null
+// Helper function to decode JWT token (basic decode, no verification)
+function decodeJWT(token: string) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('Failed to decode JWT:', error);
+    return null;
+  }
+}
+
+// Helper function to refresh access token using refresh token
+async function refreshAccessToken(): Promise<string | null> {
+  try {
+    const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
+    if (!refreshToken) {
+      console.log('No refresh token available');
+      return null;
+    }
+
+    console.log('🔄 Attempting to refresh access token...');
+    
+    const response = await fetch('https://cognito-idp.us-east-1.amazonaws.com/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': 'AWSCognitoIdentityProviderService.InitiateAuth'
+      },
+      body: JSON.stringify({
+        ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '7tap3rig4oim99d0btf24l0rih',
+        AuthFlow: 'REFRESH_TOKEN_AUTH',
+        AuthParameters: {
+          REFRESH_TOKEN: refreshToken
+        }
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Token refresh failed:', response.status);
+      return null;
+    }
+
+    const result = await response.json();
+    
+    if (result.AuthenticationResult?.AccessToken) {
+      const newAccessToken = result.AuthenticationResult.AccessToken;
+      localStorage.setItem(STORAGE_KEYS.accessToken, newAccessToken);
+      console.log('✅ Access token refreshed successfully');
+      return newAccessToken;
+    }
+
+    return null;
+  } catch (error) {
+    console.error('Error refreshing token:', error);
+    return null;
+  }
+}
+
+// Helper function to get auth headers with automatic token refresh
+async function getAuthHeaders(): Promise<HeadersInit> {
+  let token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.accessToken) : null;
+  
+  // Debug logging
+  console.log('🔐 getAuthHeaders called');
+  console.log('  - Window available:', typeof window !== 'undefined');
+  console.log('  - Token present:', !!token);
+  
+  if (token) {
+    console.log('  - Token length:', token.length);
+    console.log('  - Token preview:', `${token.substring(0, 20)}...`);
+    
+    // Check token expiration
+    const decoded = decodeJWT(token);
+    if (decoded && decoded.exp) {
+      const expirationTime = decoded.exp * 1000; // Convert to milliseconds
+      const currentTime = Date.now();
+      const isExpired = currentTime >= expirationTime;
+      const timeUntilExpiry = expirationTime - currentTime;
+      
+      console.log('  - Token expiration:', new Date(expirationTime).toISOString());
+      console.log('  - Current time:', new Date(currentTime).toISOString());
+      console.log('  - Token expired:', isExpired);
+      console.log('  - Time until expiry:', Math.round(timeUntilExpiry / 1000 / 60), 'minutes');
+      
+      // If token is expired or expires in less than 5 minutes, try to refresh
+      if (isExpired || timeUntilExpiry < 5 * 60 * 1000) {
+        console.log('🔄 Token expired or expiring soon, attempting refresh...');
+        const newToken = await refreshAccessToken();
+        if (newToken) {
+          token = newToken;
+          console.log('✅ Using refreshed token');
+        } else {
+          console.warn('⚠️ Token refresh failed, clearing auth data');
+          localStorage.removeItem(STORAGE_KEYS.accessToken);
+          localStorage.removeItem(STORAGE_KEYS.refreshToken);
+          localStorage.removeItem(STORAGE_KEYS.user);
+          token = null;
+        }
+      }
+    }
+  } else {
+    console.log('  - No token found in localStorage');
+  }
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json'
@@ -51,6 +155,9 @@ function getAuthHeaders(): HeadersInit {
   
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
+    console.log('  - Authorization header set');
+  } else {
+    console.log('  - No token, Authorization header not set');
   }
   
   return headers
@@ -66,13 +173,23 @@ async function apiRequest<T>(
   const config: RequestInit = {
     ...options,
     headers: {
-      ...getAuthHeaders(),
+      ...(await getAuthHeaders()),
       ...options.headers
     }
   }
 
+  console.log('🌐 Making API request:');
+  console.log('  - URL:', url);
+  console.log('  - Method:', config.method || 'GET');
+  console.log('  - Headers:', config.headers);
+
   try {
     const response = await fetch(url, config)
+    
+    console.log('📡 API response received:');
+    console.log('  - Status:', response.status);
+    console.log('  - Status Text:', response.statusText);
+    console.log('  - Headers:', Object.fromEntries(response.headers.entries()));
     
     if (!response.ok) {
       console.error(`API request failed: ${response.status} ${response.statusText}`)
@@ -80,6 +197,7 @@ async function apiRequest<T>(
     }
     
     const data = await response.json()
+    console.log('✅ API request successful');
     return data
   } catch (error) {
     console.error(`API request failed for ${endpoint}:`, error)
@@ -129,7 +247,7 @@ function transformArticleToTransfer(article: any): Transfer {
     fromClub: article.currentClub || article.current_club,
     toClub: article.destinationClub || article.destination_club,
     status: (article.transferStatus || article.transfer_status || 'rumor') as 'confirmed' | 'rumor' | 'completed' | 'loan',
-    publishedAt: article.publishedDate || article.published_date || article.createdAt || article.created_at,
+    publishedAt: article.publishedDate || article.published_date || article.published_at || article.createdAt || article.created_at,
     imageUrl: imageUrl,
     source: article.originalLink || article.original_link,
     tags: article.tags || [],
@@ -198,6 +316,8 @@ export const transfersApi = {
   async getLatest(limit = 10, offset = 0, language?: string): Promise<Transfer[]> {
     try {
       const currentLang = language || getCurrentLanguage()
+      console.log('🌐 transfersApi.getLatest: Using language:', currentLang)
+      
       const params = new URLSearchParams({
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
@@ -205,14 +325,18 @@ export const transfersApi = {
         language: currentLang  // Changed from 'lang' to 'language' to match backend
       })
       
+      console.log('📡 transfersApi.getLatest: API params:', Object.fromEntries(params))
+      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.transfers.latest}?${params}`
       )
       
       const articles = response.data?.articles || (response as any).articles || []
+      console.log('✅ transfersApi.getLatest: Received', articles.length, 'articles for language:', currentLang)
+      
       return articles.map(transformArticleToTransfer)
     } catch (error) {
-      console.error('Error fetching latest transfers:', error)
+      console.error('❌ transfersApi.getLatest: Error fetching latest transfers for language:', language, error)
       throw error
     }
   },
@@ -733,10 +857,20 @@ export const adminApi = {
     }>
   }> {
     try {
-      const response = await apiRequest<{ success: boolean; data: any }>(
-        API_CONFIG.endpoints.admin.stats
-      )
-      return response.data || {
+      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.stats}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data = await response.json()
+      return data.data || {
         totalArticles: 0,
         draftArticles: 0,
         publishedArticles: 0,

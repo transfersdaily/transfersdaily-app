@@ -1,243 +1,75 @@
-"use client"
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { type Locale, getDictionary, locales } from '@/lib/i18n'
+import { createTranslator } from '@/lib/dictionary-server'
+import { type Transfer } from "@/lib/api"
+import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 
-import { useState, useEffect } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { TransferCard } from "@/components/TransferCard"
-import { Sidebar } from "@/components/Sidebar"
-import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
-import { SidebarSkeleton } from "@/components/SidebarSkeleton"
-import { Filter, MessageCircle } from "lucide-react"
-import { transfersApi, type Transfer } from "@/lib/api"
-import { ResultsInfo } from "@/components/ResultsInfo"
-
-interface RumorsPageProps {
-  params: {
-    locale: string
+export async function generateMetadata({ params, searchParams }: { 
+  params: Promise<{ locale: Locale }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+  const selectedLeague = resolvedSearchParams.league as string || 'all'
+  
+  const seoData = {
+    en: {
+      title: selectedLeague === 'all' ? `Football Transfer Rumors${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily` : `${selectedLeague} Transfer Rumors${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all' ? `Latest football transfer rumors, breaking news, and speculation from all major leagues. Get insider information, transfer gossip, and potential deals before they happen.` : `Latest ${selectedLeague} transfer rumors, breaking news, and speculation. Get insider ${selectedLeague} transfer gossip and potential deals.`,
+      keywords: selectedLeague === 'all' ? 'football transfer rumors, soccer transfer gossip, transfer speculation, breaking transfer news, transfer rumors today, football rumors latest, transfer window rumors' : `${selectedLeague} transfer rumors, ${selectedLeague} transfer gossip, ${selectedLeague} speculation, ${selectedLeague} rumors today, ${selectedLeague} breaking news`
+    },
+    es: { title: selectedLeague === 'all' ? `Rumores de Fichajes${currentPage > 1 ? ` - Página ${currentPage}` : ''} | Transfer Daily` : `Rumores Fichajes ${selectedLeague}${currentPage > 1 ? ` - Página ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Últimos rumores de fichajes de fútbol, noticias de última hora y especulaciones de todas las ligas principales. Información privilegiada y rumores de fichajes.' : `Últimos rumores de fichajes de ${selectedLeague}, noticias de última hora y especulaciones. Información privilegiada de ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'rumores fichajes fútbol, rumores traspasos, especulaciones fichajes, noticias fichajes última hora, rumores fichajes hoy' : `rumores fichajes ${selectedLeague}, ${selectedLeague} rumores traspasos, especulaciones ${selectedLeague}, rumores ${selectedLeague} hoy` },
+    it: { title: selectedLeague === 'all' ? `Rumors Calciomercato${currentPage > 1 ? ` - Pagina ${currentPage}` : ''} | Transfer Daily` : `Rumors Calciomercato ${selectedLeague}${currentPage > 1 ? ` - Pagina ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Ultimi rumors di calciomercato, notizie dell\'ultima ora e speculazioni da tutte le principali leghe. Informazioni privilegiate e voci di mercato.' : `Ultimi rumors di calciomercato ${selectedLeague}, notizie dell\'ultima ora e speculazioni. Informazioni privilegiate ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'rumors calciomercato, voci mercato calcio, speculazioni trasferimenti, notizie mercato ultima ora, rumors calciomercato oggi' : `rumors calciomercato ${selectedLeague}, ${selectedLeague} voci mercato, speculazioni ${selectedLeague}, rumors ${selectedLeague} oggi` },
+    fr: { title: selectedLeague === 'all' ? `Rumeurs Transferts${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily` : `Rumeurs Transferts ${selectedLeague}${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Dernières rumeurs de transferts de football, actualités de dernière minute et spéculations de toutes les ligues principales. Informations privilégiées.' : `Dernières rumeurs de transferts ${selectedLeague}, actualités de dernière minute et spéculations. Informations privilégiées ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'rumeurs transferts football, rumeurs mercato, spéculations transferts, actualités transferts dernière minute, rumeurs transferts aujourd\'hui' : `rumeurs transferts ${selectedLeague}, ${selectedLeague} rumeurs mercato, spéculations ${selectedLeague}, rumeurs ${selectedLeague} aujourd\'hui` },
+    de: { title: selectedLeague === 'all' ? `Transfer Gerüchte${currentPage > 1 ? ` - Seite ${currentPage}` : ''} | Transfer Daily` : `${selectedLeague} Transfer Gerüchte${currentPage > 1 ? ` - Seite ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Neueste Fußball-Transfer-Gerüchte, aktuelle Nachrichten und Spekulationen aus allen großen Ligen. Insider-Informationen und Transfer-Gerüchte.' : `Neueste ${selectedLeague} Transfer-Gerüchte, aktuelle Nachrichten und Spekulationen. Insider-Informationen ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'Fußball Transfer Gerüchte, Transfer Spekulationen, Transfer Nachrichten aktuell, Transfer Gerüchte heute, Fußball Gerüchte neueste' : `${selectedLeague} Transfer Gerüchte, ${selectedLeague} Transfer Spekulationen, ${selectedLeague} Gerüchte heute, ${selectedLeague} aktuelle Nachrichten` }
+  }
+  
+  const currentSeo = seoData[locale]
+  return {
+    title: currentSeo.title, description: currentSeo.description, keywords: currentSeo.keywords,
+    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }], creator: 'Transfer Daily', publisher: 'Transfer Daily',
+    formatDetection: { email: false, address: false, telephone: false }, metadataBase: new URL('https://transferdaily.com'),
+    alternates: { canonical: locale === 'en' ? '/transfers/rumors' : `/${locale}/transfers/rumors`, languages: { 'en': '/transfers/rumors', 'es': '/es/transfers/rumors', 'it': '/it/transfers/rumors', 'fr': '/fr/transfers/rumors', 'de': '/de/transfers/rumors', 'x-default': '/transfers/rumors' } },
+    openGraph: { title: currentSeo.title, description: currentSeo.description, url: locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors`, siteName: 'Transfer Daily', locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE', type: 'website', images: [{ url: '/og-transfer-rumors.jpg', width: 1200, height: 630, alt: 'Football Transfer Rumors - Transfer Daily' }] },
+    twitter: { card: 'summary_large_image', site: '@transferdaily', creator: '@transferdaily', title: currentSeo.title, description: currentSeo.description, images: { url: '/og-transfer-rumors.jpg', alt: 'Football Transfer Rumors - Transfer Daily' } },
+    robots: { index: true, follow: true, nocache: false, googleBot: { index: true, follow: true, noimageindex: false, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
+    category: 'Sports', classification: 'Football Transfer Rumors'
   }
 }
 
-export default function RumorsPage({ params }: RumorsPageProps) {
-  const { locale } = params
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedLeague, setSelectedLeague] = useState("all")
-  const [isLoading, setIsLoading] = useState(true)
-  const [transfers, setTransfers] = useState<Transfer[]>([])
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalArticles, setTotalArticles] = useState(0)
-  
-  const itemsPerPage = 15
-  
-  useEffect(() => {
-    loadTransfers()
-  }, [currentPage, selectedLeague])
-
-  const loadTransfers = async () => {
-    try {
-      setIsLoading(true)
-      const offset = (currentPage - 1) * itemsPerPage
-      
-      // Filter for rumor transfers
-      const response = await transfersApi.getByStatusWithPagination('rumor', itemsPerPage, offset)
-      
-      // Further filter by league if selected
-      const filteredData = selectedLeague === "all" 
-        ? response.transfers 
-        : response.transfers.filter(t => t.league?.toLowerCase().includes(selectedLeague.toLowerCase()))
-      
-      setTransfers(filteredData)
-      setTotalPages(response.pagination?.totalPages || 1)
-      setTotalArticles(response.pagination?.total || 0)
-    } catch (error) {
-      console.error('Error loading transfer rumors:', error)
-    } finally {
-      setIsLoading(false)
+async function getTransferRumorsData(language = 'en', page = 1, league = 'all') {
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
+    const params = new URLSearchParams({ limit: '15', page: page.toString(), status: 'published', language: language, sortBy: 'published_at', sortOrder: 'desc', category: 'rumor' })
+    if (league !== 'all') {
+      const leagueNames: Record<string, string> = { 'premier-league': 'Premier League', 'la-liga': 'La Liga', 'serie-a': 'Serie A', 'bundesliga': 'Bundesliga', 'ligue-1': 'Ligue 1' }
+      params.append('league', leagueNames[league] || league)
     }
+    const response = await fetch(`${apiUrl}?${params}`, { next: { revalidate: 180 }, headers: { 'Content-Type': 'application/json' } })
+    if (!response.ok) throw new Error(`API request failed: ${response.status}`)
+    const data = await response.json()
+    if (!data.success || !data.data?.articles) return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
+    const transfers: Transfer[] = data.data.articles.map((article: any) => ({ id: article.id || article.uuid, title: article.title || 'Untitled Article', excerpt: article.meta_description || article.content?.substring(0, 150) + '...' || '', league: article.league || 'Unknown League', publishedAt: article.published_at || article.created_at, imageUrl: article.image_url, slug: article.slug || article.title?.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-') || '', category: article.category, transferStatus: 'rumor', playerName: article.player_name, fromClub: article.from_club, toClub: article.to_club, transferFee: article.transfer_fee, author: 'TransfersDaily', tags: [] }))
+    return { transfers, pagination: data.data.pagination || { page: 1, limit: 15, total: transfers.length, totalPages: 1, hasNext: false, hasPrev: false } }
+  } catch (error) {
+    console.error('Error fetching transfer rumors:', error)
+    return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
   }
+}
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-    
-    if (diffInHours < 1) return 'Just now'
-    if (diffInHours < 24) return `${diffInHours} hours ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays} days ago`
-  }
-  
-  const handleFilterChange = (league: string) => {
-    setSelectedLeague(league)
-    setCurrentPage(1)
-  }
+export async function generateStaticParams() { return locales.map((locale) => ({ locale })) }
 
-  const handleClearFilters = () => {
-    setSelectedLeague("all")
-    setCurrentPage(1)
-  }
-
-  return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-          <div className="lg:col-span-7">
-            <section className="py-3 border-b bg-muted/30 -mx-4 px-4 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 flex-1">
-                  <MessageCircle className="w-5 h-5 text-orange-600 dark:text-orange-500" />
-                  <h1 className="text-xl font-bold">Transfer Rumors</h1>
-                </div>
-                
-                <div className="flex gap-3 items-center">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Filter by:</span>
-                  </div>
-                  
-                  <Separator orientation="vertical" className="h-6" />
-                  
-                  <Select value={selectedLeague} onValueChange={handleFilterChange}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="League" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Leagues</SelectItem>
-                      <SelectItem value="Premier League">Premier League</SelectItem>
-                      <SelectItem value="La Liga">La Liga</SelectItem>
-                      <SelectItem value="Serie A">Serie A</SelectItem>
-                      <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                      <SelectItem value="Ligue 1">Ligue 1</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </section>
-
-            <ResultsInfo 
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={totalArticles}
-              isLoading={isLoading}
-            />
-
-            {isLoading ? (
-              <TransferGridSkeleton count={15} />
-            ) : transfers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {transfers.map((transfer) => (
-                  <TransferCard
-                    key={transfer.id}
-                    title={transfer.title}
-                    excerpt={transfer.excerpt}
-                    primaryBadge="Rumor"
-                    timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/${locale}/article/${transfer.slug}`}
-                    imageUrl={transfer.imageUrl}
-                    imageAlt={transfer.title}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">No transfer rumors found</h3>
-                <p className="text-muted-foreground mb-6">
-                  Try adjusting your filters
-                </p>
-                <button 
-                  onClick={handleClearFilters}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                >
-                  Clear all filters
-                </button>
-              </div>
-            )}
-
-            {!isLoading && totalPages > 1 && (
-              <div className="pb-6">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage > 1) {
-                            setCurrentPage(currentPage - 1)
-                          }
-                        }}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum
-                      if (totalPages <= 5) {
-                        pageNum = i + 1
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i
-                      } else {
-                        pageNum = currentPage - 2 + i
-                      }
-                      
-                      return (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setCurrentPage(pageNum)
-                            }}
-                            isActive={currentPage === pageNum}
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    })}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage < totalPages) {
-                            setCurrentPage(currentPage + 1)
-                          }
-                        }}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar - 30% */}
-          <div className="hidden lg:block lg:col-span-3">
-            {isLoading ? (
-              <div className="bg-muted/10 border-l -mr-4 pr-4">
-                <div className="p-4">
-                  <SidebarSkeleton />
-                </div>
-              </div>
-            ) : (
-              <Sidebar />
-            )}
-          </div>
-        </div>
-      </div>
-
-    </main>
-  )
+export default async function TransferRumorsPage({ params, searchParams }: { params: Promise<{ locale: Locale }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  if (!locales.includes(locale)) notFound()
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+  const selectedLeague = resolvedSearchParams.league as string || 'all'
+  const dict = await getDictionary(locale)
+  const t = createTranslator(dict)
+  const initialData = await getTransferRumorsData(locale, currentPage, selectedLeague)
+  const webPageStructuredData = { "@context": "https://schema.org", "@type": "WebPage", "name": "Football Transfer Rumors", "description": "Latest football transfer rumors, breaking news, and speculation from all major leagues", "url": locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors`, "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" }, "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` }, { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` }, { "@type": "ListItem", "position": 3, "name": t('transfers.rumors') || "Rumors", "item": locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors` }] } }
+  return (<main className="min-h-screen bg-background"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} /><TransferStatusPageClient locale={locale} dict={dict} initialData={initialData} initialPage={currentPage} initialLeague={selectedLeague} transferType="rumors" pageTitle={t('transfers.rumors') || 'Transfer Rumors'} pageDescription={t('transfers.rumorsDescription') || 'Latest football transfer rumors, breaking news, and speculation'} icon="MessageCircle" /></main>)
 }

@@ -1,60 +1,62 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { newsletterApi } from "@/lib/api"
-import { trackNewsletterSignup } from "@/lib/analytics"
-import { Loader2, CheckCircle, Mail, Users } from "lucide-react"
-import { type Locale, type Dictionary, getTranslation } from "@/lib/i18n"
+import { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { newsletterApi } from '@/lib/api';
+import { trackNewsletterSignup } from '@/lib/analytics';
+import { Loader2, CheckCircle, Mail, Users } from 'lucide-react';
+import { type Locale, type Dictionary, getTranslation } from '@/lib/i18n';
 
 interface NewsletterSectionProps {
-  locale: Locale
-  dict: Dictionary
+  locale: Locale;
+  dict: Dictionary;
 }
 
 export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
-  const [email, setEmail] = useState("")
-  const [isSubscribing, setIsSubscribing] = useState(false)
-  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [email, setEmail] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<
+    'idle' | 'success' | 'error'
+  >('idle');
 
-  const t = (key: string) => getTranslation(dict, key)
+  const t = (key: string) => getTranslation(dict, key);
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     if (!email || !email.includes('@')) {
-      setSubscriptionStatus('error')
-      return
+      setSubscriptionStatus('error');
+      return;
     }
 
-    setIsSubscribing(true)
-    setSubscriptionStatus('idle')
+    setIsSubscribing(true);
+    setSubscriptionStatus('idle');
 
     try {
-      const success = await newsletterApi.subscribe(email)
-      
+      const success = await newsletterApi.subscribe(email);
+
       if (success) {
-        setSubscriptionStatus('success')
-        setEmail('')
+        setSubscriptionStatus('success');
+        setEmail('');
         // Track successful newsletter signup
-        trackNewsletterSignup(email)
+        trackNewsletterSignup(email);
       } else {
-        setSubscriptionStatus('error')
+        setSubscriptionStatus('error');
       }
     } catch (error) {
-      console.error('Newsletter subscription error:', error)
-      setSubscriptionStatus('error')
+      console.error('Newsletter subscription error:', error);
+      setSubscriptionStatus('error');
     } finally {
-      setIsSubscribing(false)
+      setIsSubscribing(false);
     }
-  }
+  };
 
   return (
-    <section className="py-20 bg-background -mx-4 px-4">
+    <section className="py-20 bg-muted -mx-4 px-4">
       <div className="max-w-full mx-auto">
-        <Card className="border-2 border-primary shadow-lg bg-card">
+        <Card className="border shadow-md bg-card">
           <CardContent className="p-12 md:p-16">
             {subscriptionStatus === 'success' ? (
               <div className="text-center">
@@ -72,17 +74,22 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
                   <div className="bg-primary p-3 rounded-full">
                     <Mail className="h-7 w-7 text-primary-foreground" />
                   </div>
-                  <h3 className="text-2xl font-bold">{t('newsletter.title')}</h3>
+                  <h3 className="text-2xl font-bold">
+                    {t('newsletter.title')}
+                  </h3>
                 </div>
-                
+
                 <p className="text-muted-foreground mb-6 text-sm max-w-2xl mx-auto">
                   {t('newsletter.description')}
                 </p>
 
-                <form onSubmit={handleNewsletterSubmit} className="mb-6 max-w-md mx-auto">
+                <form
+                  onSubmit={handleNewsletterSubmit}
+                  className="mb-6 max-w-md mx-auto"
+                >
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Input 
-                      type="email" 
+                    <Input
+                      type="email"
                       placeholder={t('newsletter.emailPlaceholder')}
                       className="flex-1 h-11 focus:border-primary focus:ring-primary focus:outline-none"
                       value={email}
@@ -92,9 +99,9 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                       title="Please enter a valid email address"
                     />
-                    <Button 
-                      type="submit" 
-                      className="h-11 px-6 bg-primary hover:bg-primary/90 font-medium" 
+                    <Button
+                      type="submit"
+                      className="h-11 px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
                       disabled={isSubscribing || !email}
                     >
                       {isSubscribing ? (
@@ -107,7 +114,7 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
                       )}
                     </Button>
                   </div>
-                  
+
                   {subscriptionStatus === 'error' && (
                     <p className="text-sm text-destructive mt-3">
                       Please check your email and try again.
@@ -117,7 +124,10 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
 
                 <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                   <Users className="h-4 w-4" />
-                  <span>{t('newsletter.joinSubscribers')} • No spam • Unsubscribe anytime</span>
+                  <span>
+                    {t('newsletter.joinSubscribers')} • No spam • Unsubscribe
+                    anytime
+                  </span>
                 </div>
               </div>
             )}
@@ -125,5 +135,5 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
         </Card>
       </div>
     </section>
-  )
+  );
 }

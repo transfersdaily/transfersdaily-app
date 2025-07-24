@@ -125,7 +125,7 @@ export default function ContentEditingStep({
       console.log('✅ Found article:', fetchedArticle.title);
       
       // Initialize translations structure for the 5 languages
-      let translations: Record<string, any> = {
+      const translations: Record<string, any> = {
         en: {
           title: fetchedArticle.title || '',
           content: fetchedArticle.content || ''

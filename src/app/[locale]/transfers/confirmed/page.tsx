@@ -1,243 +1,204 @@
-"use client"
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { type Locale, getDictionary, locales } from '@/lib/i18n'
+import { createTranslator } from '@/lib/dictionary-server'
+import { type Transfer } from "@/lib/api"
+import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 
-import { useState, useEffect } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { TransferCard } from "@/components/TransferCard"
-import { Sidebar } from "@/components/Sidebar"
-import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
-import { SidebarSkeleton } from "@/components/SidebarSkeleton"
-import { Filter, CheckCircle } from "lucide-react"
-import { transfersApi, type Transfer } from "@/lib/api"
-import { ResultsInfo } from "@/components/ResultsInfo"
-
-interface ConfirmedTransfersPageProps {
-  params: {
-    locale: string
+// Generate comprehensive metadata for SEO optimization
+export async function generateMetadata({ 
+  params,
+  searchParams 
+}: { 
+  params: Promise<{ locale: Locale }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  
+  // Get current page and league filter for dynamic metadata
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+  const selectedLeague = resolvedSearchParams.league as string || 'all'
+  
+  // Language-specific SEO data with confirmed transfer keywords
+  const seoData = {
+    en: {
+      title: selectedLeague === 'all' 
+        ? `Confirmed Football Transfers${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`
+        : `Confirmed ${selectedLeague} Transfers${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all'
+        ? `Browse confirmed football transfers and completed deals from all major leagues. Stay updated with official signings, contract confirmations, and transfer announcements.`
+        : `Get confirmed ${selectedLeague} transfers and completed deals. Official signings, contract confirmations, and transfer announcements from ${selectedLeague}.`,
+      keywords: selectedLeague === 'all'
+        ? 'confirmed football transfers, completed transfers today, official signings, confirmed deals, transfer confirmations, football signings confirmed'
+        : `confirmed ${selectedLeague} transfers, ${selectedLeague} signings confirmed, ${selectedLeague} completed deals, official ${selectedLeague} transfers`
+    },
+    es: {
+      title: selectedLeague === 'all'
+        ? `Fichajes Confirmados${currentPage > 1 ? ` - Página ${currentPage}` : ''} | Transfer Daily`
+        : `Fichajes Confirmados ${selectedLeague}${currentPage > 1 ? ` - Página ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all'
+        ? 'Explora los fichajes de fútbol confirmados y traspasos completados de todas las ligas principales. Mantente actualizado con fichajes oficiales.'
+        : `Obtén los fichajes confirmados de ${selectedLeague} y traspasos completados. Fichajes oficiales y confirmaciones de contratos.`,
+      keywords: selectedLeague === 'all'
+        ? 'fichajes confirmados fútbol, traspasos completados hoy, fichajes oficiales, confirmaciones fichajes'
+        : `fichajes confirmados ${selectedLeague}, ${selectedLeague} fichajes oficiales, traspasos confirmados ${selectedLeague}`
+    },
+    it: {
+      title: selectedLeague === 'all'
+        ? `Trasferimenti Confermati${currentPage > 1 ? ` - Pagina ${currentPage}` : ''} | Transfer Daily`
+        : `Trasferimenti Confermati ${selectedLeague}${currentPage > 1 ? ` - Pagina ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all'
+        ? 'Scopri i trasferimenti di calcio confermati e gli accordi completati da tutte le principali leghe. Rimani aggiornato con i trasferimenti ufficiali.'
+        : `Scopri i trasferimenti confermati ${selectedLeague} e gli accordi completati. Trasferimenti ufficiali e conferme contrattuali.`,
+      keywords: selectedLeague === 'all'
+        ? 'trasferimenti confermati calcio, trasferimenti completati oggi, trasferimenti ufficiali, conferme trasferimenti'
+        : `trasferimenti confermati ${selectedLeague}, ${selectedLeague} trasferimenti ufficiali, accordi confermati ${selectedLeague}`
+    },
+    fr: {
+      title: selectedLeague === 'all'
+        ? `Transferts Confirmés${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`
+        : `Transferts Confirmés ${selectedLeague}${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all'
+        ? 'Découvrez les transferts de football confirmés et les accords conclus de toutes les ligues principales. Restez informé des transferts officiels.'
+        : `Découvrez les transferts confirmés ${selectedLeague} et les accords conclus. Transferts officiels et confirmations de contrats.`,
+      keywords: selectedLeague === 'all'
+        ? 'transferts confirmés football, transferts conclus aujourd\'hui, transferts officiels, confirmations transferts'
+        : `transferts confirmés ${selectedLeague}, ${selectedLeague} transferts officiels, accords confirmés ${selectedLeague}`
+    },
+    de: {
+      title: selectedLeague === 'all'
+        ? `Bestätigte Transfers${currentPage > 1 ? ` - Seite ${currentPage}` : ''} | Transfer Daily`
+        : `Bestätigte ${selectedLeague} Transfers${currentPage > 1 ? ` - Seite ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all'
+        ? 'Entdecken Sie bestätigte Fußball-Transfers und abgeschlossene Deals aus allen großen Ligen. Bleiben Sie über offizielle Transfers informiert.'
+        : `Erhalten Sie bestätigte ${selectedLeague} Transfers und abgeschlossene Deals. Offizielle Transfers und Vertragsbestätigungen.`,
+      keywords: selectedLeague === 'all'
+        ? 'bestätigte Fußball Transfers, abgeschlossene Transfers heute, offizielle Transfers, Transfer Bestätigungen'
+        : `bestätigte ${selectedLeague} Transfers, ${selectedLeague} offizielle Transfers, bestätigte ${selectedLeague} Deals`
+    }
+  }
+  
+  const currentSeo = seoData[locale]
+  
+  return {
+    title: currentSeo.title,
+    description: currentSeo.description,
+    keywords: currentSeo.keywords,
+    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }],
+    creator: 'Transfer Daily',
+    publisher: 'Transfer Daily',
+    formatDetection: { email: false, address: false, telephone: false },
+    metadataBase: new URL('https://transferdaily.com'),
+    alternates: {
+      canonical: locale === 'en' ? '/transfers/confirmed' : `/${locale}/transfers/confirmed`,
+      languages: {
+        'en': '/transfers/confirmed', 'es': '/es/transfers/confirmed', 'it': '/it/transfers/confirmed',
+        'fr': '/fr/transfers/confirmed', 'de': '/de/transfers/confirmed', 'x-default': '/transfers/confirmed'
+      },
+    },
+    openGraph: {
+      title: currentSeo.title, description: currentSeo.description,
+      url: locale === 'en' ? 'https://transferdaily.com/transfers/confirmed' : `https://transferdaily.com/${locale}/transfers/confirmed`,
+      siteName: 'Transfer Daily', locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
+      type: 'website', images: [{ url: '/og-confirmed-transfers.jpg', width: 1200, height: 630, alt: 'Confirmed Football Transfers - Transfer Daily' }],
+    },
+    twitter: {
+      card: 'summary_large_image', site: '@transferdaily', creator: '@transferdaily',
+      title: currentSeo.title, description: currentSeo.description,
+      images: { url: '/og-confirmed-transfers.jpg', alt: 'Confirmed Football Transfers - Transfer Daily' },
+    },
+    robots: { index: true, follow: true, nocache: false, googleBot: { index: true, follow: true, noimageindex: false, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
+    category: 'Sports', classification: 'Confirmed Football Transfers',
   }
 }
 
-export default function ConfirmedTransfersPage({ params }: ConfirmedTransfersPageProps) {
-  const { locale } = params
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedLeague, setSelectedLeague] = useState("all")
-  const [isLoading, setIsLoading] = useState(true)
-  const [transfers, setTransfers] = useState<Transfer[]>([])
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalArticles, setTotalArticles] = useState(0)
-  
-  const itemsPerPage = 15
-  
-  useEffect(() => {
-    loadTransfers()
-  }, [currentPage, selectedLeague])
-
-  const loadTransfers = async () => {
-    try {
-      setIsLoading(true)
-      const offset = (currentPage - 1) * itemsPerPage
-      
-      // Filter for confirmed transfers
-      const response = await transfersApi.getByStatusWithPagination('confirmed', itemsPerPage, offset)
-      
-      // Further filter by league if selected
-      const filteredData = selectedLeague === "all" 
-        ? response.transfers 
-        : response.transfers.filter(t => t.league?.toLowerCase().includes(selectedLeague.toLowerCase()))
-      
-      setTransfers(filteredData)
-      setTotalPages(response.pagination?.totalPages || 1)
-      setTotalArticles(response.pagination?.total || 0)
-    } catch (error) {
-      console.error('Error loading confirmed transfers:', error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+// Server-side data fetching for confirmed transfers
+async function getConfirmedTransfersData(language = 'en', page = 1, league = 'all') {
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
+    const params = new URLSearchParams({
+      limit: '15', page: page.toString(), status: 'published', language: language,
+      sortBy: 'published_at', sortOrder: 'desc', category: 'confirmed'
+    })
     
-    if (diffInHours < 1) return 'Just now'
-    if (diffInHours < 24) return `${diffInHours} hours ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays} days ago`
+    if (league !== 'all') {
+      const leagueNames: Record<string, string> = {
+        'premier-league': 'Premier League', 'la-liga': 'La Liga', 'serie-a': 'Serie A',
+        'bundesliga': 'Bundesliga', 'ligue-1': 'Ligue 1'
+      }
+      params.append('league', leagueNames[league] || league)
+    }
+    
+    const response = await fetch(`${apiUrl}?${params}`, {
+      next: { revalidate: 300 }, headers: { 'Content-Type': 'application/json' }
+    })
+    
+    if (!response.ok) throw new Error(`API request failed: ${response.status}`)
+    const data = await response.json()
+    if (!data.success || !data.data?.articles) {
+      return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
+    }
+    
+    const transfers: Transfer[] = data.data.articles.map((article: any) => ({
+      id: article.id || article.uuid, title: article.title || 'Untitled Article',
+      excerpt: article.meta_description || article.content?.substring(0, 150) + '...' || '',
+      league: article.league || 'Unknown League', publishedAt: article.published_at || article.created_at,
+      imageUrl: article.image_url, slug: article.slug || article.title?.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-') || '',
+      category: article.category, transferStatus: 'confirmed', playerName: article.player_name,
+      fromClub: article.from_club, toClub: article.to_club, transferFee: article.transfer_fee,
+      author: 'TransfersDaily', tags: [],
+    }))
+    
+    return { transfers, pagination: data.data.pagination || { page: 1, limit: 15, total: transfers.length, totalPages: 1, hasNext: false, hasPrev: false } }
+  } catch (error) {
+    console.error('Error fetching confirmed transfers:', error)
+    return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
   }
-  
-  const handleFilterChange = (league: string) => {
-    setSelectedLeague(league)
-    setCurrentPage(1)
-  }
+}
 
-  const handleClearFilters = () => {
-    setSelectedLeague("all")
-    setCurrentPage(1)
+export async function generateStaticParams() {
+  return locales.map((locale) => ({ locale }))
+}
+
+export default async function ConfirmedTransfersPage({ params, searchParams }: { 
+  params: Promise<{ locale: Locale }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  
+  if (!locales.includes(locale)) notFound()
+  
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+  const selectedLeague = resolvedSearchParams.league as string || 'all'
+  const dict = await getDictionary(locale)
+  const t = createTranslator(dict)
+  const initialData = await getConfirmedTransfersData(locale, currentPage, selectedLeague)
+  
+  const webPageStructuredData = {
+    "@context": "https://schema.org", "@type": "WebPage", "name": "Confirmed Football Transfers",
+    "description": "Browse confirmed football transfers and completed deals from all major leagues",
+    "url": locale === 'en' ? 'https://transferdaily.com/transfers/confirmed' : `https://transferdaily.com/${locale}/transfers/confirmed`,
+    "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" },
+    "breadcrumb": {
+      "@type": "BreadcrumbList", "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` },
+        { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` },
+        { "@type": "ListItem", "position": 3, "name": t('transfers.confirmed') || "Confirmed", "item": locale === 'en' ? 'https://transferdaily.com/transfers/confirmed' : `https://transferdaily.com/${locale}/transfers/confirmed` }
+      ]
+    }
   }
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-          <div className="lg:col-span-7">
-            <section className="py-3 border-b bg-muted/30 -mx-4 px-4 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 flex-1">
-                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-500" />
-                  <h1 className="text-xl font-bold">Confirmed Transfers</h1>
-                </div>
-                
-                <div className="flex gap-3 items-center">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Filter by:</span>
-                  </div>
-                  
-                  <Separator orientation="vertical" className="h-6" />
-                  
-                  <Select value={selectedLeague} onValueChange={handleFilterChange}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="League" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Leagues</SelectItem>
-                      <SelectItem value="Premier League">Premier League</SelectItem>
-                      <SelectItem value="La Liga">La Liga</SelectItem>
-                      <SelectItem value="Serie A">Serie A</SelectItem>
-                      <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                      <SelectItem value="Ligue 1">Ligue 1</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </section>
-
-            <ResultsInfo 
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={totalArticles}
-              isLoading={isLoading}
-            />
-
-            {isLoading ? (
-              <TransferGridSkeleton count={15} />
-            ) : transfers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {transfers.map((transfer) => (
-                  <TransferCard
-                    key={transfer.id}
-                    title={transfer.title}
-                    excerpt={transfer.excerpt}
-                    primaryBadge="Confirmed"
-                    timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/${locale}/article/${transfer.slug}`}
-                    imageUrl={transfer.imageUrl}
-                    imageAlt={transfer.title}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">No confirmed transfers found</h3>
-                <p className="text-muted-foreground mb-6">
-                  Try adjusting your filters
-                </p>
-                <button 
-                  onClick={handleClearFilters}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                >
-                  Clear all filters
-                </button>
-              </div>
-            )}
-
-            {!isLoading && totalPages > 1 && (
-              <div className="pb-6">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage > 1) {
-                            setCurrentPage(currentPage - 1)
-                          }
-                        }}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum
-                      if (totalPages <= 5) {
-                        pageNum = i + 1
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i
-                      } else {
-                        pageNum = currentPage - 2 + i
-                      }
-                      
-                      return (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setCurrentPage(pageNum)
-                            }}
-                            isActive={currentPage === pageNum}
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    })}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage < totalPages) {
-                            setCurrentPage(currentPage + 1)
-                          }
-                        }}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar - 30% */}
-          <div className="hidden lg:block lg:col-span-3">
-            {isLoading ? (
-              <div className="bg-muted/10 border-l -mr-4 pr-4">
-                <div className="p-4">
-                  <SidebarSkeleton />
-                </div>
-              </div>
-            ) : (
-              <Sidebar />
-            )}
-          </div>
-        </div>
-      </div>
-
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} />
+      <TransferStatusPageClient 
+        locale={locale} dict={dict} initialData={initialData} initialPage={currentPage} initialLeague={selectedLeague}
+        transferType="confirmed" pageTitle={t('transfers.confirmed') || 'Confirmed Transfers'}
+        pageDescription={t('transfers.confirmedDescription') || 'Browse confirmed football transfers and completed deals'}
+        icon="CheckCircle"
+      />
     </main>
   )
 }

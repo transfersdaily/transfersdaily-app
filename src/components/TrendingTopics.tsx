@@ -141,7 +141,7 @@ export function TrendingTopics({ locale = 'en', dict }: TrendingTopicsProps) {
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-5">
               <Clock className="h-4 w-4 text-primary" />
-              <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">
+              <h3 className="text-lg font-semibold text-foreground">
                 {t('sidebar.recentSearches', 'Recent Searches')}
               </h3>
             </div>
@@ -181,7 +181,7 @@ export function TrendingTopics({ locale = 'en', dict }: TrendingTopicsProps) {
         <CardContent className="p-5">
           <div className="flex items-center gap-2 mb-5">
             <TrendingUp className="h-4 w-4 text-primary" />
-            <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">
+            <h3 className="text-lg font-semibold text-foreground">
               {t('sidebar.trending', 'Most Searched')}
             </h3>
           </div>

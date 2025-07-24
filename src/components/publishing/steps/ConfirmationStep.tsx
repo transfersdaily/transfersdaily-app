@@ -104,7 +104,7 @@ export default function ConfirmationStep({
       const fetchedArticle = data.data.article;
       
       // Initialize translations structure
-      let translations: Record<string, any> = {
+      const translations: Record<string, any> = {
         en: {
           title: fetchedArticle.title || '',
           content: fetchedArticle.content || ''

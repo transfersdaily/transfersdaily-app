@@ -77,7 +77,7 @@ module.exports = {
   			league: {
   				'premier-league': 'hsl(var(--premier-league))',
   				'la-liga': 'hsl(var(--la-liga))',
-  				'bundesliga': 'hsl(var(--bundesliga))',
+  				bundesliga: 'hsl(var(--bundesliga))',
   				'serie-a': 'hsl(var(--serie-a))',
   				'ligue-1': 'hsl(var(--ligue-1))'
   			},
@@ -107,8 +107,12 @@ module.exports = {
   				}
   			},
   			shimmer: {
-  				'0%': { transform: 'translateX(-100%)' },
-  				'100%': { transform: 'translateX(100%)' }
+  				'0%': {
+  					transform: 'translateX(-100%)'
+  				},
+  				'100%': {
+  					transform: 'translateX(100%)'
+  				}
   			}
   		},
   		animation: {

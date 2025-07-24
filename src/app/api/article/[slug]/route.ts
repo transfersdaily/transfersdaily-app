@@ -4,10 +4,10 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.exec
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
     
     // Make request to your backend API
     const response = await fetch(`${API_BASE_URL}/public/articles/${slug}`, {

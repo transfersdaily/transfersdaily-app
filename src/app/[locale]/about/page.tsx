@@ -76,13 +76,13 @@ export default async function AboutPage({ params }: AboutPageProps) {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           <div className="lg:col-span-7">
             {/* Hero Section */}
             <section className="py-16">
               <div className="max-w-4xl mx-auto text-center">
-                <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <h1 className="text-4xl font-bold mb-4">
                   {t('about.title', 'About Transfer Daily')}
                 </h1>
                 <div className="w-24 h-1 bg-primary mx-auto rounded-full mb-8"></div>
@@ -96,7 +96,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
             <section className="py-16 bg-gradient-to-r from-muted/30 to-muted/10 -mx-4 px-4 rounded-3xl">
               <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
-                  <h2 className="text-3xl font-bold mb-4">
+                  <h2 className="text-2xl font-bold mb-4">
                     {t('about.ourStory', 'Our Story')}
                   </h2>
                   <div className="w-24 h-1 bg-primary mx-auto rounded-full"></div>
@@ -108,7 +108,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
                       <Target className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-3">The Problem</h3>
+                      <h3 className="font-semibold mb-3">The Problem</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         {t('about.storyParagraph1', 'Football fans were struggling to find reliable, up-to-date transfer information in one place. News was scattered across multiple sources, often unreliable, and difficult to verify.')}
                       </p>
@@ -120,7 +120,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
                       <Zap className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-3">The Solution</h3>
+                      <h3 className="font-semibold mb-3">The Solution</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         {t('about.storyParagraph2', 'We created Transfer Daily to be the definitive source for transfer news. Our platform aggregates, verifies, and presents transfer information in a clean, easy-to-navigate format.')}
                       </p>
@@ -132,7 +132,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
                       <Award className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-semibold mb-3">Today</h3>
+                      <h3 className="font-semibold mb-3">Today</h3>
                       <p className="text-muted-foreground leading-relaxed">
                         {t('about.storyParagraph3', 'Today, Transfer Daily serves thousands of football fans worldwide with the latest transfer news, rumors, and confirmed deals from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1.')}
                       </p>
@@ -145,7 +145,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
             {/* Mission Section */}
             <section className="py-16">
               <div className="max-w-4xl mx-auto text-center">
-                <h2 className="text-3xl font-bold mb-6">
+                <h2 className="text-2xl font-bold mb-6">
                   {t('about.mission', 'Our Mission')}
                 </h2>
                 <p className="text-lg text-muted-foreground leading-relaxed">

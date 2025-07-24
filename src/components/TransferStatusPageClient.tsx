@@ -16,14 +16,15 @@ import { TransferCard } from "@/components/TransferCard"
 import { Sidebar } from "@/components/Sidebar"
 import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
 import { SidebarSkeleton } from "@/components/SidebarSkeleton"
-import { Filter, Clock } from "lucide-react"
+import { Filter, CheckCircle, CheckCircle2, MessageCircle } from "lucide-react"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { ResultsInfo } from "@/components/ResultsInfo"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
+import { typography, responsive } from "@/lib/typography"
 import { PageHeader } from "@/components/PageHeader"
 
-interface LatestPageClientProps {
+interface TransferStatusPageClientProps {
   locale: Locale
   dict: any
   initialData: {
@@ -39,15 +40,23 @@ interface LatestPageClientProps {
   }
   initialPage: number
   initialLeague: string
+  transferType: 'confirmed' | 'completed' | 'rumors'
+  pageTitle: string
+  pageDescription: string
+  icon: 'CheckCircle' | 'CheckCircle2' | 'MessageCircle'
 }
 
-export function LatestPageClient({ 
+export function TransferStatusPageClient({ 
   locale, 
   dict, 
   initialData, 
   initialPage, 
-  initialLeague 
-}: LatestPageClientProps) {
+  initialLeague,
+  transferType,
+  pageTitle,
+  pageDescription,
+  icon
+}: TransferStatusPageClientProps) {
   const router = useRouter()
   const t = createTranslator(dict)
   
@@ -59,27 +68,50 @@ export function LatestPageClient({
   
   const itemsPerPage = 15
 
+  // Get the appropriate icon component
+  const IconComponent = {
+    CheckCircle,
+    CheckCircle2,
+    MessageCircle
+  }[icon]
+
   // Update URL when filters change
   const updateURL = (page: number, league: string) => {
     const params = new URLSearchParams()
     if (page > 1) params.set('page', page.toString())
     if (league !== 'all') params.set('league', league)
     
-    const newURL = `/${locale}/latest${params.toString() ? `?${params.toString()}` : ''}`
+    const newURL = `/${locale}/transfers/${transferType}${params.toString() ? `?${params.toString()}` : ''}`
     router.push(newURL, { scroll: false })
   }
 
-  // Load transfers when filters change (but not on initial load)
+  // Load transfers when filters change
   const loadTransfers = async (page: number, league: string) => {
     try {
       setIsLoading(true)
       const offset = (page - 1) * itemsPerPage
       
       let response: { transfers: Transfer[], pagination?: any }
-      if (league === "all") {
-        response = await transfersApi.getLatestWithPagination(itemsPerPage, offset, locale)
-      } else {
-        response = await transfersApi.getByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+      
+      // Use appropriate API method based on transfer type
+      if (transferType === 'confirmed') {
+        if (league === "all") {
+          response = await transfersApi.getConfirmedWithPagination(itemsPerPage, offset, locale)
+        } else {
+          response = await transfersApi.getConfirmedByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+        }
+      } else if (transferType === 'completed') {
+        if (league === "all") {
+          response = await transfersApi.getCompletedWithPagination(itemsPerPage, offset, locale)
+        } else {
+          response = await transfersApi.getCompletedByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+        }
+      } else { // rumors
+        if (league === "all") {
+          response = await transfersApi.getRumorsWithPagination(itemsPerPage, offset, locale)
+        } else {
+          response = await transfersApi.getRumorsByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+        }
       }
       
       setTransfers(response.transfers)
@@ -91,8 +123,8 @@ export function LatestPageClient({
         hasNext: false,
         hasPrev: false
       })
-    } catch (loadError) {
-      console.error('Error loading transfers:', loadError)
+    } catch (error) {
+      console.error('Error loading transfers:', error)
     } finally {
       setIsLoading(false)
     }
@@ -139,12 +171,12 @@ export function LatestPageClient({
         <div className="lg:col-span-7">
           {/* Header Section - Using PageHeader component */}
           <PageHeader 
-            title={t('navigation.latest')}
-            icon={Clock}
+            title={pageTitle}
+            icon={IconComponent}
           >
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">{t('common.filter')}:</span>
+              <span className={typography.body.small}>{t('common.filter')}:</span>
             </div>
             
             <Separator orientation="vertical" className="h-6" />
@@ -164,7 +196,7 @@ export function LatestPageClient({
             </Select>
           </PageHeader>
 
-          {/* Results Info */}
+          {/* Results Info - Match Latest Page */}
           <ResultsInfo 
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
@@ -172,34 +204,37 @@ export function LatestPageClient({
             isLoading={isLoading}
           />
 
-          {/* Content Section */}
+          {/* Content Section - Match Latest Page Style */}
           <section aria-labelledby="transfers-list">
+            <h2 id="transfers-list" className="sr-only">{pageTitle} List</h2>
+            
             {isLoading ? (
               <TransferGridSkeleton count={15} />
             ) : transfers.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {transfers.map((transfer) => (
-                  <TransferCard
-                    key={transfer.id}
-                    title={transfer.title}
-                    excerpt={transfer.excerpt}
-                    primaryBadge={transfer.league}
-                    timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/${locale}/article/${transfer.slug}`}
-                    imageUrl={transfer.imageUrl}
-                    imageAlt={transfer.title}
-                  />
+                  <article key={transfer.id}>
+                    <TransferCard
+                      title={transfer.title}
+                      excerpt={transfer.excerpt}
+                      primaryBadge={transfer.league}
+                      timeAgo={formatTimeAgo(transfer.publishedAt)}
+                      href={`/${locale}/article/${transfer.slug}`}
+                      imageUrl={transfer.imageUrl}
+                      imageAlt={`${transfer.title} - ${pageTitle}`}
+                    />
+                  </article>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">{t('common.notFound')}</h3>
-                <p className="text-muted-foreground mb-6">
+                <h3 className={`${typography.heading.h4} mb-2`}>{t('common.notFound')}</h3>
+                <p className={`${typography.body.base} text-muted-foreground mb-6`}>
                   {t('common.tryAdjustingFilters') || 'Try adjusting your filters'}
                 </p>
                 <button 
                   onClick={handleClearFilters}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                  className={`px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors ${typography.button.default}`}
                 >
                   {t('common.clearFilters') || 'Clear all filters'}
                 </button>
@@ -207,7 +242,7 @@ export function LatestPageClient({
             )}
           </section>
 
-          {/* Pagination */}
+          {/* Pagination - Match Latest Page */}
           {!isLoading && pagination.totalPages > 1 && (
             <nav className="pb-6" aria-label="Pagination Navigation">
               <Pagination>
@@ -275,7 +310,7 @@ export function LatestPageClient({
           )}
         </div>
 
-        {/* Sidebar */}
+        {/* Sidebar - Match Latest Page */}
         <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
           {isLoading ? (
             <div className="bg-muted/10 border-l -mr-4 pr-4">

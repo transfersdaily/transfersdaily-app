@@ -1,243 +1,75 @@
-"use client"
+import { Metadata } from 'next'
+import { notFound } from 'next/navigation'
+import { type Locale, getDictionary, locales } from '@/lib/i18n'
+import { createTranslator } from '@/lib/dictionary-server'
+import { type Transfer } from "@/lib/api"
+import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 
-import { useState, useEffect } from "react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import { TransferCard } from "@/components/TransferCard"
-import { Sidebar } from "@/components/Sidebar"
-import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
-import { SidebarSkeleton } from "@/components/SidebarSkeleton"
-import { Filter, CheckCircle2 } from "lucide-react"
-import { transfersApi, type Transfer } from "@/lib/api"
-import { ResultsInfo } from "@/components/ResultsInfo"
-
-interface CompletedTransfersPageProps {
-  params: {
-    locale: string
+export async function generateMetadata({ params, searchParams }: { 
+  params: Promise<{ locale: Locale }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+  const selectedLeague = resolvedSearchParams.league as string || 'all'
+  
+  const seoData = {
+    en: {
+      title: selectedLeague === 'all' ? `Completed Football Transfers${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily` : `Completed ${selectedLeague} Transfers${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`,
+      description: selectedLeague === 'all' ? `Browse completed football transfers and finalized deals from all major leagues. Track finished transfer windows, closed deals, and completed signings.` : `Get completed ${selectedLeague} transfers and finalized deals. Track finished ${selectedLeague} transfer windows and closed signings.`,
+      keywords: selectedLeague === 'all' ? 'completed football transfers, finished transfers, closed deals, completed signings, finalized transfers, transfer window completed' : `completed ${selectedLeague} transfers, finished ${selectedLeague} deals, ${selectedLeague} completed signings, ${selectedLeague} closed transfers`
+    },
+    es: { title: selectedLeague === 'all' ? `Fichajes Completados${currentPage > 1 ? ` - Página ${currentPage}` : ''} | Transfer Daily` : `Fichajes Completados ${selectedLeague}${currentPage > 1 ? ` - Página ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Explora los fichajes de fútbol completados y traspasos finalizados de todas las ligas principales. Rastrea ventanas de fichajes terminadas.' : `Obtén los fichajes completados de ${selectedLeague} y traspasos finalizados. Rastrea ventanas de fichajes terminadas de ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'fichajes completados fútbol, traspasos finalizados, fichajes terminados, ventana fichajes completada' : `fichajes completados ${selectedLeague}, traspasos finalizados ${selectedLeague}, ${selectedLeague} fichajes terminados` },
+    it: { title: selectedLeague === 'all' ? `Trasferimenti Completati${currentPage > 1 ? ` - Pagina ${currentPage}` : ''} | Transfer Daily` : `Trasferimenti Completati ${selectedLeague}${currentPage > 1 ? ` - Pagina ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Scopri i trasferimenti di calcio completati e gli accordi finalizzati da tutte le principali leghe. Traccia le finestre di trasferimento terminate.' : `Scopri i trasferimenti completati ${selectedLeague} e gli accordi finalizzati. Traccia le finestre di trasferimento terminate di ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'trasferimenti completati calcio, trasferimenti finalizzati, accordi chiusi, finestra trasferimenti completata' : `trasferimenti completati ${selectedLeague}, accordi finalizzati ${selectedLeague}, ${selectedLeague} trasferimenti chiusi` },
+    fr: { title: selectedLeague === 'all' ? `Transferts Terminés${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily` : `Transferts Terminés ${selectedLeague}${currentPage > 1 ? ` - Page ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Découvrez les transferts de football terminés et les accords finalisés de toutes les ligues principales. Suivez les fenêtres de transfert fermées.' : `Découvrez les transferts terminés ${selectedLeague} et les accords finalisés. Suivez les fenêtres de transfert fermées de ${selectedLeague}.`, keywords: selectedLeague === 'all' ? 'transferts terminés football, transferts finalisés, accords fermés, fenêtre transferts terminée' : `transferts terminés ${selectedLeague}, accords finalisés ${selectedLeague}, ${selectedLeague} transferts fermés` },
+    de: { title: selectedLeague === 'all' ? `Abgeschlossene Transfers${currentPage > 1 ? ` - Seite ${currentPage}` : ''} | Transfer Daily` : `Abgeschlossene ${selectedLeague} Transfers${currentPage > 1 ? ` - Seite ${currentPage}` : ''} | Transfer Daily`, description: selectedLeague === 'all' ? 'Entdecken Sie abgeschlossene Fußball-Transfers und finalisierte Deals aus allen großen Ligen. Verfolgen Sie beendete Transferfenster.' : `Erhalten Sie abgeschlossene ${selectedLeague} Transfers und finalisierte Deals. Verfolgen Sie beendete ${selectedLeague} Transferfenster.`, keywords: selectedLeague === 'all' ? 'abgeschlossene Fußball Transfers, finalisierte Transfers, geschlossene Deals, Transferfenster abgeschlossen' : `abgeschlossene ${selectedLeague} Transfers, finalisierte ${selectedLeague} Deals, ${selectedLeague} geschlossene Transfers` }
+  }
+  
+  const currentSeo = seoData[locale]
+  return {
+    title: currentSeo.title, description: currentSeo.description, keywords: currentSeo.keywords,
+    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }], creator: 'Transfer Daily', publisher: 'Transfer Daily',
+    formatDetection: { email: false, address: false, telephone: false }, metadataBase: new URL('https://transferdaily.com'),
+    alternates: { canonical: locale === 'en' ? '/transfers/completed' : `/${locale}/transfers/completed`, languages: { 'en': '/transfers/completed', 'es': '/es/transfers/completed', 'it': '/it/transfers/completed', 'fr': '/fr/transfers/completed', 'de': '/de/transfers/completed', 'x-default': '/transfers/completed' } },
+    openGraph: { title: currentSeo.title, description: currentSeo.description, url: locale === 'en' ? 'https://transferdaily.com/transfers/completed' : `https://transferdaily.com/${locale}/transfers/completed`, siteName: 'Transfer Daily', locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE', type: 'website', images: [{ url: '/og-completed-transfers.jpg', width: 1200, height: 630, alt: 'Completed Football Transfers - Transfer Daily' }] },
+    twitter: { card: 'summary_large_image', site: '@transferdaily', creator: '@transferdaily', title: currentSeo.title, description: currentSeo.description, images: { url: '/og-completed-transfers.jpg', alt: 'Completed Football Transfers - Transfer Daily' } },
+    robots: { index: true, follow: true, nocache: false, googleBot: { index: true, follow: true, noimageindex: false, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
+    category: 'Sports', classification: 'Completed Football Transfers'
   }
 }
 
-export default function CompletedTransfersPage({ params }: CompletedTransfersPageProps) {
-  const { locale } = params
-  const [currentPage, setCurrentPage] = useState(1)
-  const [selectedLeague, setSelectedLeague] = useState("all")
-  const [isLoading, setIsLoading] = useState(true)
-  const [transfers, setTransfers] = useState<Transfer[]>([])
-  const [totalPages, setTotalPages] = useState(1)
-  const [totalArticles, setTotalArticles] = useState(0)
-  
-  const itemsPerPage = 15
-  
-  useEffect(() => {
-    loadTransfers()
-  }, [currentPage, selectedLeague])
-
-  const loadTransfers = async () => {
-    try {
-      setIsLoading(true)
-      const offset = (currentPage - 1) * itemsPerPage
-      
-      // Filter for completed transfers
-      const response = await transfersApi.getByStatusWithPagination('completed', itemsPerPage, offset)
-      
-      // Further filter by league if selected
-      const filteredData = selectedLeague === "all" 
-        ? response.transfers 
-        : response.transfers.filter(t => t.league?.toLowerCase().includes(selectedLeague.toLowerCase()))
-      
-      setTransfers(filteredData)
-      setTotalPages(response.pagination?.totalPages || 1)
-      setTotalArticles(response.pagination?.total || 0)
-    } catch (error) {
-      console.error('Error loading completed transfers:', error)
-    } finally {
-      setIsLoading(false)
+async function getCompletedTransfersData(language = 'en', page = 1, league = 'all') {
+  try {
+    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
+    const params = new URLSearchParams({ limit: '15', page: page.toString(), status: 'published', language: language, sortBy: 'published_at', sortOrder: 'desc', category: 'completed' })
+    if (league !== 'all') {
+      const leagueNames: Record<string, string> = { 'premier-league': 'Premier League', 'la-liga': 'La Liga', 'serie-a': 'Serie A', 'bundesliga': 'Bundesliga', 'ligue-1': 'Ligue 1' }
+      params.append('league', leagueNames[league] || league)
     }
+    const response = await fetch(`${apiUrl}?${params}`, { next: { revalidate: 300 }, headers: { 'Content-Type': 'application/json' } })
+    if (!response.ok) throw new Error(`API request failed: ${response.status}`)
+    const data = await response.json()
+    if (!data.success || !data.data?.articles) return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
+    const transfers: Transfer[] = data.data.articles.map((article: any) => ({ id: article.id || article.uuid, title: article.title || 'Untitled Article', excerpt: article.meta_description || article.content?.substring(0, 150) + '...' || '', league: article.league || 'Unknown League', publishedAt: article.published_at || article.created_at, imageUrl: article.image_url, slug: article.slug || article.title?.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-') || '', category: article.category, transferStatus: 'completed', playerName: article.player_name, fromClub: article.from_club, toClub: article.to_club, transferFee: article.transfer_fee, author: 'TransfersDaily', tags: [] }))
+    return { transfers, pagination: data.data.pagination || { page: 1, limit: 15, total: transfers.length, totalPages: 1, hasNext: false, hasPrev: false } }
+  } catch (error) {
+    console.error('Error fetching completed transfers:', error)
+    return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }
   }
+}
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-    
-    if (diffInHours < 1) return 'Just now'
-    if (diffInHours < 24) return `${diffInHours} hours ago`
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays} days ago`
-  }
-  
-  const handleFilterChange = (league: string) => {
-    setSelectedLeague(league)
-    setCurrentPage(1)
-  }
+export async function generateStaticParams() { return locales.map((locale) => ({ locale })) }
 
-  const handleClearFilters = () => {
-    setSelectedLeague("all")
-    setCurrentPage(1)
-  }
-
-  return (
-    <main className="min-h-screen bg-background">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-          <div className="lg:col-span-7">
-            <section className="py-3 border-b bg-muted/30 -mx-4 px-4 mb-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 flex-1">
-                  <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-500" />
-                  <h1 className="text-xl font-bold">Completed Transfers</h1>
-                </div>
-                
-                <div className="flex gap-3 items-center">
-                  <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Filter by:</span>
-                  </div>
-                  
-                  <Separator orientation="vertical" className="h-6" />
-                  
-                  <Select value={selectedLeague} onValueChange={handleFilterChange}>
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="League" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Leagues</SelectItem>
-                      <SelectItem value="Premier League">Premier League</SelectItem>
-                      <SelectItem value="La Liga">La Liga</SelectItem>
-                      <SelectItem value="Serie A">Serie A</SelectItem>
-                      <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                      <SelectItem value="Ligue 1">Ligue 1</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </section>
-
-            <ResultsInfo 
-              currentPage={currentPage}
-              itemsPerPage={itemsPerPage}
-              totalItems={totalArticles}
-              isLoading={isLoading}
-            />
-
-            {isLoading ? (
-              <TransferGridSkeleton count={15} />
-            ) : transfers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {transfers.map((transfer) => (
-                  <TransferCard
-                    key={transfer.id}
-                    title={transfer.title}
-                    excerpt={transfer.excerpt}
-                    primaryBadge="Completed"
-                    timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/${locale}/article/${transfer.slug}`}
-                    imageUrl={transfer.imageUrl}
-                    imageAlt={transfer.title}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">No completed transfers found</h3>
-                <p className="text-muted-foreground mb-6">
-                  Try adjusting your filters
-                </p>
-                <button 
-                  onClick={handleClearFilters}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                >
-                  Clear all filters
-                </button>
-              </div>
-            )}
-
-            {!isLoading && totalPages > 1 && (
-              <div className="pb-6">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage > 1) {
-                            setCurrentPage(currentPage - 1)
-                          }
-                        }}
-                        className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                      let pageNum
-                      if (totalPages <= 5) {
-                        pageNum = i + 1
-                      } else if (currentPage <= 3) {
-                        pageNum = i + 1
-                      } else if (currentPage >= totalPages - 2) {
-                        pageNum = totalPages - 4 + i
-                      } else {
-                        pageNum = currentPage - 2 + i
-                      }
-                      
-                      return (
-                        <PaginationItem key={pageNum}>
-                          <PaginationLink
-                            href="#"
-                            onClick={(e) => {
-                              e.preventDefault()
-                              setCurrentPage(pageNum)
-                            }}
-                            isActive={currentPage === pageNum}
-                          >
-                            {pageNum}
-                          </PaginationLink>
-                        </PaginationItem>
-                      )
-                    })}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (currentPage < totalPages) {
-                            setCurrentPage(currentPage + 1)
-                          }
-                        }}
-                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </div>
-
-          {/* Sidebar - 30% */}
-          <div className="hidden lg:block lg:col-span-3">
-            {isLoading ? (
-              <div className="bg-muted/10 border-l -mr-4 pr-4">
-                <div className="p-4">
-                  <SidebarSkeleton />
-                </div>
-              </div>
-            ) : (
-              <Sidebar />
-            )}
-          </div>
-        </div>
-      </div>
-
-    </main>
-  )
+export default async function CompletedTransfersPage({ params, searchParams }: { params: Promise<{ locale: Locale }>, searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+  const { locale } = await params
+  const resolvedSearchParams = await searchParams
+  if (!locales.includes(locale)) notFound()
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+  const selectedLeague = resolvedSearchParams.league as string || 'all'
+  const dict = await getDictionary(locale)
+  const t = createTranslator(dict)
+  const initialData = await getCompletedTransfersData(locale, currentPage, selectedLeague)
+  const webPageStructuredData = { "@context": "https://schema.org", "@type": "WebPage", "name": "Completed Football Transfers", "description": "Browse completed football transfers and finalized deals from all major leagues", "url": locale === 'en' ? 'https://transferdaily.com/transfers/completed' : `https://transferdaily.com/${locale}/transfers/completed`, "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" }, "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` }, { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` }, { "@type": "ListItem", "position": 3, "name": t('transfers.completed') || "Completed", "item": locale === 'en' ? 'https://transferdaily.com/transfers/completed' : `https://transferdaily.com/${locale}/transfers/completed` }] } }
+  return (<main className="min-h-screen bg-background"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} /><TransferStatusPageClient locale={locale} dict={dict} initialData={initialData} initialPage={currentPage} initialLeague={selectedLeague} transferType="completed" pageTitle={t('transfers.completed') || 'Completed Transfers'} pageDescription={t('transfers.completedDescription') || 'Browse completed football transfers and finalized deals'} icon="CheckCircle2" /></main>)
 }

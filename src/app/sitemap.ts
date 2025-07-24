@@ -8,7 +8,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '',
     '/latest',
-    '/trending',
+    '/about',
+    '/contact',
+    '/search',
+    '/transfers/confirmed',
+    '/transfers/completed',
+    '/transfers/rumors',
     '/league/premier-league',
     '/league/la-liga',
     '/league/serie-a',
@@ -21,11 +26,37 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Add entries for each locale and route combination
   locales.forEach(locale => {
     routes.forEach(route => {
+      // Determine priority and change frequency based on page type
+      let priority = 0.8
+      let changeFrequency: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never' = 'daily'
+      
+      if (route === '') {
+        // Homepage - highest priority, changes hourly
+        priority = 1.0
+        changeFrequency = 'hourly'
+      } else if (route === '/latest' || route.startsWith('/transfers/')) {
+        // Latest and transfer pages - high priority, changes frequently
+        priority = 0.9
+        changeFrequency = 'hourly'
+      } else if (route.startsWith('/league/')) {
+        // League pages - high priority, changes daily
+        priority = 0.8
+        changeFrequency = 'daily'
+      } else if (route === '/search') {
+        // Search page - medium priority, changes daily
+        priority = 0.7
+        changeFrequency = 'daily'
+      } else if (route === '/about' || route === '/contact') {
+        // Static pages - lower priority, changes rarely
+        priority = 0.6
+        changeFrequency = 'monthly'
+      }
+      
       sitemapEntries.push({
         url: `${baseUrl}/${locale}${route}`,
         lastModified: new Date(),
-        changeFrequency: route === '' ? 'hourly' : 'daily',
-        priority: route === '' ? 1 : 0.8,
+        changeFrequency,
+        priority,
         alternates: {
           languages: Object.fromEntries(
             locales.map(lang => [lang, `${baseUrl}/${lang}${route}`])

@@ -32,6 +32,16 @@
     "noTransfersFound": "No transfers found",
     "checkBackLater": "Check back later for updates"
   },
+  "transfers": {
+    "confirmed": "Confirmed Transfers",
+    "confirmedDescription": "Browse confirmed football transfers and completed deals",
+    "completed": "Completed Transfers", 
+    "completedDescription": "View all completed transfer deals and signings",
+    "rumours": "Transfer Rumours",
+    "rumoursDescription": "Latest transfer rumors and speculation from reliable sources",
+    "rumors": "Transfer Rumors",
+    "rumorsDescription": "Latest transfer rumors and speculation from reliable sources"
+  },
   "navigation": {
     "home": "Home",
     "latest": "Latest Transfers",
