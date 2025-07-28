@@ -1,20 +1,19 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Clock, Search, Filter, TrendingUp, History, X } from "lucide-react"
-import { transfersApi, searchApi, type Transfer } from "@/lib/api"
+import { Search, Filter, TrendingUp, History } from "lucide-react"
+import { searchApi, transfersApi, type Transfer } from "@/lib/api"
 import { TransferCard } from "@/components/TransferCard"
 import { Sidebar } from "@/components/Sidebar"
 import { addRecentSearch } from "@/components/TrendingTopics"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
-import { cn } from "@/lib/utils"
 
 const trendingSearches = [
   "Kylian Mbappé", "Manchester United transfers", "Real Madrid", "Premier League", 
@@ -87,11 +86,18 @@ export function SearchPageClient({
     setHasSearched(true)
     
     try {
-      const results = await searchApi.searchTransfers({
-        query: query.trim(),
+      // Track the search query in the database
+      searchApi.trackSearch(query.trim(), {
+        league: selectedLeague === 'all' ? undefined : selectedLeague,
+        status: selectedStatus === 'all' ? undefined : selectedStatus
+      }).catch(error => {
+        // Don't let tracking failures affect search functionality
+        console.warn('Failed to track search:', error)
+      })
+
+      const results = await transfersApi.search(query.trim(), {
         league: selectedLeague === 'all' ? undefined : selectedLeague,
         status: selectedStatus === 'all' ? undefined : selectedStatus,
-        sortBy: sortBy,
         language: locale
       })
       
@@ -163,15 +169,12 @@ export function SearchPageClient({
               </ol>
             </nav>
             
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-3xl font-bold mb-6">
               {hasSearched && searchTerm 
                 ? `${t('search.resultsFor')} "${searchTerm}"`
                 : t('search.title') || 'Search Transfer News'
               }
             </h1>
-            <p className="text-muted-foreground text-lg mb-8">
-              {t('search.description') || 'Find the latest football transfer news, rumors, and confirmed deals'}
-            </p>
           </header>
 
           {/* Search Form */}
@@ -197,7 +200,7 @@ export function SearchPageClient({
               <div className="flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{t('common.filters')}:</span>
+                  <span className="text-sm font-medium">{t('search.filters') || t('common.filter') || 'Filters'}:</span>
                 </div>
                 
                 <Select value={selectedLeague} onValueChange={(value) => handleFilterChange('league', value)}>
@@ -216,23 +219,23 @@ export function SearchPageClient({
                 
                 <Select value={selectedStatus} onValueChange={(value) => handleFilterChange('status', value)}>
                   <SelectTrigger className="w-32">
-                    <SelectValue placeholder={t('common.status')} />
+                    <SelectValue placeholder={t('search.status') || 'Status'} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t('common.all')}</SelectItem>
-                    <SelectItem value="confirmed">{t('common.confirmed')}</SelectItem>
-                    <SelectItem value="rumor">{t('common.rumors')}</SelectItem>
+                    <SelectItem value="confirmed">{t('search.confirmed') || t('transfers.confirmed') || 'Confirmed'}</SelectItem>
+                    <SelectItem value="rumor">{t('search.rumor') || t('transfers.rumors') || 'Rumors'}</SelectItem>
                   </SelectContent>
                 </Select>
                 
                 <Select value={sortBy} onValueChange={(value) => handleFilterChange('sort', value)}>
                   <SelectTrigger className="w-32">
-                    <SelectValue placeholder={t('common.sortBy')} />
+                    <SelectValue placeholder={t('search.sortBy') || 'Sort by'} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="relevance">{t('common.relevance')}</SelectItem>
-                    <SelectItem value="date">{t('common.newest')}</SelectItem>
-                    <SelectItem value="popularity">{t('common.popular')}</SelectItem>
+                    <SelectItem value="relevance">{t('search.relevance') || 'Relevance'}</SelectItem>
+                    <SelectItem value="date">{t('search.newest') || 'Newest'}</SelectItem>
+                    <SelectItem value="popularity">{t('search.popular') || 'Popular'}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -304,7 +307,7 @@ export function SearchPageClient({
               ) : searchResults.length > 0 ? (
                 <>
                   <div className="mb-4 text-sm text-muted-foreground">
-                    {searchResults.length} {t('search.resultsFound')} for "{searchTerm}"
+                    {searchResults.length} {t('search.resultsFound')} for &quot;{searchTerm}&quot;
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {searchResults.map((transfer) => (
@@ -326,7 +329,7 @@ export function SearchPageClient({
                 <div className="text-center py-12">
                   <h3 className="text-lg font-semibold mb-2">{t('search.noResults')}</h3>
                   <p className="text-muted-foreground mb-6">
-                    {t('search.tryDifferent')} "{searchTerm}"
+                    {t('search.tryDifferent')} &quot;{searchTerm}&quot;
                   </p>
                   <Button 
                     onClick={() => {

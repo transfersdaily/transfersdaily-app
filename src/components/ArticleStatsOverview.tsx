@@ -14,7 +14,7 @@ interface StatsData {
   createdThisMonth: number
   byCategory: Array<{ name: string; value: number; color: string }>
   byLeague: Array<{ name: string; value: number }>
-  dailyCreation: Array<{ date: string; count: number }>
+  dailyCreation: Array<{ date: string; count: number; dayName?: string; fullDate?: string }>
   byStatus: Array<{ name: string; value: number; color: string }>
 }
 
@@ -73,14 +73,6 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
       case "draft": return "Draft Articles"
       case "published": return "Published Articles"
       case "scheduled": return "Scheduled Articles"
-    }
-  }
-
-  const getPageDescription = () => {
-    switch (pageType) {
-      case "draft": return "Overview of draft articles awaiting publication"
-      case "published": return "Overview of published articles performance"
-      case "scheduled": return "Overview of scheduled articles pipeline"
     }
   }
 
@@ -152,7 +144,7 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
                     cy="50%"
                     outerRadius={120}
                     fill="hsl(330 81% 60%)"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                   >
                     {safeData.byCategory.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={[

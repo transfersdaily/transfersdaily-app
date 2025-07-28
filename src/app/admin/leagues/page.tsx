@@ -6,77 +6,135 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Search, Trophy, Building, Users, Calendar } from "lucide-react"
-import { getLeagues, League } from "@/lib/leagues-api"
+import { adminApi } from "@/lib/api"
+import { Pagination } from "@/components/ui/pagination"
+
+interface League {
+  id: number
+  name: string
+  country: string
+  club_count?: number
+  player_count?: number
+  article_count?: number
+  created_at: string
+}
+
+interface Pagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
 
 export default function AdminLeaguesPage() {
   const [leagues, setLeagues] = useState<League[]>([])
-  const [filteredLeagues, setFilteredLeagues] = useState<League[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 50,
+    total: 0,
+    totalPages: 0
+  })
+  const [stats, setStats] = useState({
+    totalLeagues: 0,
+    totalClubs: 0,
+    totalPlayers: 0,
+    totalArticles: 0
+  })
 
   useEffect(() => {
-    loadLeagues()
+    loadLeagues(1)
   }, [])
 
   useEffect(() => {
-    const filtered = leagues.filter(league =>
-      league.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      league.country?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    setFilteredLeagues(filtered)
-  }, [leagues, searchTerm])
+    if (searchTerm) {
+      // Reset to page 1 when searching
+      loadLeagues(1, searchTerm)
+    } else {
+      loadLeagues(pagination.page)
+    }
+  }, [searchTerm])
 
-  const loadLeagues = async () => {
+  const loadLeagues = async (page: number = 1, search?: string) => {
     try {
       setIsLoading(true)
       setError(null)
-      const data = await getLeagues()
-      setLeagues(data)
+      
+      const response = await adminApi.getLeagues({
+        page,
+        limit: 50,
+        search: search || searchTerm
+      })
+      
+      setLeagues(response.leagues)
+      setPagination(response.pagination)
+      
+      // Calculate stats from all leagues data
+      setStats({
+        totalLeagues: response.pagination.total,
+        totalClubs: response.leagues.reduce((sum, league) => sum + (league.club_count || 0), 0),
+        totalPlayers: response.leagues.reduce((sum, league) => sum + (league.player_count || 0), 0),
+        totalArticles: response.leagues.reduce((sum, league) => sum + (league.article_count || 0), 0)
+      })
+      
     } catch (err) {
+      console.error('Failed to load leagues:', err)
       setError(err instanceof Error ? err.message : 'Failed to load leagues')
+      setLeagues([])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleAddClick = () => {
-    console.log('Add league clicked')
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      loadLeagues(newPage)
+    }
   }
 
-  if (isLoading) {
-    return (
-      <AdminPageLayout title="Leagues">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </AdminPageLayout>
-    )
-  }
-
-  if (error) {
-    return (
-      <AdminPageLayout title="Leagues">
-        <div className="text-center py-8">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={loadLeagues}>Retry</Button>
-        </div>
-      </AdminPageLayout>
-    )
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   return (
-    <AdminPageLayout
-      title="Leagues"
-      actions={
-        <Button size="sm" onClick={handleAddClick}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add League
-        </Button>
-      }
-    >
+    <AdminPageLayout>
       <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Leagues</h1>
+            <p className="text-muted-foreground">Manage football leagues and their information</p>
+          </div>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add League
+          </Button>
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-red-800 font-medium">Failed to load leagues</p>
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => loadLeagues(1)}>
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Search */}
         <div className="relative w-96">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -95,7 +153,7 @@ export default function AdminLeaguesPage() {
               <div className="flex items-center gap-2">
                 <Trophy className="h-5 w-5 text-yellow-500" />
                 <div>
-                  <p className="text-2xl font-bold">{leagues.length}</p>
+                  <p className="text-2xl font-bold">{stats.totalLeagues}</p>
                   <p className="text-sm text-muted-foreground">Total Leagues</p>
                 </div>
               </div>
@@ -107,7 +165,7 @@ export default function AdminLeaguesPage() {
               <div className="flex items-center gap-2">
                 <Building className="h-5 w-5 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold">{leagues.reduce((sum, league) => sum + (league.club_count || 0), 0)}</p>
+                  <p className="text-2xl font-bold">{stats.totalClubs}</p>
                   <p className="text-sm text-muted-foreground">Total Clubs</p>
                 </div>
               </div>
@@ -119,7 +177,7 @@ export default function AdminLeaguesPage() {
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold">{leagues.reduce((sum, league) => sum + (league.player_count || 0), 0)}</p>
+                  <p className="text-2xl font-bold">{stats.totalPlayers}</p>
                   <p className="text-sm text-muted-foreground">Total Players</p>
                 </div>
               </div>
@@ -131,7 +189,7 @@ export default function AdminLeaguesPage() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-purple-500" />
                 <div>
-                  <p className="text-2xl font-bold">{leagues.reduce((sum, league) => sum + (league.article_count || 0), 0)}</p>
+                  <p className="text-2xl font-bold">{stats.totalArticles}</p>
                   <p className="text-sm text-muted-foreground">Total Articles</p>
                 </div>
               </div>
@@ -139,51 +197,76 @@ export default function AdminLeaguesPage() {
           </Card>
         </div>
 
-        {/* Leagues Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredLeagues.map((league) => (
-            <Card key={league.id} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                    {league.name?.charAt(0) || 'L'}
+        {/* Leagues Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Leagues ({pagination.total})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-20" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg truncate">{league.name || 'Unknown League'}</CardTitle>
-                    <Badge variant="outline" className="mt-1 text-xs">{league.country}</Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-3">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <p className="text-lg font-bold text-blue-600">{league.club_count || 0}</p>
-                    <p className="text-xs text-muted-foreground">Clubs</p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold text-green-600">{league.player_count || 0}</p>
-                    <p className="text-xs text-muted-foreground">Players</p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-bold text-purple-600">{league.article_count || 0}</p>
-                    <p className="text-xs text-muted-foreground">Articles</p>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <Badge variant="secondary" className="text-xs">
-                    Tier {league.tier_level || 1}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Country</TableHead>
+                      <TableHead>Clubs</TableHead>
+                      <TableHead>Players</TableHead>
+                      <TableHead>Articles</TableHead>
+                      <TableHead>Created</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {leagues.map((league) => (
+                      <TableRow key={league.id}>
+                        <TableCell className="font-mono text-sm">{league.id}</TableCell>
+                        <TableCell className="font-medium">{league.name}</TableCell>
+                        <TableCell>{league.country}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{league.club_count || 0}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{league.player_count || 0}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{league.article_count || 0}</Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDate(league.created_at)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
 
-        {filteredLeagues.length === 0 && searchTerm && (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No leagues found matching "{searchTerm}"</p>
-          </div>
-        )}
+                {/* Pagination */}
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.total}
+                  itemsPerPage={pagination.limit}
+                  onPageChange={handlePageChange}
+                  itemName="leagues"
+                />
+              </>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminPageLayout>
   )

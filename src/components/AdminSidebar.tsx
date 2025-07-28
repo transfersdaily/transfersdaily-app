@@ -7,14 +7,11 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,18 +33,20 @@ import {
   User2,
   Edit,
   Eye,
-  Calendar,
   ChevronDown,
   Building,
   Trophy,
-  UserCheck,
-  Home,
+  Search,
+  MessageSquare,
+  Mail,
+  Home
 } from "lucide-react"
 import Link from "next/link"
 
+// Menu items configuration
 const mainMenuItems = [
   {
-    title: "Back to Home",
+    title: "Homepage",
     url: "/",
     icon: Home,
   },
@@ -55,6 +54,19 @@ const mainMenuItems = [
     title: "Dashboard",
     url: "/admin",
     icon: BarChart3,
+  },
+]
+
+const articleMenuItems = [
+  {
+    title: "Drafts",
+    url: "/admin/articles/drafts",
+    icon: Edit,
+  },
+  {
+    title: "Published",
+    url: "/admin/articles/published",
+    icon: Eye,
   },
 ]
 
@@ -66,21 +78,31 @@ const entityMenuItems = [
   },
   {
     title: "Leagues",
-    url: "/admin/leagues",
+    url: "/admin/leagues", 
     icon: Trophy,
   },
   {
     title: "Players",
     url: "/admin/players",
-    icon: UserCheck,
+    icon: Users,
   },
 ]
 
 const systemMenuItems = [
   {
-    title: "Users",
-    url: "/admin/users",
-    icon: Users,
+    title: "Search Analytics",
+    url: "/admin/analytics",
+    icon: Search,
+  },
+  {
+    title: "Contact Messages",
+    url: "/admin/messages",
+    icon: MessageSquare,
+  },
+  {
+    title: "Newsletter",
+    url: "/admin/newsletter",
+    icon: Mail,
   },
   {
     title: "Settings",
@@ -89,111 +111,107 @@ const systemMenuItems = [
   },
 ]
 
-const articleMenuItems = [
-  {
-    title: "Draft",
-    url: "/admin/articles/drafts",
-    icon: Edit,
-  },
-  {
-    title: "Published",
-    url: "/admin/articles/published",
-    icon: Eye,
-  },
-]
-
 export function AdminSidebar() {
   const { user, signOut } = useAuth()
 
   return (
-    <Sidebar className="bg-slate-800 border-slate-700 shadow-lg rounded-r-lg">
-      <SidebarHeader className="bg-slate-800 border-slate-700 p-6">
-        <div className="flex items-center gap-3">
-          <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-            <FileText className="size-5" />
+    <Sidebar className="bg-card/50 backdrop-blur-sm border-border shadow-lg">
+      <SidebarHeader className="bg-card/80 border-border p-4 backdrop-blur-sm">
+        <div className="flex items-center gap-2">
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+            <FileText className="size-4" />
           </div>
-          <div className="grid flex-1 text-left leading-tight">
-            <span className="truncate font-semibold text-slate-100 text-base">TransfersDaily</span>
-            <span className="truncate text-sm text-slate-300">Admin Panel</span>
+          <div className="grid flex-1 text-left text-sm leading-tight">
+            <span className="truncate font-semibold text-foreground">TransfersDaily</span>
+            <span className="truncate text-xs text-muted-foreground">Admin Panel</span>
           </div>
         </div>
       </SidebarHeader>
       
-      <SidebarContent className="bg-slate-800 px-3">
+      <SidebarContent className="bg-card/50 backdrop-blur-sm px-2">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
+            <SidebarMenu className="space-y-0.5">
               {/* Dashboard */}
               {mainMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
-                    {item.title === "Back to Home" ? (
-                      <a href={item.url}>
-                        <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
-                        <span className="font-medium">{item.title}</span>
+                  <SidebarMenuButton asChild className="h-9 px-3 rounded-md hover:bg-accent focus:bg-accent text-foreground hover:text-accent-foreground transition-all duration-200">
+                    {item.url.startsWith('http') ? (
+                      <a href={item.url} target="_blank" rel="noopener noreferrer">
+                        <item.icon className="size-4 text-muted-foreground hover:text-accent-foreground" />
+                        <span className="font-medium text-sm">{item.title}</span>
                       </a>
                     ) : (
                       <Link href={item.url}>
-                        <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
-                        <span className="font-medium">{item.title}</span>
+                        <item.icon className="size-4 text-muted-foreground hover:text-accent-foreground" />
+                        <span className="font-medium text-sm">{item.title}</span>
                       </Link>
                     )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
               
-              <div className="h-px bg-slate-700 my-3" />
+              {/* Divider */}
+              <SidebarMenuItem>
+                <div className="h-px bg-border my-2" />
+              </SidebarMenuItem>
               
               {/* Articles */}
-              <Collapsible defaultOpen className="group/collapsible">
-                <SidebarMenuItem>
+              <SidebarMenuItem>
+                <Collapsible defaultOpen className="group/collapsible">
                   <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="h-11 px-4 rounded-lg hover:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
-                      <FileText className="size-5 text-slate-300" />
-                      <span className="font-medium">Articles</span>
-                      <ChevronDown className="ml-auto size-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                    <SidebarMenuButton className="h-9 px-3 rounded-md hover:bg-accent focus:bg-accent text-foreground hover:text-accent-foreground transition-all duration-200">
+                      <FileText className="size-4 text-muted-foreground hover:text-accent-foreground" />
+                      <span className="font-medium text-sm">Articles</span>
+                      <ChevronDown className="ml-auto size-3 transition-transform group-data-[state=open]/collapsible:rotate-180" />
                     </SidebarMenuButton>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <SidebarMenu className="mt-2 space-y-1">
+                    <SidebarMenu className="mt-1 space-y-0.5">
                       {articleMenuItems.map((item) => (
                         <SidebarMenuItem key={item.title}>
-                          <SidebarMenuButton asChild className="h-10 pl-12 pr-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-300 hover:text-slate-100 transition-all duration-200">
+                          <SidebarMenuButton asChild className="h-8 pl-10 pr-3 rounded-md hover:bg-accent focus:bg-accent text-muted-foreground hover:text-accent-foreground transition-all duration-200">
                             <Link href={item.url}>
-                              <item.icon className="size-4" />
-                              <span className="font-medium">{item.title}</span>
+                              <item.icon className="size-3" />
+                              <span className="font-medium text-sm">{item.title}</span>
                             </Link>
                           </SidebarMenuButton>
                         </SidebarMenuItem>
                       ))}
                     </SidebarMenu>
                   </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
+                </Collapsible>
+              </SidebarMenuItem>
               
-              <div className="h-px bg-slate-700 my-3" />
+              {/* Divider */}
+              <SidebarMenuItem>
+                <div className="h-px bg-border my-2" />
+              </SidebarMenuItem>
               
               {/* Entity Management */}
               {entityMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
+                  <SidebarMenuButton asChild className="h-9 px-3 rounded-md hover:bg-accent focus:bg-accent text-foreground hover:text-accent-foreground transition-all duration-200">
                     <Link href={item.url}>
-                      <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
-                      <span className="font-medium">{item.title}</span>
+                      <item.icon className="size-4 text-muted-foreground hover:text-accent-foreground" />
+                      <span className="font-medium text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
               
-              <div className="h-px bg-slate-700 my-3" />
+              {/* Divider */}
+              <SidebarMenuItem>
+                <div className="h-px bg-border my-2" />
+              </SidebarMenuItem>
               
-              {/* System */}
+              {/* System Management */}
               {systemMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="h-11 px-4 rounded-lg hover:bg-slate-700 focus:bg-slate-700 text-slate-200 hover:text-slate-100 transition-all duration-200">
+                  <SidebarMenuButton asChild className="h-9 px-3 rounded-md hover:bg-accent focus:bg-accent text-foreground hover:text-accent-foreground transition-all duration-200">
                     <Link href={item.url}>
-                      <item.icon className="size-5 text-slate-300 hover:text-slate-100" />
-                      <span className="font-medium">{item.title}</span>
+                      <item.icon className="size-4 text-muted-foreground hover:text-accent-foreground" />
+                      <span className="font-medium text-sm">{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -203,45 +221,45 @@ export function AdminSidebar() {
         </SidebarGroup>
       </SidebarContent>
       
-      <SidebarFooter className="bg-slate-800 p-4 border-t border-slate-700">
+      <SidebarFooter className="bg-card/80 backdrop-blur-sm border-border p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton
                   size="lg"
-                  className="h-14 px-4 rounded-lg hover:bg-slate-700 data-[state=open]:bg-slate-700 text-slate-200 transition-all duration-200"
+                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground h-10 px-3 rounded-md hover:bg-accent focus:bg-accent text-foreground hover:text-accent-foreground transition-all duration-200"
                 >
-                  <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                    <User2 className="size-5" />
+                  <div className="flex aspect-square size-6 items-center justify-center rounded-md bg-primary text-primary-foreground text-xs font-medium shadow-sm">
+                    {user?.email?.charAt(0).toUpperCase() || 'A'}
                   </div>
-                  <div className="grid flex-1 text-left leading-tight">
-                    <span className="truncate font-semibold text-slate-100">Admin</span>
-                    <span className="truncate text-sm text-slate-300">{user?.email}</span>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold text-sm">{user?.email || 'Admin'}</span>
+                    <span className="truncate text-xs text-muted-foreground">Administrator</span>
                   </div>
-                  <ChevronUp className="ml-auto size-4 text-slate-400" />
+                  <ChevronUp className="ml-auto size-3" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-56 rounded-xl border-0 bg-white/95 backdrop-blur-md shadow-2xl ring-1 ring-black/5"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-popover border-border shadow-lg"
                 side="bottom"
                 align="end"
-                sideOffset={8}
+                sideOffset={4}
               >
-                <div className="p-2">
+                <div className="p-1">
                   <DropdownMenuItem asChild>
-                    <Link href="/admin/profile" className="flex items-center px-3 py-2.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
-                      <User2 className="size-4 mr-3 text-slate-600" />
-                      <span className="font-medium text-slate-700">Profile</span>
+                    <Link href="/admin/profile" className="flex items-center px-2 py-2 rounded-md hover:bg-accent focus:bg-accent transition-colors cursor-pointer">
+                      <User2 className="size-4 mr-2 text-muted-foreground" />
+                      <span className="font-medium text-sm text-foreground">Profile</span>
                     </Link>
                   </DropdownMenuItem>
-                  <div className="h-px bg-slate-200 my-2" />
+                  <div className="h-px bg-border my-1" />
                   <DropdownMenuItem 
                     onClick={() => signOut()} 
-                    className="flex items-center px-3 py-2.5 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                    className="flex items-center px-2 py-2 rounded-md hover:bg-destructive/10 focus:bg-destructive/10 transition-colors cursor-pointer"
                   >
-                    <LogOut className="size-4 mr-3 text-red-500" />
-                    <span className="font-medium text-red-600">Log out</span>
+                    <LogOut className="size-4 mr-2 text-destructive" />
+                    <span className="font-medium text-sm text-destructive">Log out</span>
                   </DropdownMenuItem>
                 </div>
               </DropdownMenuContent>

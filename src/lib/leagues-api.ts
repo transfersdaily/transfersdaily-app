@@ -1,4 +1,5 @@
 import { API_CONFIG } from './config'
+import { getAuthHeaders } from './api'
 
 export interface League {
   id: number
@@ -12,8 +13,12 @@ export interface League {
 
 export async function getLeagues(language = 'en'): Promise<League[]> {
   try {
+    const authHeaders = await getAuthHeaders()
     const response = await fetch(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.leagues.all}?lang=${language}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.leagues.all}?lang=${language}`,
+      {
+        headers: authHeaders
+      }
     )
     
     if (!response.ok) {
@@ -35,8 +40,12 @@ export async function getLeagues(language = 'en'): Promise<League[]> {
 
 export async function getLeagueById(id: number, language = 'en'): Promise<League | null> {
   try {
+    const authHeaders = await getAuthHeaders()
     const response = await fetch(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.leagues.byId}/${id}?lang=${language}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.leagues.byId}/${id}?lang=${language}`,
+      {
+        headers: authHeaders
+      }
     )
     
     if (!response.ok) {

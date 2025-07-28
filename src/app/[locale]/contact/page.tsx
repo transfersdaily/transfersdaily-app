@@ -10,25 +10,6 @@ interface ContactPageProps {
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const { locale } = await params
   
-  // Get translations for metadata
-  const dict = await getDictionary(locale)
-  
-  // Helper function to get translation with fallback
-  function getTranslation(key: string, fallback: string): string {
-    const keys = key.split('.')
-    let result: any = dict
-    
-    for (const k of keys) {
-      if (result && typeof result === 'object' && k in result) {
-        result = result[k]
-      } else {
-        return fallback
-      }
-    }
-    
-    return typeof result === 'string' ? result : fallback
-  }
-
   // Dynamic metadata based on language
   const metaData = {
     en: {

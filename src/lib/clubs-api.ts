@@ -1,4 +1,5 @@
 import { API_CONFIG } from './config'
+import { getAuthHeaders } from './api'
 
 export interface Club {
   id: number
@@ -15,8 +16,12 @@ export interface Club {
 
 export async function getClubs(language = 'en'): Promise<Club[]> {
   try {
+    const authHeaders = await getAuthHeaders()
     const response = await fetch(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.clubs.all}?lang=${language}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.clubs.all}?lang=${language}`,
+      {
+        headers: authHeaders
+      }
     )
     
     if (!response.ok) {
@@ -38,8 +43,12 @@ export async function getClubs(language = 'en'): Promise<Club[]> {
 
 export async function getClubById(id: number, language = 'en'): Promise<Club | null> {
   try {
+    const authHeaders = await getAuthHeaders()
     const response = await fetch(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.clubs.byId}/${id}?lang=${language}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.clubs.byId}/${id}?lang=${language}`,
+      {
+        headers: authHeaders
+      }
     )
     
     if (!response.ok) {

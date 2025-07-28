@@ -78,6 +78,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear invalid stored data
       localStorage.removeItem(STORAGE_KEYS.user)
       localStorage.removeItem(STORAGE_KEYS.accessToken)
+      localStorage.removeItem(STORAGE_KEYS.idToken)
       localStorage.removeItem(STORAGE_KEYS.refreshToken)
     } finally {
       setIsLoading(false)
@@ -115,10 +116,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         })
         
         if (challengeResponse.AuthenticationResult) {
-          const { AccessToken, RefreshToken } = challengeResponse.AuthenticationResult
+          const { AccessToken, RefreshToken, IdToken } = challengeResponse.AuthenticationResult
           
           localStorage.setItem(STORAGE_KEYS.accessToken, AccessToken)
           if (RefreshToken) localStorage.setItem(STORAGE_KEYS.refreshToken, RefreshToken)
+          if (IdToken) localStorage.setItem(STORAGE_KEYS.idToken, IdToken)
           
           const userInfo = {
             id: email,
@@ -134,10 +136,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           window.location.href = '/admin'
         }
       } else if (response.AuthenticationResult) {
-        const { AccessToken, RefreshToken } = response.AuthenticationResult
+        const { AccessToken, RefreshToken, IdToken } = response.AuthenticationResult
         
         localStorage.setItem(STORAGE_KEYS.accessToken, AccessToken)
         if (RefreshToken) localStorage.setItem(STORAGE_KEYS.refreshToken, RefreshToken)
+        if (IdToken) localStorage.setItem(STORAGE_KEYS.idToken, IdToken)
         
         const userInfo = {
           id: email,
@@ -187,6 +190,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Clear local storage
       localStorage.removeItem(STORAGE_KEYS.user)
       localStorage.removeItem(STORAGE_KEYS.accessToken)
+      localStorage.removeItem(STORAGE_KEYS.idToken)
       localStorage.removeItem(STORAGE_KEYS.refreshToken)
       localStorage.removeItem(STORAGE_KEYS.preferences)
       

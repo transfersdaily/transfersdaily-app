@@ -1,12 +1,11 @@
 "use client"
 
 import { useState, useEffect, use } from "react"
-import { useRouter, useParams } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
   SelectContent,
@@ -19,15 +18,12 @@ import { AdminPageHeader } from "@/components/AdminPageHeader"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
-import { ImageUpload } from "@/components/ui/image-upload"
 import {
   Save,
   ArrowLeft,
   Trash2,
   Loader2,
-  Plus,
   Eye,
-  X,
 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -90,8 +86,6 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     featured: false
   })
   
-  const [newTag, setNewTag] = useState("")
-
   useEffect(() => {
     console.log('🚀 Edit page useEffect triggered');
     console.log('Article ID:', articleId);
@@ -137,7 +131,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         try {
           errorText = await response.text();
           console.error('Error response body:', errorText);
-        } catch (e) {
+        } catch (_e) {
           console.error('Could not read error response body');
         }
         
@@ -232,7 +226,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       await new Promise(resolve => setTimeout(resolve, 1000))
       
       router.push('/admin/articles')
-    } catch (err) {
+    } catch (_err) {
       setError("Failed to delete article")
     } finally {
       setIsDeleting(false)
@@ -310,7 +304,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold">Article Not Found</h2>
-            <p className="text-muted-foreground mt-2">The article you're looking for doesn't exist.</p>
+            <p className="text-muted-foreground mt-2">The article you&apos;re looking for doesn&apos;t exist.</p>
             <Button className="mt-4" onClick={() => router.back()}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Go Back
@@ -342,7 +336,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete Article</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete "{article?.title}"? This action cannot be undone.
+                    Are you sure you want to delete &quot;{article?.title}&quot;? This action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -517,7 +511,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                       <Button 
                         size="sm" 
                         onClick={() => window.location.href = `/admin/articles/publish/${articleId}/edit`}
-                        className="bg-green-600 hover:bg-green-700"
+                        className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-600"
                       >
                         Publish
                       </Button>

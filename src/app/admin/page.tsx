@@ -10,18 +10,13 @@ import {
   FileText, 
   Users, 
   Eye, 
-  Plus,
   Edit,
-  Upload,
   Settings,
-  Download,
-  Clock,
   Activity,
   Database,
   Globe
 } from "lucide-react"
 import { adminApi } from "@/lib/api"
-import { API_CONFIG } from "@/lib/config"
 import { DraftVsPublishedChart } from "@/components/DraftVsPublishedChart"
 
 interface DashboardStats {
@@ -82,6 +77,27 @@ export default function AdminDashboard() {
         const dashboardStats = await adminApi.getDashboardStats()
         console.log('Dashboard stats response:', JSON.stringify(dashboardStats, null, 2))
         
+        // Debug dailyActivity specifically
+        console.log('🔍 Daily Activity Debug:');
+        console.log('  - Raw dailyActivity:', dashboardStats.dailyActivity);
+        console.log('  - dailyActivity type:', typeof dashboardStats.dailyActivity);
+        console.log('  - dailyActivity length:', dashboardStats.dailyActivity?.length);
+        if (dashboardStats.dailyActivity && dashboardStats.dailyActivity.length > 0) {
+          console.log('  - First item:', dashboardStats.dailyActivity[0]);
+          console.log('  - Last item:', dashboardStats.dailyActivity[dashboardStats.dailyActivity.length - 1]);
+          console.log('  - Sample date format:', typeof dashboardStats.dailyActivity[0].date);
+        }
+        
+        // Ensure dailyActivity is properly formatted
+        const formattedDailyActivity = (dashboardStats.dailyActivity || []).map(item => ({
+          date: item.date,
+          draftCount: parseInt(item.draftCount) || 0,
+          publishedCount: parseInt(item.publishedCount) || 0,
+          totalCount: parseInt(item.totalCount) || 0
+        }));
+        
+        console.log('  - Formatted dailyActivity:', formattedDailyActivity);
+        
         setStats({
           totalArticles: dashboardStats.totalArticles || 0,
           draftArticles: dashboardStats.draftArticles || 0,
@@ -94,8 +110,11 @@ export default function AdminDashboard() {
           createdThisMonth: dashboardStats.createdThisMonth || 0,
           byCategory: dashboardStats.byCategory || [],
           byLeague: dashboardStats.byLeague || [],
-          dailyActivity: dashboardStats.dailyActivity || []
+          dailyActivity: formattedDailyActivity
         })
+        
+        console.log('📊 Stats set in state:');
+        console.log('  - dailyActivity after setState:', dashboardStats.dailyActivity || []);
         
         // Only try to fetch recent articles if stats worked
         try {
@@ -191,8 +210,8 @@ export default function AdminDashboard() {
   return (
     <AdminPageLayout title="Dashboard">
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div className="flex items-center gap-2 text-red-800">
+        <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+          <div className="flex items-center gap-2 text-destructive">
             <Activity className="h-4 w-4" />
             <span className="font-medium">Connection Error</span>
           </div>
@@ -332,15 +351,15 @@ export default function AdminDashboard() {
                   return (
                     <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-green-100 rounded-lg">
-                          <Icon className="h-4 w-4 text-green-600" />
+                        <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
+                          <Icon className="h-4 w-4 text-green-600 dark:text-green-400" />
                         </div>
                         <div>
                           <p className="font-medium text-sm">{item.name}</p>
                           <p className="text-xs text-muted-foreground">{item.value}</p>
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
+                      <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
                         {item.status}
                       </Badge>
                     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { default as NextImage } from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -67,7 +68,7 @@ export function ImageDebugger({ imageUrl }: ImageDebuggerProps) {
 
       try {
         const imageLoadResult = await imageLoadPromise;
-        results.imageLoad = { success: true, ...imageLoadResult };
+        results.imageLoad = { success: true, data: imageLoadResult };
         console.log('✅ Image load result:', results.imageLoad);
       } catch (imageError) {
         results.imageLoad = { success: false, error: imageError };
@@ -152,9 +153,11 @@ export function ImageDebugger({ imageUrl }: ImageDebuggerProps) {
             <div>
               <strong>Direct Image Test:</strong>
               <div className="border p-4 rounded">
-                <img 
+                <NextImage 
                   src={imageUrl} 
                   alt="Test image"
+                  width={400}
+                  height={300}
                   className="max-w-full h-auto"
                   onLoad={() => console.log('✅ Direct image loaded')}
                   onError={(e) => console.error('❌ Direct image failed:', e)}

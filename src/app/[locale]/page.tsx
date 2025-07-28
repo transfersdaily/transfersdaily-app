@@ -1,20 +1,20 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Image from 'next/image';
 import { TransferCard } from '@/components/TransferCard';
 import { Sidebar } from '@/components/Sidebar';
 import { TransferGridSkeleton } from '@/components/TransferCardSkeleton';
 import { SidebarSkeleton } from '@/components/SidebarSkeleton';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { ViewAllButton } from '@/components/ViewAllButton';
 import { NewsletterSection } from '@/components/NewsletterSection';
 import { type Locale, getDictionary, locales } from '@/lib/i18n';
 import { createTranslator } from '@/lib/dictionary-server';
-import { articlesApi, type Article } from '@/lib/api';
-import { Trophy, Clock } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({
@@ -373,12 +373,13 @@ export default async function HomePage({
                       <Card className="overflow-hidden h-[500px] relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group bg-card border border-border shadow-md rounded-xl">
                         <div className="h-full bg-card relative">
                           {initialData.featuredTransfer.imageUrl && (
-                            <img
+                            <Image
                               src={initialData.featuredTransfer.imageUrl}
                               alt={`Featured: ${initialData.featuredTransfer.title} - ${initialData.featuredTransfer.league}`}
+                              width={600}
+                              height={500}
                               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                              loading="eager"
-                              fetchPriority="high"
+                              priority
                             />
                           )}
                           {/* Overlay gradient */}
@@ -439,7 +440,6 @@ export default async function HomePage({
                 </div>
                 <ViewAllButton
                   href={`/${locale}/latest`}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                   {t('common.viewAll')}
                 </ViewAllButton>
@@ -467,7 +467,7 @@ export default async function HomePage({
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {initialData.leagues.map((league) => (
+                {initialData.leagues.map((league: any) => (
                   <Link
                     key={league.id}
                     href={`/${locale}/league/${league.slug}`}
@@ -475,9 +475,11 @@ export default async function HomePage({
                   >
                     <div className="flex flex-col items-center text-center space-y-3">
                       <div className="w-16 h-16 relative">
-                        <img
+                        <Image
                           src={league.logoUrl || '/placeholder-image.svg'}
                           alt={`${league.name} logo`}
+                          width={64}
+                          height={64}
                           className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
                         />
                       </div>
@@ -506,7 +508,6 @@ export default async function HomePage({
                 </div>
                 <ViewAllButton
                   href={`/${locale}/trending`}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
                 >
                   {t('common.viewAll')}
                 </ViewAllButton>
@@ -539,46 +540,46 @@ export default async function HomePage({
 
 // Server-side data fetching - fetch real articles from API
 async function getInitialData(language = 'en') {
-  try {
-    // Static leagues for navigation - these have images and should not be touched
-    const staticLeagues = [
-      {
-        id: 'premier-league',
-        name: 'Premier League',
-        country: 'England',
-        slug: 'premier-league',
-        logoUrl: '/logos/leagues/premier-league.png',
-      },
-      {
-        id: 'la-liga',
-        name: 'La Liga',
-        country: 'Spain',
-        slug: 'la-liga',
-        logoUrl: '/logos/leagues/la-liga.png',
-      },
-      {
-        id: 'serie-a',
-        name: 'Serie A',
-        country: 'Italy',
-        slug: 'serie-a',
-        logoUrl: '/logos/leagues/serie-a.png',
-      },
-      {
-        id: 'bundesliga',
-        name: 'Bundesliga',
-        country: 'Germany',
-        slug: 'bundesliga',
-        logoUrl: '/logos/leagues/bundesliga.png',
-      },
-      {
-        id: 'ligue-1',
-        name: 'Ligue 1',
-        country: 'France',
-        slug: 'ligue-1',
-        logoUrl: '/logos/leagues/ligue-1.png',
-      },
-    ];
+  // Static leagues for navigation - these have images and should not be touched
+  const staticLeagues = [
+    {
+      id: 'premier-league',
+      name: 'Premier League',
+      country: 'England',
+      logoUrl: '/logos/leagues/premier-league.png',
+      slug: 'premier-league'
+    },
+    {
+      id: 'la-liga',
+      name: 'La Liga',
+      country: 'Spain',
+      logoUrl: '/logos/leagues/la-liga.png',
+      slug: 'la-liga'
+    },
+    {
+      id: 'serie-a',
+      name: 'Serie A',
+      country: 'Italy',
+      logoUrl: '/logos/leagues/serie-a.png',
+      slug: 'serie-a'
+    },
+    {
+      id: 'bundesliga',
+      name: 'Bundesliga',
+      country: 'Germany',
+      logoUrl: '/logos/leagues/bundesliga.png',
+      slug: 'bundesliga'
+    },
+    {
+      id: 'ligue-1',
+      name: 'Ligue 1',
+      country: 'France',
+      logoUrl: '/logos/leagues/ligue-1.png',
+      slug: 'ligue-1'
+    }
+  ];
 
+  try {
     // Fetch real articles from the backend API
     let featuredTransfer = null;
     let latestTransfers = [];
@@ -628,7 +629,7 @@ async function getInitialData(language = 'en') {
           const articles = data.data.articles;
 
           // Transform articles to the expected format
-          const transformedArticles = articles.map((article) => ({
+          const transformedArticles = articles.map((article: any) => ({
             id: article.id,
             title: article.title,
             excerpt: article.content
@@ -671,7 +672,7 @@ async function getInitialData(language = 'en') {
           response.statusText
         );
       }
-    } catch (apiError) {
+    } catch (apiError: any) {
       console.error('❌ Error fetching articles from API:', apiError.message);
       console.error(
         '❌ This is likely a CORS issue. The API is not accessible from localhost:3000'
@@ -717,51 +718,6 @@ function generateSlug(title: string): string {
     .replace(/\s+/g, '-') // Replace spaces with hyphens
     .replace(/-+/g, '-') // Replace multiple hyphens with single
     .trim();
-}
-
-// Server-side rendered components
-function FeaturedTransferCard({ transfer, locale, dict }: any) {
-  const t = createTranslator(dict);
-
-  if (!transfer) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">
-          {t('common.noFeaturedTransfer')}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <article className="relative overflow-hidden rounded-lg bg-gradient-to-r from-red-600 to-red-700 text-white">
-      <div className="p-8 md:p-12">
-        <div className="flex items-center gap-2 mb-4">
-          <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
-            {transfer.league}
-          </span>
-          <span className="text-white/80 text-sm">
-            {formatTimeAgo(transfer.publishedAt, t)}
-          </span>
-        </div>
-
-        <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-          {transfer.title}
-        </h1>
-
-        <p className="text-white/90 text-lg mb-6 leading-relaxed">
-          {transfer.excerpt}
-        </p>
-
-        <Link
-          href={`/${locale}/article/${transfer.slug}`}
-          className="inline-flex items-center bg-white text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-white/90 transition-colors"
-        >
-          {t('common.readFullArticle')}
-        </Link>
-      </div>
-    </article>
-  );
 }
 
 function TransferGrid({ transfers, locale, dict }: any) {

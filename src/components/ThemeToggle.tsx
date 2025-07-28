@@ -34,8 +34,10 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       variant="ghost"
       size="icon"
       className={cn(
-        // Custom hover for light mode: subtle gray background, keep icon color
-        'hover:bg-secondary hover:text-foreground',
+        // Default hover styles - will be overridden by className if provided
+        'hover:bg-secondary',
+        // Only add default text hover if no custom className is provided
+        !className?.includes('hover:text-') && 'hover:text-foreground',
         className
       )}
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}

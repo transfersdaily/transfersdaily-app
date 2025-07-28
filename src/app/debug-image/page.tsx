@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 
 export default function DebugImagePage() {
   const [imageUrl, setImageUrl] = useState('https://d2w4vhlo0um37d.cloudfront.net/articles/9a4960ce-a2d8-484f-b8cf-62ff8c2ba99d/featured/1752998014899.png');
@@ -10,7 +11,7 @@ export default function DebugImagePage() {
   const testImage = () => {
     setImageStatus('Testing...');
     
-    const img = new Image();
+    const img = new window.Image();
     
     img.onload = () => {
       setImageStatus('✅ Image loaded successfully');
@@ -39,7 +40,7 @@ export default function DebugImagePage() {
         status: response.status,
         headers: Object.fromEntries(response.headers.entries())
       });
-    } catch (error) {
+    } catch (error: any) {
       setImageStatus('❌ Fetch failed');
       setImageInfo({ error: error.toString() });
     }
@@ -89,9 +90,11 @@ export default function DebugImagePage() {
         
         <div className="border rounded p-4">
           <h3 className="font-medium mb-2">Direct Image Display:</h3>
-          <img
+          <Image
             src={imageUrl}
             alt="Test"
+            width={400}
+            height={300}
             className="max-w-full h-auto border"
             onLoad={() => console.log('Direct img onLoad triggered')}
             onError={(e) => {

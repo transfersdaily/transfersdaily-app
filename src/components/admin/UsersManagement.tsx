@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { 
   Dialog, 
   DialogContent, 
@@ -48,16 +49,25 @@ interface User {
 }
 
 export function UsersManagement() {
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: '1',
-      email: 'admin@transfersdaily.com',
-      role: 'admin',
-      status: 'active',
-      createdAt: '2025-01-01',
-      lastLogin: '2025-01-15'
-    }
-  ])
+  const [users, setUsers] = useState<User[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Simulate loading
+  useState(() => {
+    setTimeout(() => {
+      setUsers([
+        {
+          id: '1',
+          email: 'admin@transfersdaily.com',
+          role: 'admin',
+          status: 'active',
+          createdAt: '2025-01-01',
+          lastLogin: '2025-01-15'
+        }
+      ])
+      setIsLoading(false)
+    }, 1000)
+  })
   
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
 
@@ -184,48 +194,62 @@ export function UsersManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">{user.email}</TableCell>
-                <TableCell>
-                  <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
-                    {user.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{user.createdAt}</TableCell>
-                <TableCell>{user.lastLogin || 'Never'}</TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem 
-                        onClick={() => handleToggleStatus(user.id)}
-                      >
-                        {user.status === 'active' ? 'Deactivate' : 'Activate'}
-                      </DropdownMenuItem>
-                      {user.role !== 'admin' && (
+            {isLoading ? (
+              // Skeleton loading rows
+              [...Array(5)].map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-48" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-8" /></TableCell>
+                </TableRow>
+              ))
+            ) : (
+              users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">{user.email}</TableCell>
+                  <TableCell>
+                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                      {user.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={user.status === 'active' ? 'default' : 'destructive'}>
+                      {user.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{user.createdAt}</TableCell>
+                  <TableCell>{user.lastLogin || 'Never'}</TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
                         <DropdownMenuItem 
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-destructive"
+                          onClick={() => handleToggleStatus(user.id)}
                         >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete User
+                          {user.status === 'active' ? 'Deactivate' : 'Activate'}
                         </DropdownMenuItem>
-                      )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))}
+                        {user.role !== 'admin' && (
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete User
+                          </DropdownMenuItem>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
 

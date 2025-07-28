@@ -5,8 +5,14 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Sidebar } from "@/components/Sidebar"
 import { Menu, X } from "lucide-react"
+import { type Locale, type Dictionary } from "@/lib/i18n"
 
-export function MobileSidebarDrawer() {
+interface MobileSidebarDrawerProps {
+  locale: Locale
+  dict: Dictionary
+}
+
+export function MobileSidebarDrawer({ locale, dict }: MobileSidebarDrawerProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -34,7 +40,7 @@ export function MobileSidebarDrawer() {
             </Button>
           </div>
           <div className="overflow-y-auto h-full">
-            <Sidebar className="border-0 bg-transparent -mr-0 pr-0" />
+            <Sidebar className="border-0 bg-transparent -mr-0 pr-0" locale={locale} dict={dict} />
           </div>
         </SheetContent>
       </Sheet>

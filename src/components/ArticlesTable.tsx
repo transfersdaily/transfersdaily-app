@@ -4,7 +4,7 @@
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
@@ -38,7 +38,6 @@ import {
   Trash2,
   Upload,
   ArrowUpDown,
-  Calendar,
   Archive,
 } from "lucide-react"
 
@@ -51,7 +50,8 @@ interface Article {
   player_name: string
   transfer_fee: number | null
   transfer_status: string
-  published_date: string
+  created_at: string        // Backend returns created_at
+  published_at?: string     // Backend returns published_at (optional)
   tags: string[]
 }
 
@@ -144,11 +144,6 @@ export function ArticlesTable({
   const handleBulkDelete = () => {
     selectedArticles.forEach(id => onDeleteArticle?.(id))
     onSelectArticles([])
-  }
-
-  const getBulkActions = () => {
-    // Only show bulk delete - no bulk publishing to enforce workflow
-    return null
   }
 
   const getRowActions = (article: Article) => {
@@ -286,7 +281,7 @@ export function ArticlesTable({
                     checked={articles.length > 0 && selectedArticles.length === articles.length}
                     ref={(el) => {
                       if (el) {
-                        el.indeterminate = selectedArticles.length > 0 && selectedArticles.length < articles.length
+                        (el as any).indeterminate = selectedArticles.length > 0 && selectedArticles.length < articles.length
                       }
                     }}
                     onCheckedChange={onSelectAll}
@@ -344,9 +339,9 @@ export function ArticlesTable({
                     variant="ghost" 
                     size="sm" 
                     className="h-8 p-0"
-                    onClick={() => onSort?.('created_at')}
+                    onClick={() => onSort?.(pageType === 'published' ? 'published_at' : 'created_at')}
                   >
-                    Created Date
+                    {pageType === 'published' ? 'Published Date' : 'Created Date'}
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
@@ -383,10 +378,27 @@ export function ArticlesTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {article.created_at ? 
-                      new Date(article.created_at).toLocaleDateString() : 
-                      'No date'
-                    }
+                    {/* For draft articles, show created_at. For published articles, show published_at or created_at as fallback */}
+                    {(() => {
+                      const createdAt = (article as any).created_at
+                      const publishedAt = (article as any).published_at
+                      
+                      // For published articles, prefer published_at, fallback to created_at
+                      // For draft articles, use created_at
+                      const dateToShow = pageType === 'published' 
+                        ? (publishedAt || createdAt)
+                        : createdAt
+                      
+                      return dateToShow 
+                        ? new Date(dateToShow).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })
+                        : 'No date'
+                    })()}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>

@@ -96,21 +96,21 @@ export function TransferStatusPageClient({
       // Use appropriate API method based on transfer type
       if (transferType === 'confirmed') {
         if (league === "all") {
-          response = await transfersApi.getConfirmedWithPagination(itemsPerPage, offset, locale)
+          response = await transfersApi.getByStatusWithPagination('confirmed', itemsPerPage, offset)
         } else {
-          response = await transfersApi.getConfirmedByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+          response = await transfersApi.getByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
         }
       } else if (transferType === 'completed') {
         if (league === "all") {
-          response = await transfersApi.getCompletedWithPagination(itemsPerPage, offset, locale)
+          response = await transfersApi.getByStatusWithPagination('completed', itemsPerPage, offset)
         } else {
-          response = await transfersApi.getCompletedByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+          response = await transfersApi.getByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
         }
-      } else { // rumors
+      } else { // rumors or other statuses
         if (league === "all") {
-          response = await transfersApi.getRumorsWithPagination(itemsPerPage, offset, locale)
+          response = await transfersApi.getByStatusWithPagination(transferType, itemsPerPage, offset)
         } else {
-          response = await transfersApi.getRumorsByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
+          response = await transfersApi.getByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
         }
       }
       

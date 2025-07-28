@@ -1,9 +1,7 @@
-import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
-import { type Transfer } from "@/lib/api"
 import { LeaguePageClient } from '@/components/LeaguePageClient'
 
 // Helper function to generate slug from title
@@ -18,18 +16,18 @@ function generateSlug(title: string): string {
 
 // Server-side data fetching for league articles
 async function getLeagueData(leagueSlug: string, language = 'en') {
+  // Convert slug to proper league name
+  const leagueNames: Record<string, string> = {
+    'premier-league': 'Premier League',
+    'la-liga': 'La Liga', 
+    'serie-a': 'Serie A',
+    'bundesliga': 'Bundesliga',
+    'ligue-1': 'Ligue 1'
+  }
+  
+  const leagueName = leagueNames[leagueSlug] || leagueSlug
+  
   try {
-    // Convert slug to proper league name
-    const leagueNames: Record<string, string> = {
-      'premier-league': 'Premier League',
-      'la-liga': 'La Liga', 
-      'serie-a': 'Serie A',
-      'bundesliga': 'Bundesliga',
-      'ligue-1': 'Ligue 1'
-    }
-    
-    const leagueName = leagueNames[leagueSlug] || leagueSlug
-    
     console.log('🔍 SERVER: Fetching league articles for:', leagueName, 'in language:', language)
     
     // Direct API call to backend (same as homepage)
@@ -69,7 +67,7 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
         const articles = data.data.articles
         
         // Transform articles to the expected format (same as homepage)
-        const transformedArticles = articles.map(article => ({
+        const transformedArticles = articles.map((article: any) => ({
           id: article.id,
           title: article.title,
           excerpt: article.content ? article.content.substring(0, 200) + '...' : article.meta_description || '',
@@ -115,8 +113,6 @@ export async function generateMetadata({
   params: Promise<{ locale: Locale; slug: string }> 
 }): Promise<Metadata> {
   const { locale, slug } = await params
-  const dict = await getDictionary(locale)
-  const t = createTranslator(dict)
   
   const leagueNames: { [key: string]: string } = {
     'premier-league': 'Premier League',
@@ -267,7 +263,7 @@ export async function generateMetadata({
     }
   }
   
-  const currentSeo = seoData[locale]?.[slug] || {
+  const currentSeo = (seoData as any)[locale]?.[slug] || {
     title: `${leagueName} Transfer News | Transfer Daily`,
     description: `Latest ${leagueName} transfer news, confirmed signings, and breaking rumors.`,
     keywords: `${leagueName} transfers, ${leagueName} signings, ${leagueName} news`
@@ -458,7 +454,7 @@ export default async function LeaguePage({
     "name": `${leagueName} Transfer News`,
     "description": `Latest transfer news and updates from ${leagueName}`,
     "numberOfItems": transfers.length,
-    "itemListElement": transfers.slice(0, 10).map((transfer, index) => ({
+    "itemListElement": transfers.slice(0, 10).map((transfer: any, index: number) => ({
       "@type": "ListItem",
       "position": index + 1,
       "item": {
@@ -487,30 +483,6 @@ export default async function LeaguePage({
     }))
   } : null
   
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-    
-    if (diffInHours < 1) return t('common.justNow')
-    if (diffInHours < 24) return `${diffInHours} ${t('common.hoursAgo')}`
-    const diffInDays = Math.floor(diffInHours / 24)
-    if (diffInDays < 7) return `${diffInDays} ${t('common.daysAgo')}`
-    const diffInWeeks = Math.floor(diffInDays / 7)
-    return `${diffInWeeks} ${t('common.weeksAgo')}`
-  }
-
-  const getLeagueName = (slug: string) => {
-    const leagueNames: { [key: string]: string } = {
-      'premier-league': 'Premier League',
-      'la-liga': 'La Liga',
-      'serie-a': 'Serie A',
-      'bundesliga': 'Bundesliga',
-      'ligue-1': 'Ligue 1'
-    }
-    return leagueNames[slug] || slug.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())
-  }
-
   return (
     <main className="min-h-screen bg-background">
       {/* Enhanced JSON-LD Structured Data for SEO */}

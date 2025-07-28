@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -36,6 +37,12 @@ export function ImageUpload({
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
+        // Get access token from localStorage
+        const accessToken = localStorage.getItem('transfersdaily_access_token');
+        if (!accessToken) {
+          throw new Error('No access token found. Please log in again.');
+        }
+        
         // Create FormData for S3 upload
         const formData = new FormData();
         formData.append('file', file);
@@ -46,9 +53,12 @@ export function ImageUpload({
           setUploadProgress(prev => Math.min(prev + 10, 90));
         }, 100);
 
-        // Upload to your media endpoint
+        // Upload to your media endpoint with Authorization header
         const response = await fetch('/api/admin/media/upload', {
           method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`
+          },
           body: formData,
         });
 
@@ -142,9 +152,11 @@ export function ImageUpload({
           {existingImages.map((url, index) => (
             <div key={index} className="relative group">
               <div className="aspect-square rounded-lg overflow-hidden border bg-muted">
-                <img
+                <Image
                   src={url}
                   alt={`Upload ${index + 1}`}
+                  width={200}
+                  height={200}
                   className="w-full h-full object-cover"
                 />
               </div>

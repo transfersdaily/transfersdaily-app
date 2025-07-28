@@ -18,17 +18,17 @@ import { type Locale } from "@/lib/i18n"
 
 interface ContactPageClientProps {
   locale: Locale
-  dict: any
+  dict: Record<string, unknown>
 }
 
 // Helper function to get translation
-function getTranslation(dict: any, key: string, fallback: string): string {
+function getTranslation(dict: Record<string, unknown>, key: string, fallback: string): string {
   const keys = key.split('.')
-  let result: any = dict
+  let result: unknown = dict
   
   for (const k of keys) {
-    if (result && typeof result === 'object' && k in result) {
-      result = result[k]
+    if (result && typeof result === 'object' && result !== null && k in result) {
+      result = (result as Record<string, unknown>)[k]
     } else {
       return fallback
     }
@@ -37,7 +37,7 @@ function getTranslation(dict: any, key: string, fallback: string): string {
   return typeof result === 'string' ? result : fallback
 }
 
-export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
+export function ContactPageClient({ dict }: ContactPageClientProps) {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

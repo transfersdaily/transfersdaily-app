@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { transfersApi, type Transfer } from '@/lib/api';
 import { SidebarArticleItem } from '@/components/SidebarArticleItem';

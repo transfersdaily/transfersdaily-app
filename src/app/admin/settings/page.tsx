@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { Skeleton } from "@/components/ui/skeleton"
 import { Bell, Sun, Shield, Database } from "lucide-react"
 
 // Custom Toggle Component
@@ -39,6 +40,14 @@ export default function SettingsPage() {
   })
 
   const [isLoading, setIsLoading] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+
+  // Simulate initial data loading
+  useState(() => {
+    setTimeout(() => {
+      setIsInitialLoading(false)
+    }, 600)
+  })
 
   const handleSave = async () => {
     setIsLoading(true)
@@ -49,14 +58,98 @@ export default function SettingsPage() {
   return (
     <AdminPageLayout title="Settings">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Appearance */}
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Sun className="h-5 w-5" />
-              Appearance
-            </CardTitle>
-          </CardHeader>
+        {isInitialLoading ? (
+          <>
+            {/* Appearance Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Sun className="h-5 w-5" />
+                  Appearance
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div>
+                  <Skeleton className="h-4 w-16 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Notifications Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Bell className="h-5 w-5" />
+                  Notifications
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div>
+                      <Skeleton className="h-4 w-32 mb-1" />
+                      <Skeleton className="h-3 w-48" />
+                    </div>
+                    <Skeleton className="h-6 w-11 rounded-full" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Privacy & Security Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Shield className="h-5 w-5" />
+                  Privacy & Security
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Skeleton className="h-4 w-28 mb-1" />
+                    <Skeleton className="h-3 w-56" />
+                  </div>
+                  <Skeleton className="h-6 w-11 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Content Management Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Database className="h-5 w-5" />
+                  Content Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Skeleton className="h-4 w-24 mb-1" />
+                    <Skeleton className="h-3 w-52" />
+                  </div>
+                  <Skeleton className="h-6 w-11 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Save Button Skeleton */}
+            <div className="flex justify-end">
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Appearance */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Sun className="h-5 w-5" />
+                  Appearance
+                </CardTitle>
+              </CardHeader>
           <CardContent className="p-6">
             <div className="flex items-center justify-between py-2">
               <div>
@@ -170,6 +263,8 @@ export default function SettingsPage() {
             {isLoading ? "Saving..." : "Save Changes"}
           </Button>
         </div>
+          </>
+        )}
       </div>
     </AdminPageLayout>
   )

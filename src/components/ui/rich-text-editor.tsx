@@ -15,7 +15,6 @@ import {
   Image,
   Undo,
   Redo,
-  Type,
   AlignLeft,
   AlignCenter,
   AlignRight

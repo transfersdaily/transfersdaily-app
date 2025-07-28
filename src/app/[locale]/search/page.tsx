@@ -14,11 +14,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const resolvedSearchParams = await searchParams
-  const dict = await getDictionary(locale)
   
   // Get current search query for dynamic metadata
   const searchQuery = resolvedSearchParams.q as string || ''
-  const selectedLeague = resolvedSearchParams.league as string || 'all'
   
   // Language-specific SEO data with search-specific keywords
   const seoData = {

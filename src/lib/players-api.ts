@@ -1,4 +1,5 @@
 import { API_CONFIG } from './config'
+import { getAuthHeaders } from './api'
 
 export interface Player {
   id: number
@@ -17,8 +18,12 @@ export interface Player {
 
 export async function getPlayers(language = 'en'): Promise<Player[]> {
   try {
+    const authHeaders = await getAuthHeaders()
     const response = await fetch(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.players.all}?lang=${language}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.players.all}?lang=${language}`,
+      {
+        headers: authHeaders
+      }
     )
     
     if (!response.ok) {
@@ -40,8 +45,12 @@ export async function getPlayers(language = 'en'): Promise<Player[]> {
 
 export async function getPlayerById(id: number, language = 'en'): Promise<Player | null> {
   try {
+    const authHeaders = await getAuthHeaders()
     const response = await fetch(
-      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.players.byId}/${id}?lang=${language}`
+      `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.players.byId}/${id}?lang=${language}`,
+      {
+        headers: authHeaders
+      }
     )
     
     if (!response.ok) {

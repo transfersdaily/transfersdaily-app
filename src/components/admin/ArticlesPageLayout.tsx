@@ -5,7 +5,7 @@ import { ArticlesTable } from "@/components/ArticlesTable"
 import { ArticleStatsOverview } from "@/components/ArticleStatsOverview"
 import { AdminPageHeader } from "@/components/AdminPageHeader"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Plus, Loader2 } from "lucide-react"
+import { Plus } from "lucide-react"
 import { useArticles, UseArticlesParams } from "@/hooks/useArticles"
 
 interface ArticlesPageLayoutProps extends UseArticlesParams {

@@ -6,91 +6,135 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Plus, Search, UserCheck, Users, Calendar, TrendingUp } from "lucide-react"
-import { getPlayers, Player } from "@/lib/players-api"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Plus, Search, Users, Building, Calendar } from "lucide-react"
+import { adminApi } from "@/lib/api"
+import { Pagination } from "@/components/ui/pagination"
+
+interface Player {
+  id: number
+  full_name: string
+  current_club_id?: number
+  current_club_name?: string
+  league_name?: string
+  country?: string
+  article_count?: number
+  created_at: string
+}
+
+interface Pagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
 
 export default function AdminPlayersPage() {
   const [players, setPlayers] = useState<Player[]>([])
-  const [filteredPlayers, setFilteredPlayers] = useState<Player[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 50,
+    total: 0,
+    totalPages: 0
+  })
+  const [stats, setStats] = useState({
+    totalPlayers: 0,
+    totalClubs: 0,
+    totalArticles: 0
+  })
 
   useEffect(() => {
-    loadPlayers()
+    loadPlayers(1)
   }, [])
 
   useEffect(() => {
-    const filtered = players.filter(player =>
-      player.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      player.club_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      player.position?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      player.nationality?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    setFilteredPlayers(filtered)
-  }, [players, searchTerm])
+    if (searchTerm) {
+      // Reset to page 1 when searching
+      loadPlayers(1, searchTerm)
+    } else {
+      loadPlayers(pagination.page)
+    }
+  }, [searchTerm])
 
-  const loadPlayers = async () => {
+  const loadPlayers = async (page: number = 1, search?: string) => {
     try {
       setIsLoading(true)
       setError(null)
-      const data = await getPlayers()
-      setPlayers(data)
+      
+      const response = await adminApi.getPlayers({
+        page,
+        limit: 50,
+        search: search || searchTerm
+      })
+      
+      setPlayers(response.players)
+      setPagination(response.pagination)
+      
+      // Calculate stats from all players data
+      const uniqueClubs = new Set(response.players.filter(p => p.current_club_id).map(p => p.current_club_id))
+      setStats({
+        totalPlayers: response.pagination.total,
+        totalClubs: uniqueClubs.size,
+        totalArticles: response.players.reduce((sum, player) => sum + (player.article_count || 0), 0)
+      })
+      
     } catch (err) {
+      console.error('Failed to load players:', err)
       setError(err instanceof Error ? err.message : 'Failed to load players')
+      setPlayers([])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleAddClick = () => {
-    console.log('Add player clicked')
-  }
-
-  const calculateAge = (dateOfBirth?: string) => {
-    if (!dateOfBirth) return null
-    const today = new Date()
-    const birthDate = new Date(dateOfBirth)
-    let age = today.getFullYear() - birthDate.getFullYear()
-    const monthDiff = today.getMonth() - birthDate.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      loadPlayers(newPage)
     }
-    return age
   }
 
-  if (isLoading) {
-    return (
-      <AdminPageLayout title="Players">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </AdminPageLayout>
-    )
-  }
-
-  if (error) {
-    return (
-      <AdminPageLayout title="Players">
-        <div className="text-center py-8">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={loadPlayers}>Retry</Button>
-        </div>
-      </AdminPageLayout>
-    )
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   return (
-    <AdminPageLayout
-      title="Players"
-      actions={
-        <Button size="sm" onClick={handleAddClick}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Player
-        </Button>
-      }
-    >
+    <AdminPageLayout>
       <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Players</h1>
+            <p className="text-muted-foreground">Manage football players and their information</p>
+          </div>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Player
+          </Button>
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-red-800 font-medium">Failed to load players</p>
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => loadPlayers(1)}>
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Search */}
         <div className="relative w-96">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -103,13 +147,13 @@ export default function AdminPlayersPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
-                <UserCheck className="h-5 w-5 text-blue-500" />
+                <Users className="h-5 w-5 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold">{players.length}</p>
+                  <p className="text-2xl font-bold">{stats.totalPlayers}</p>
                   <p className="text-sm text-muted-foreground">Total Players</p>
                 </div>
               </div>
@@ -119,10 +163,10 @@ export default function AdminPlayersPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-green-500" />
+                <Building className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold">{new Set(players.map(p => p.club_name).filter(Boolean)).size}</p>
-                  <p className="text-sm text-muted-foreground">Unique Clubs</p>
+                  <p className="text-2xl font-bold">{stats.totalClubs}</p>
+                  <p className="text-sm text-muted-foreground">Active Clubs</p>
                 </div>
               </div>
             </CardContent>
@@ -133,78 +177,77 @@ export default function AdminPlayersPage() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-purple-500" />
                 <div>
-                  <p className="text-2xl font-bold">{players.reduce((sum, player) => sum + (player.total_articles || 0), 0)}</p>
+                  <p className="text-2xl font-bold">{stats.totalArticles}</p>
                   <p className="text-sm text-muted-foreground">Total Articles</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-orange-500" />
-                <div>
-                  <p className="text-2xl font-bold">
-                    €{Math.round(players.reduce((sum, p) => sum + (p.market_value || 0), 0) / 1000000)}M
-                  </p>
-                  <p className="text-sm text-muted-foreground">Total Value</p>
-                </div>
+        </div>
+
+        {/* Players Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Players ({pagination.total})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Current Club</TableHead>
+                      <TableHead>League</TableHead>
+                      <TableHead>Articles</TableHead>
+                      <TableHead>Created</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {players.map((player) => (
+                      <TableRow key={player.id}>
+                        <TableCell className="font-mono text-sm">{player.id}</TableCell>
+                        <TableCell className="font-medium">{player.full_name}</TableCell>
+                        <TableCell>{player.current_club_name || '-'}</TableCell>
+                        <TableCell>{player.league_name || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{player.article_count || 0}</Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDate(player.created_at)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
 
-        {/* Players Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredPlayers.map((player) => (
-            <Card key={player.id} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">
-                    {player.full_name?.split(' ').map(n => n[0]).join('') || 'P'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-base truncate">{player.full_name || 'Unknown Player'}</CardTitle>
-                    <div className="flex gap-1 mt-1">
-                      {player.position && (
-                        <Badge variant="outline" className="text-xs">{player.position}</Badge>
-                      )}
-                      {player.nationality && (
-                        <Badge variant="outline" className="text-xs">{player.nationality}</Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                {player.club_name && (
-                  <p className="text-sm font-medium">{player.club_name}</p>
-                )}
-                {player.league_name && (
-                  <p className="text-xs text-muted-foreground">{player.league_name}</p>
-                )}
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Age: {calculateAge(player.date_of_birth) || 'N/A'}</span>
-                  <span>Articles: {player.total_articles || 0}</span>
-                </div>
-                {player.market_value && (
-                  <div className="text-center">
-                    <Badge variant="secondary" className="text-xs">
-                      €{(player.market_value / 1000000).toFixed(1)}M
-                    </Badge>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredPlayers.length === 0 && searchTerm && (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No players found matching "{searchTerm}"</p>
-          </div>
-        )}
+                {/* Pagination */}
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.total}
+                  itemsPerPage={pagination.limit}
+                  onPageChange={handlePageChange}
+                  itemName="players"
+                />
+              </>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminPageLayout>
   )

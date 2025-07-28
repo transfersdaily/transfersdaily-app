@@ -39,9 +39,9 @@ export const API_CONFIG = {
     },
     search: {
       track: '/search/track',
-      trending: '/search/trending',
       stats: '/search/stats'
     },
+    mostSearched: '/most-searched',
     admin: {
       stats: '/admin/stats',
       articles: '/admin/articles',
@@ -93,6 +93,7 @@ export const AUTH_CONFIG = {
 // Storage keys
 export const STORAGE_KEYS = {
   accessToken: 'transfersdaily_access_token',
+  idToken: 'transfersdaily_id_token',
   refreshToken: 'transfersdaily_refresh_token',
   user: 'transfersdaily_user',
   preferences: 'transfersdaily_preferences'

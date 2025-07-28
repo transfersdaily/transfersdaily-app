@@ -42,12 +42,26 @@ export async function POST(request: NextRequest) {
       );
     }
     
+    // Get authorization header from the request
+    const authHeader = request.headers.get('authorization') || request.headers.get('Authorization');
+    console.log('🔐 Auth header present:', !!authHeader);
+    
+    if (!authHeader) {
+      return NextResponse.json({
+        success: false,
+        error: 'Authorization header is required'
+      }, { status: 401 });
+    }
+    
     // Try to upload to AWS API first
     try {
       console.log('🚀 Attempting upload to AWS API');
       
       const response = await fetch(`${API_BASE_URL}/admin/media/upload`, {
         method: 'POST',
+        headers: {
+          'Authorization': authHeader
+        },
         body: formData
       });
       

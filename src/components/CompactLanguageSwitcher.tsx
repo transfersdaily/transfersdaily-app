@@ -64,7 +64,7 @@ export function CompactLanguageSwitcher({ currentLocale }: CompactLanguageSwitch
         <Button 
           variant="ghost" 
           size="sm" 
-          className="flex items-center gap-1 px-2 py-1 h-8 text-muted-foreground hover:text-foreground hover:bg-muted"
+          className="flex items-center gap-1 px-2 py-1 h-8 text-muted-foreground hover:text-primary hover:bg-muted"
         >
           <span className="text-xs font-medium uppercase">{locale}</span>
           <ChevronDown className="h-3 w-3" />

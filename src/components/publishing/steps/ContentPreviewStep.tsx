@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,6 +19,7 @@ import {
   Globe
 } from 'lucide-react';
 import { API_CONFIG, getApiUrl } from '@/lib/config';
+import { getAuthHeaders } from '@/lib/api';
 
 interface ArticleData {
   id: string;
@@ -66,11 +68,15 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
       const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       console.log('🔍 Loading article from URL:', url);
       
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
+      
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...authHeaders
         }
       });
       
@@ -85,7 +91,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
         try {
           errorText = await response.text();
           console.error('Error response body:', errorText);
-        } catch (e) {
+        } catch (_e) {
           console.error('Could not read error response body');
         }
         
@@ -104,7 +110,7 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
       
       // Test if the image URL is accessible with Image constructor
       if (foundArticle.image_url) {
-        const testImg = new Image();
+        const testImg = new window.Image();
         testImg.crossOrigin = 'anonymous';
         testImg.onload = () => {
           // Image loaded successfully
@@ -265,9 +271,11 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
         {/* Featured Image */}
         {article?.image_url ? (
           <div className="relative">
-            <img 
+            <Image 
               src={article.image_url} 
               alt={previewData.title}
+              width={800}
+              height={256}
               className="w-full h-64 object-cover"
               onError={(e) => {
                 console.error('Failed to load featured image:', article.image_url);
@@ -393,9 +401,11 @@ export default function ContentPreviewStep({ articleId }: { articleId: string })
             {/* Link Preview Card */}
             <div className="border rounded-lg overflow-hidden">
               {article?.image_url ? (
-                <img 
+                <Image 
                   src={article.image_url} 
                   alt={previewData.title}
+                  width={400}
+                  height={200}
                   className="w-full h-32 object-cover"
                   onError={(e) => {
                     console.error('Failed to load social preview image:', article.image_url);

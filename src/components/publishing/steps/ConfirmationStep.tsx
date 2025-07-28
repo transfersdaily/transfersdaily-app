@@ -2,16 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  CheckCircle, 
   AlertTriangle, 
-  ArrowLeft,
   Eye
 } from 'lucide-react';
 import { API_CONFIG } from '@/lib/config';
+import { getAuthHeaders } from '@/lib/api';
 import ReactMarkdown from 'react-markdown';
 
 // Helper function to generate slug from title
@@ -63,7 +61,6 @@ export default function ConfirmationStep({
     socialConfigured: false,
     finalApproval: false
   });
-  const [isPublishing, setIsPublishing] = useState(false);
 
   useEffect(() => {
     loadArticle();
@@ -80,14 +77,19 @@ export default function ConfirmationStep({
   const loadArticle = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       console.log('🔍 Loading article for confirmation:', articleId);
+      
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
       
       const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...authHeaders
         }
       });
       
@@ -156,21 +158,6 @@ export default function ConfirmationStep({
     setConfirmations(prev => ({ ...prev, [key]: checked }));
   };
 
-  const allConfirmed = Object.values(confirmations).every(Boolean);
-
-  const handleTwitterPost = () => {
-    if (!article) return;
-    
-    const hashtags = generateHashtags();
-    const tweetText = `${article.title}\n\n${getArticleUrl()}\n\n${hashtags.map(tag => `#${tag}`).join(' ')}`;
-    
-    // Twitter Web Intent URL
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-    
-    // Open in new tab
-    window.open(twitterUrl, '_blank', 'width=550,height=420');
-  };
-
   const getArticleUrl = () => {
     if (!article) return `https://transfersdaily.com/en/article/loading-${articleId}`;
     
@@ -227,11 +214,6 @@ export default function ConfirmationStep({
     return hashtags.slice(0, 8); // Limit to 8 hashtags
   };
 
-  const handleFinish = () => {
-    // Route back to drafts page
-    window.location.href = '/admin/articles';
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -272,10 +254,10 @@ export default function ConfirmationStep({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-white border rounded-lg p-4 max-h-96 overflow-y-auto">
+            <div className="bg-card border border-border rounded-lg p-4 max-h-96 overflow-y-auto">
               {/* Article Header */}
               <div className="mb-3">
-                <span className="text-xs text-rose-600 font-medium uppercase tracking-wide">
+                <span className="text-xs text-primary font-medium uppercase tracking-wide">
                   {article.category}
                 </span>
                 <h1 className="heading text-black font-bold text-lg mt-1 mb-2">
@@ -322,10 +304,10 @@ export default function ConfirmationStep({
           <CardContent>
             <div className="space-y-4">
               {/* Twitter Post */}
-              <div className="bg-white border rounded-lg p-4">
+              <div className="bg-card border border-border rounded-lg p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-gray-600">TD</span>
+                    <span className="text-xs font-bold text-muted-foreground">TD</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
@@ -352,7 +334,7 @@ export default function ConfirmationStep({
               </div>
 
               {/* Twitter Card Preview */}
-              <div className="border rounded-lg overflow-hidden bg-white">
+              <div className="border border-border rounded-lg overflow-hidden bg-card">
                 <div className="flex">
                   {article.image_url && (
                     <img 

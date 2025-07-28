@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Trophy } from 'lucide-react'
 
 interface LeagueImageProps {
@@ -22,9 +23,11 @@ export function LeagueImage({ src, alt, className, fallbackClassName }: LeagueIm
   }
 
   return (
-    <img
+    <Image
       src={src}
       alt={alt}
+      width={64}
+      height={64}
       className={className}
       onError={() => setImageError(true)}
     />

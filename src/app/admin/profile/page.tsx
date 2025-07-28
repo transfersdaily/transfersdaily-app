@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User, Lock, Mail } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { User, Lock } from "lucide-react"
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState({
@@ -23,6 +24,14 @@ export default function ProfilePage() {
   })
 
   const [isLoading, setIsLoading] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+
+  // Simulate initial data loading
+  useState(() => {
+    setTimeout(() => {
+      setIsInitialLoading(false)
+    }, 800)
+  })
 
   const handleSaveProfile = async () => {
     setIsLoading(true)
@@ -44,31 +53,95 @@ export default function ProfilePage() {
   return (
     <AdminPageLayout title="Profile">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Profile Information */}
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <User className="h-5 w-5" />
-              Profile Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">First Name</Label>
-                <Input
-                  value={profile.firstName}
-                  onChange={(e) => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
-                  className="mt-1"
-                />
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Last Name</Label>
-                <Input
-                  value={profile.lastName}
-                  onChange={(e) => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
-                  className="mt-1"
-                />
+        {isInitialLoading ? (
+          <>
+            {/* Profile Information Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <User className="h-5 w-5" />
+                  Profile Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Skeleton className="h-4 w-20 mb-2" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-20 mb-2" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-16 mb-2" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                  <div>
+                    <Skeleton className="h-4 w-12 mb-2" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </div>
+                <div className="flex justify-end pt-4">
+                  <Skeleton className="h-10 w-32" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Change Password Skeleton */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Lock className="h-5 w-5" />
+                  Change Password
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div>
+                  <Skeleton className="h-4 w-32 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div>
+                  <Skeleton className="h-4 w-28 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div>
+                  <Skeleton className="h-4 w-36 mb-2" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="flex justify-end pt-4">
+                  <Skeleton className="h-10 w-36" />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <>
+            {/* Profile Information */}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <User className="h-5 w-5" />
+                  Profile Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">First Name</Label>
+                    <Input
+                      value={profile.firstName}
+                      onChange={(e) => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium">Last Name</Label>
+                    <Input
+                      value={profile.lastName}
+                      onChange={(e) => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
+                      className="mt-1"
+                    />
               </div>
             </div>
             
@@ -149,6 +222,8 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
+          </>
+        )}
       </div>
     </AdminPageLayout>
   )

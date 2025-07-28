@@ -1,23 +1,19 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { 
   CheckCircle, 
-  Circle, 
   ArrowLeft, 
   ArrowRight, 
   Save,
   Eye,
   Edit,
-  Share2,
-  FileCheck
+  Share2
 } from 'lucide-react';
-import { API_CONFIG, getApiUrl } from '@/lib/config';
 import { adminApi } from '@/lib/api';
 
 // Step Components
@@ -192,14 +188,14 @@ export default function PublishingWizardPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-900">Publishing Wizard</h1>
-              <p className="text-slate-600">Article ID: {articleId}</p>
+              <h1 className="text-2xl font-semibold text-foreground">Publishing Wizard</h1>
+              <p className="text-muted-foreground">Article ID: {articleId}</p>
             </div>
             <Button variant="outline" onClick={handleSaveDraft}>
               <Save className="w-4 h-4 mr-2" />
@@ -210,10 +206,10 @@ export default function PublishingWizardPage({
       </div>
 
       {/* Progress Bar */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="space-y-4">
-            <div className="flex justify-between text-sm text-slate-600">
+            <div className="flex justify-between text-sm text-muted-foreground">
               <span>Step {currentStepIndex + 1} of {STEPS.length}</span>
               <span>{Math.round(progress)}% Complete</span>
             </div>
@@ -223,7 +219,7 @@ export default function PublishingWizardPage({
       </div>
 
       {/* Step Navigation */}
-      <div className="bg-white border-b border-slate-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-8">
@@ -240,8 +236,8 @@ export default function PublishingWizardPage({
                         ${isCompleted 
                           ? 'bg-green-500 border-green-500 text-white shadow-lg' 
                           : isActive 
-                            ? 'bg-rose-500 border-rose-500 text-white shadow-lg scale-110'
-                            : 'bg-white border-slate-300 text-slate-400'
+                            ? 'bg-primary border-primary text-primary-foreground shadow-lg scale-110'
+                            : 'bg-card border-border text-muted-foreground'
                         }
                       `}>
                         {isCompleted ? (
@@ -252,18 +248,18 @@ export default function PublishingWizardPage({
                       </div>
                       <div className="mt-3 text-center">
                         <p className={`text-sm font-medium ${
-                          isActive ? 'text-rose-600' : isCompleted ? 'text-green-600' : 'text-slate-500'
+                          isActive ? 'text-primary' : isCompleted ? 'text-green-600' : 'text-muted-foreground'
                         }`}>
                           {stepConfig.title}
                         </p>
-                        <p className="text-xs text-slate-400 mt-1 hidden sm:block">
+                        <p className="text-xs text-muted-foreground mt-1 hidden sm:block">
                           {stepConfig.description}
                         </p>
                       </div>
                     </div>
                     {index < STEPS.length - 1 && (
                       <div className={`w-16 h-0.5 mx-4 transition-colors duration-200 ${
-                        isCompleted ? 'bg-green-500' : 'bg-slate-300'
+                        isCompleted ? 'bg-green-500' : 'bg-border'
                       }`} />
                     )}
                   </div>
@@ -282,7 +278,7 @@ export default function PublishingWizardPage({
               {currentStepConfig.icon}
               <div>
                 <CardTitle>{currentStepConfig.title}</CardTitle>
-                <p className="text-slate-600">{currentStepConfig.description}</p>
+                <p className="text-muted-foreground">{currentStepConfig.description}</p>
               </div>
             </div>
           </CardHeader>
@@ -310,13 +306,13 @@ export default function PublishingWizardPage({
                 disabled={!wizardState.confirmationsComplete || isPublishing}
                 className={`px-8 py-3 ${
                   wizardState.confirmationsComplete && !isPublishing
-                    ? 'bg-rose-600 hover:bg-rose-700 text-white' 
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
+                    : 'bg-muted text-muted-foreground cursor-not-allowed'
                 }`}
               >
                 {isPublishing ? (
                   <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
                     Publishing...
                   </>
                 ) : (

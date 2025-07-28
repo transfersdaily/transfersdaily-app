@@ -43,5 +43,5 @@ export function ClientFooter() {
     )
   }
 
-  return <Footer locale={locale} dict={dict} />
+  return <Footer />
 }

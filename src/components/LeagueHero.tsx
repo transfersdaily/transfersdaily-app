@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { Badge } from "@/components/ui/badge"
 
 interface LeagueHeroProps {
@@ -29,9 +30,11 @@ export function LeagueHero({
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="flex items-center justify-center gap-4 mb-6">
-            <img 
+            <Image 
               src={logoSrc}
               alt={logoAlt}
+              width={64}
+              height={64}
               className="w-16 h-16 object-contain"
             />
             <div>

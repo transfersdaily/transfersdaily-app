@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -10,11 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Twitter, 
   Calendar,
-  Clock,
-  Hash,
   Sparkles
 } from 'lucide-react';
 import { API_CONFIG } from '@/lib/config';
+import { getAuthHeaders } from '@/lib/api';
 
 // Helper function to generate slug from title
 function generateSlug(title: string): string {
@@ -88,6 +88,7 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
   
   const [article, setArticle] = useState<ArticleData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [newHashtag, setNewHashtag] = useState('');
 
   useEffect(() => {
@@ -116,14 +117,19 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
   const loadArticle = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       console.log('🔍 Loading article for social media:', articleId);
+      
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
       
       const url = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...authHeaders
         }
       });
       
@@ -160,13 +166,14 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
       
     } catch (err) {
       console.error('💥 Error loading article:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load article');
     } finally {
       setIsLoading(false);
     }
   };
 
   const generateHashtags = (articleData: ArticleData) => {
-    const hashtags = [];
+    const hashtags: string[] = [];
     
     // Add player name (remove spaces and special characters)
     if (articleData.player_name) {
@@ -431,9 +438,11 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
                     <div className="border rounded-lg overflow-hidden bg-white">
                       <div className="flex">
                         {article.image_url && (
-                          <img 
+                          <Image 
                             src={article.image_url} 
-                            alt="Article preview" 
+                            alt="Article preview"
+                            width={96}
+                            height={96}
                             className="w-24 h-24 object-cover"
                           />
                         )}

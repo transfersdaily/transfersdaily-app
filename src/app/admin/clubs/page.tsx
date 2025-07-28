@@ -6,78 +6,134 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Plus, Search, Building, Users, Calendar } from "lucide-react"
-import { getClubs, Club } from "@/lib/clubs-api"
+import { adminApi } from "@/lib/api"
+import { Pagination } from "@/components/ui/pagination"
+
+interface Club {
+  id: number
+  name: string
+  league_id?: number
+  league_name?: string
+  country?: string
+  player_count?: number
+  article_count?: number
+  created_at: string
+}
+
+interface Pagination {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+}
 
 export default function AdminClubsPage() {
   const [clubs, setClubs] = useState<Club[]>([])
-  const [filteredClubs, setFilteredClubs] = useState<Club[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 50,
+    total: 0,
+    totalPages: 0
+  })
+  const [stats, setStats] = useState({
+    totalClubs: 0,
+    totalPlayers: 0,
+    totalArticles: 0
+  })
 
   useEffect(() => {
-    loadClubs()
+    loadClubs(1)
   }, [])
 
   useEffect(() => {
-    const filtered = clubs.filter(club =>
-      club.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      club.league_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      club.country?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    setFilteredClubs(filtered)
-  }, [clubs, searchTerm])
+    if (searchTerm) {
+      // Reset to page 1 when searching
+      loadClubs(1, searchTerm)
+    } else {
+      loadClubs(pagination.page)
+    }
+  }, [searchTerm])
 
-  const loadClubs = async () => {
+  const loadClubs = async (page: number = 1, search?: string) => {
     try {
       setIsLoading(true)
       setError(null)
-      const data = await getClubs()
-      setClubs(data)
+      
+      const response = await adminApi.getClubs({
+        page,
+        limit: 50,
+        search: search || searchTerm
+      })
+      
+      setClubs(response.clubs)
+      setPagination(response.pagination)
+      
+      // Calculate stats from all clubs data
+      setStats({
+        totalClubs: response.pagination.total,
+        totalPlayers: response.clubs.reduce((sum, club) => sum + (club.player_count || 0), 0),
+        totalArticles: response.clubs.reduce((sum, club) => sum + (club.article_count || 0), 0)
+      })
+      
     } catch (err) {
+      console.error('Failed to load clubs:', err)
       setError(err instanceof Error ? err.message : 'Failed to load clubs')
+      setClubs([])
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleAddClick = () => {
-    console.log('Add club clicked')
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      loadClubs(newPage)
+    }
   }
 
-  if (isLoading) {
-    return (
-      <AdminPageLayout title="Clubs">
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </AdminPageLayout>
-    )
-  }
-
-  if (error) {
-    return (
-      <AdminPageLayout title="Clubs">
-        <div className="text-center py-8">
-          <p className="text-red-600 mb-4">{error}</p>
-          <Button onClick={loadClubs}>Retry</Button>
-        </div>
-      </AdminPageLayout>
-    )
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
   }
 
   return (
-    <AdminPageLayout
-      title="Clubs"
-      actions={
-        <Button size="sm" onClick={handleAddClick}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Club
-        </Button>
-      }
-    >
+    <AdminPageLayout>
       <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Clubs</h1>
+            <p className="text-muted-foreground">Manage football clubs and their information</p>
+          </div>
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Club
+          </Button>
+        </div>
+
+        {/* Error State */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-red-800 font-medium">Failed to load clubs</p>
+                <p className="text-red-600 text-sm">{error}</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => loadClubs(1)}>
+                Retry
+              </Button>
+            </div>
+          </div>
+        )}
+
         {/* Search */}
         <div className="relative w-96">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -96,7 +152,7 @@ export default function AdminClubsPage() {
               <div className="flex items-center gap-2">
                 <Building className="h-5 w-5 text-blue-500" />
                 <div>
-                  <p className="text-2xl font-bold">{clubs.length}</p>
+                  <p className="text-2xl font-bold">{stats.totalClubs}</p>
                   <p className="text-sm text-muted-foreground">Total Clubs</p>
                 </div>
               </div>
@@ -108,7 +164,7 @@ export default function AdminClubsPage() {
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-green-500" />
                 <div>
-                  <p className="text-2xl font-bold">{clubs.reduce((sum, club) => sum + (club.player_count || 0), 0)}</p>
+                  <p className="text-2xl font-bold">{stats.totalPlayers}</p>
                   <p className="text-sm text-muted-foreground">Total Players</p>
                 </div>
               </div>
@@ -120,7 +176,7 @@ export default function AdminClubsPage() {
               <div className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-purple-500" />
                 <div>
-                  <p className="text-2xl font-bold">{clubs.reduce((sum, club) => sum + (club.article_count || 0), 0)}</p>
+                  <p className="text-2xl font-bold">{stats.totalArticles}</p>
                   <p className="text-sm text-muted-foreground">Total Articles</p>
                 </div>
               </div>
@@ -128,44 +184,74 @@ export default function AdminClubsPage() {
           </Card>
         </div>
 
-        {/* Clubs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredClubs.map((club) => (
-            <Card key={club.id} className="hover:shadow-md transition-shadow cursor-pointer">
-              <CardHeader className="pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
-                    {club.name?.charAt(0) || 'C'}
+        {/* Clubs Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>All Clubs ({pagination.total})</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <div className="space-y-3">
+                {[...Array(10)].map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4">
+                    <Skeleton className="h-4 w-8" />
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-20" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-base truncate">{club.name || 'Unknown Club'}</CardTitle>
-                    {club.league_name && (
-                      <Badge variant="outline" className="mt-1 text-xs">{club.league_name}</Badge>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 space-y-2">
-                {club.country && (
-                  <p className="text-sm text-muted-foreground">{club.country}</p>
-                )}
-                {club.stadium && (
-                  <p className="text-xs text-muted-foreground">Stadium: {club.stadium}</p>
-                )}
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Players: {club.player_count || 0}</span>
-                  <span>Articles: {club.article_count || 0}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                ))}
+              </div>
+            ) : (
+              <>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>League</TableHead>
+                      <TableHead>Country</TableHead>
+                      <TableHead>Players</TableHead>
+                      <TableHead>Articles</TableHead>
+                      <TableHead>Created</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {clubs.map((club) => (
+                      <TableRow key={club.id}>
+                        <TableCell className="font-mono text-sm">{club.id}</TableCell>
+                        <TableCell className="font-medium">{club.name}</TableCell>
+                        <TableCell>{club.league_name || '-'}</TableCell>
+                        <TableCell>{club.country || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="secondary">{club.player_count || 0}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline">{club.article_count || 0}</Badge>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {formatDate(club.created_at)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
 
-        {filteredClubs.length === 0 && searchTerm && (
-          <div className="text-center py-8">
-            <p className="text-muted-foreground">No clubs found matching "{searchTerm}"</p>
-          </div>
-        )}
+                {/* Pagination */}
+                <Pagination
+                  currentPage={pagination.page}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.total}
+                  itemsPerPage={pagination.limit}
+                  onPageChange={handlePageChange}
+                  itemName="clubs"
+                />
+              </>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </AdminPageLayout>
   )

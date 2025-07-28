@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, ChevronDown, Search, User, X } from 'lucide-react';
+import { Menu, ChevronDown, Search, User } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useDictionary } from '@/lib/dictionary-provider';
 import { useParams } from 'next/navigation';
@@ -26,7 +26,7 @@ interface NavbarProps {
 
 export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const params = useParams();
   const locale = propLocale || (params?.locale as Locale) || 'en';
   const { t } = useDictionary();
@@ -175,7 +175,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={signOut}>Logout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (

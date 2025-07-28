@@ -91,9 +91,13 @@ async function refreshAccessToken(): Promise<string | null> {
     
     if (result.AuthenticationResult?.AccessToken) {
       const newAccessToken = result.AuthenticationResult.AccessToken;
+      const newIdToken = result.AuthenticationResult.IdToken;
+      
       localStorage.setItem(STORAGE_KEYS.accessToken, newAccessToken);
-      console.log('✅ Access token refreshed successfully');
-      return newAccessToken;
+      if (newIdToken) localStorage.setItem(STORAGE_KEYS.idToken, newIdToken);
+      
+      console.log('✅ Tokens refreshed successfully');
+      return newIdToken || newAccessToken; // Return ID token for auth headers
     }
 
     return null;
@@ -104,17 +108,18 @@ async function refreshAccessToken(): Promise<string | null> {
 }
 
 // Helper function to get auth headers with automatic token refresh
-async function getAuthHeaders(): Promise<HeadersInit> {
-  let token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.accessToken) : null;
+export async function getAuthHeaders(): Promise<HeadersInit> {
+  // Use ID token for Cognito User Pool Authorizer (not access token)
+  let token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.idToken) : null;
   
   // Debug logging
   console.log('🔐 getAuthHeaders called');
   console.log('  - Window available:', typeof window !== 'undefined');
-  console.log('  - Token present:', !!token);
+  console.log('  - ID Token present:', !!token);
   
   if (token) {
     console.log('  - Token length:', token.length);
-    console.log('  - Token preview:', `${token.substring(0, 20)}...`);
+    console.log('  - Token preview:', `${token.substring(0, 50)}...`);
     
     // Check token expiration
     const decoded = decodeJWT(token);
@@ -128,6 +133,11 @@ async function getAuthHeaders(): Promise<HeadersInit> {
       console.log('  - Current time:', new Date(currentTime).toISOString());
       console.log('  - Token expired:', isExpired);
       console.log('  - Time until expiry:', Math.round(timeUntilExpiry / 1000 / 60), 'minutes');
+      console.log('  - Token claims:', decoded);
+      console.log('  - Token type (typ):', decoded.typ);
+      console.log('  - Token audience (aud):', decoded.aud);
+      console.log('  - Token issuer (iss):', decoded.iss);
+      console.log('  - Token use (token_use):', decoded.token_use);
       
       // If token is expired or expires in less than 5 minutes, try to refresh
       if (isExpired || timeUntilExpiry < 5 * 60 * 1000) {
@@ -139,11 +149,14 @@ async function getAuthHeaders(): Promise<HeadersInit> {
         } else {
           console.warn('⚠️ Token refresh failed, clearing auth data');
           localStorage.removeItem(STORAGE_KEYS.accessToken);
+          localStorage.removeItem(STORAGE_KEYS.idToken);
           localStorage.removeItem(STORAGE_KEYS.refreshToken);
           localStorage.removeItem(STORAGE_KEYS.user);
           token = null;
         }
       }
+    } else {
+      console.warn('⚠️ Could not decode token or missing expiration');
     }
   } else {
     console.log('  - No token found in localStorage');
@@ -155,7 +168,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
-    console.log('  - Authorization header set');
+    console.log('  - Authorization header set with Bearer token');
   } else {
     console.log('  - No token, Authorization header not set');
   }
@@ -688,26 +701,15 @@ export const articlesApi = {
     }
   },
 
-  // Get trending articles (highest transfer fees)
+  // Get trending articles (redirects to latest for now)
   async getTrending(limit = 5, language = 'en'): Promise<Article[]> {
     try {
-      const params = new URLSearchParams({
-        limit: limit.toString(),
-        status: 'published',
-        sort: 'trending', // Signal to backend to sort by transfer fee
-        language: language // Add language parameter
-      })
+      console.log('Trending articles redirecting to latest articles for language:', language)
       
-      console.log('Fetching trending articles for language:', language)
-      
-      const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
-        `${API_CONFIG.endpoints.articles.trending}?${params}`
-      )
-      
-      const articles = response.data?.articles || (response as any).articles || []
-      return articles.slice(0, limit).map(transformArticleToArticle)
+      // Redirect trending to latest articles for now
+      return await this.getLatest(limit, 0, language)
     } catch (error) {
-      console.error('Error fetching trending articles:', error)
+      console.error('Error fetching trending articles (redirected to latest):', error)
       throw error
     }
   }
@@ -769,63 +771,7 @@ export const leaguesApi = {
   }
 }
 
-// Newsletter API functions
-export const newsletterApi = {
-  // Subscribe to newsletter
-  async subscribe(email: string, preferences?: {
-    firstName?: string
-    lastName?: string
-    preferences?: Record<string, unknown>
-  }): Promise<boolean> {
-    try {
-      const response = await apiRequest(
-        API_CONFIG.endpoints.newsletter.subscribe,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            email,
-            firstName: preferences?.firstName,
-            lastName: preferences?.lastName,
-            preferences: preferences?.preferences
-          })
-        }
-      )
-      return (response as any).success || true
-    } catch (error) {
-      console.error('Error subscribing to newsletter:', error)
-      return false
-    }
-  },
 
-  // Get newsletter subscriptions (admin only)
-  async getSubscriptions(): Promise<any[]> {
-    try {
-      const response = await apiRequest<{ success: boolean; data: { subscriptions: any[] } }>(
-        API_CONFIG.endpoints.newsletter.list
-      )
-      return response.data?.subscriptions || []
-    } catch (error) {
-      console.error('Error getting newsletter subscriptions:', error)
-      return []
-    }
-  },
-
-  // Unsubscribe from newsletter
-  async unsubscribe(emailOrId: string): Promise<boolean> {
-    try {
-      const response = await apiRequest(
-        `${API_CONFIG.endpoints.newsletter.unsubscribe}/${emailOrId}`,
-        {
-          method: 'DELETE'
-        }
-      )
-      return (response as any).success || true
-    } catch (error) {
-      console.error('Error unsubscribing from newsletter:', error)
-      return false
-    }
-  }
-}
 
 // Admin API functions
 export const adminApi = {
@@ -857,20 +803,8 @@ export const adminApi = {
     }>
   }> {
     try {
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.stats}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      })
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      return data.data || {
+      const response = await apiRequest<any>(API_CONFIG.endpoints.admin.stats)
+      return response.data || {
         totalArticles: 0,
         draftArticles: 0,
         publishedArticles: 0,
@@ -940,29 +874,17 @@ export const adminApi = {
 
       console.log('🔍 Fetching articles with params:', Object.fromEntries(queryParams))
       
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}?${queryParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      })
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.articles}?${queryParams}`)
+      console.log('📊 Articles API response:', response)
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      console.log('📊 Articles API response:', data)
-
-      if (!data.success) {
-        throw new Error(data.message || 'Failed to fetch articles')
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch articles')
       }
 
       return {
-        articles: data.data?.articles || [],
-        pagination: data.data?.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 },
-        stats: data.data?.stats || null
+        articles: response.data?.articles || [],
+        pagination: response.data?.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 },
+        stats: response.data?.stats || null
       }
     } catch (error) {
       console.error('💥 Error fetching articles:', error)
@@ -1064,6 +986,208 @@ export const adminApi = {
     } catch (error) {
       console.error('Error updating article status:', error)
       return false
+    }
+  },
+
+  // Clubs API functions
+  async getClubs(params?: {
+    page?: number
+    limit?: number
+    search?: string
+    league?: string
+  }): Promise<{
+    clubs: Array<{
+      id: number
+      name: string
+      league_id?: number
+      league_name?: string
+      country?: string
+      player_count?: number
+      article_count?: number
+      created_at: string
+    }>
+    pagination: {
+      page: number
+      limit: number
+      total: number
+      totalPages: number
+    }
+  }> {
+    try {
+      const queryParams = new URLSearchParams({
+        page: (params?.page || 1).toString(),
+        limit: (params?.limit || 50).toString()
+      })
+      
+      if (params?.search) queryParams.append('search', params.search)
+      if (params?.league) queryParams.append('league', params.league)
+
+      console.log('🏢 Fetching clubs with params:', Object.fromEntries(queryParams))
+      
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.clubs.all}?${queryParams}`)
+      console.log('📊 Clubs API response:', response)
+
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch clubs')
+      }
+
+      return {
+        clubs: response.clubs || [],  // Backend now returns clubs in 'clubs' field
+        pagination: response.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 }
+      }
+    } catch (error) {
+      console.error('💥 Error fetching clubs:', error)
+      throw error
+    }
+  },
+
+  // Players API functions
+  async getPlayers(params?: {
+    page?: number
+    limit?: number
+    search?: string
+    club?: string
+  }): Promise<{
+    players: Array<{
+      id: number
+      full_name: string
+      current_club_id?: number
+      current_club_name?: string
+      league_name?: string
+      country?: string
+      article_count?: number
+      created_at: string
+    }>
+    pagination: {
+      page: number
+      limit: number
+      total: number
+      totalPages: number
+    }
+  }> {
+    try {
+      const queryParams = new URLSearchParams({
+        page: (params?.page || 1).toString(),
+        limit: (params?.limit || 50).toString()
+      })
+      
+      if (params?.search) queryParams.append('search', params.search)
+      if (params?.club) queryParams.append('club', params.club)
+
+      console.log('👤 Fetching players with params:', Object.fromEntries(queryParams))
+      
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.players.all}?${queryParams}`)
+      console.log('📊 Players API response:', response)
+
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch players')
+      }
+
+      return {
+        players: response.players || [],
+        pagination: response.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 }
+      }
+    } catch (error) {
+      console.error('💥 Error fetching players:', error)
+      throw error
+    }
+  },
+
+  async getPlayerById(id: number): Promise<{
+    id: number
+    full_name: string
+    current_club_id?: number
+    current_club_name?: string
+    league_name?: string
+    country?: string
+    article_count?: number
+    created_at: string
+  } | null> {
+    try {
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.players.byId}/${id}`)
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch player')
+      }
+
+      return response.data || null
+    } catch (error) {
+      console.error('💥 Error fetching player:', error)
+      throw error
+    }
+  },
+
+  // Leagues API functions
+  async getLeagues(params?: {
+    page?: number
+    limit?: number
+    search?: string
+    country?: string
+  }): Promise<{
+    leagues: Array<{
+      id: number
+      name: string
+      country: string
+      club_count?: number
+      player_count?: number
+      article_count?: number
+      created_at: string
+    }>
+    pagination: {
+      page: number
+      limit: number
+      total: number
+      totalPages: number
+    }
+  }> {
+    try {
+      const queryParams = new URLSearchParams({
+        page: (params?.page || 1).toString(),
+        limit: (params?.limit || 50).toString()
+      })
+      
+      if (params?.search) queryParams.append('search', params.search)
+      if (params?.country) queryParams.append('country', params.country)
+
+      console.log('🏆 Fetching leagues with params:', Object.fromEntries(queryParams))
+      
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.leagues.all}?${queryParams}`)
+      console.log('📊 Leagues API response:', response)
+
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch leagues')
+      }
+
+      return {
+        leagues: response.leagues || [],
+        pagination: response.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 }
+      }
+    } catch (error) {
+      console.error('💥 Error fetching leagues:', error)
+      throw error
+    }
+  },
+
+  async getLeagueById(id: number): Promise<{
+    id: number
+    name: string
+    country: string
+    club_count?: number
+    player_count?: number
+    article_count?: number
+    created_at: string
+  } | null> {
+    try {
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.leagues.byId}/${id}`)
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch league')
+      }
+
+      return response.data || null
+    } catch (error) {
+      console.error('💥 Error fetching league:', error)
+      throw error
     }
   },
 
@@ -1279,15 +1403,16 @@ export const searchApi = {
     }
   },
 
-  // Get trending searches
-  async getTrendingSearches(params?: {
+  // Get most searched terms for sidebar
+  async getMostSearchedTerms(params?: {
     limit?: number
     days?: number
   }): Promise<Array<{
-    name: string
+    term: string
     query: string
-    count: string
-    search_count: number
+    count: number
+    displayCount: string
+    lastSearched: string
   }>> {
     try {
       const queryParams = new URLSearchParams()
@@ -1297,20 +1422,22 @@ export const searchApi = {
       const response = await apiRequest<{
         success: boolean
         data: {
-          trending: Array<{
-            name: string
+          mostSearched: Array<{
+            term: string
             query: string
-            count: string
-            search_count: number
+            count: number
+            displayCount: string
+            lastSearched: string
           }>
+          total: number
         }
       }>(
-        `${API_CONFIG.endpoints.search.trending}?${queryParams}`
+        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.mostSearched}?${queryParams}`
       )
       
-      return response.data?.trending || []
+      return response.data?.mostSearched || []
     } catch (error) {
-      console.error('Error getting trending searches:', error)
+      console.error('Error getting most searched terms:', error)
       throw error
     }
   },
@@ -1357,12 +1484,85 @@ export const searchApi = {
       }
     } catch (error) {
       console.error('Error getting search statistics:', error)
+      // Return empty stats instead of throwing to prevent UI crashes
       return {
         totalSearches: 0,
         uniqueQueries: 0,
         topSearches: [],
         recentActivity: { recent_searches: 0, unique_recent: 0 }
       }
+    }
+  }
+}
+
+// Newsletter API functions
+export const newsletterApi = {
+  // Subscribe to newsletter (public)
+  async subscribe(email: string, preferences?: {
+    firstName?: string
+    lastName?: string
+    preferences?: Record<string, unknown>
+  }): Promise<{ success: boolean; subscriptionId?: string }> {
+    try {
+      const response = await apiRequest<{ 
+        success: boolean
+        data: { subscriptionId: string; status: string }
+      }>(
+        API_CONFIG.endpoints.newsletter.subscribe,
+        {
+          method: 'POST',
+          body: JSON.stringify({ email, ...preferences })
+        }
+      )
+      return {
+        success: response.success || true,
+        subscriptionId: response.data?.subscriptionId
+      }
+    } catch (error) {
+      console.error('Error subscribing to newsletter:', error)
+      return { success: false }
+    }
+  },
+
+  // Get all subscriptions (admin only)
+  async getSubscriptions(): Promise<Array<{
+    id: string
+    email: string
+    firstName?: string
+    lastName?: string
+    status: 'active' | 'unsubscribed' | 'bounced'
+    subscribed_at: string
+    unsubscribed_at?: string
+    preferences?: Record<string, unknown>
+    source?: string
+  }>> {
+    try {
+      const response = await apiRequest<any>(API_CONFIG.endpoints.newsletter.list)
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch newsletter subscribers')
+      }
+
+      return response.data?.subscribers || []
+    } catch (error) {
+      console.error('💥 Error fetching newsletter subscribers:', error)
+      throw error
+    }
+  },
+
+  // Unsubscribe user (admin only)
+  async unsubscribe(subscriberId: string): Promise<void> {
+    try {
+      const response = await apiRequest<any>(`${API_CONFIG.endpoints.newsletter.unsubscribe}/${subscriberId}`, {
+        method: 'POST'
+      })
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to unsubscribe user')
+      }
+    } catch (error) {
+      console.error('💥 Error unsubscribing user:', error)
+      throw error
     }
   }
 }

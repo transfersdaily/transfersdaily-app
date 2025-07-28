@@ -20,34 +20,75 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
   const [subscriptionStatus, setSubscriptionStatus] = useState<
     'idle' | 'success' | 'error'
   >('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isEmailValid, setIsEmailValid] = useState(true);
 
   const t = (key: string) => getTranslation(dict, key);
+
+  // Email validation function
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email.trim());
+  };
+
+  // Handle email input change with real-time validation
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    
+    // Reset error state when user starts typing
+    if (subscriptionStatus === 'error') {
+      setSubscriptionStatus('idle');
+      setErrorMessage('');
+    }
+    
+    // Real-time validation (only show error if user has typed something)
+    if (newEmail.length > 0) {
+      setIsEmailValid(isValidEmail(newEmail));
+    } else {
+      setIsEmailValid(true);
+    }
+  };
 
   const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !email.includes('@')) {
+    // Reset error state
+    setErrorMessage('');
+    setSubscriptionStatus('idle');
+
+    // Validate email
+    if (!email.trim()) {
       setSubscriptionStatus('error');
+      setErrorMessage('Please enter your email address.');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setSubscriptionStatus('error');
+      setErrorMessage('Please enter a valid email address.');
       return;
     }
 
     setIsSubscribing(true);
-    setSubscriptionStatus('idle');
 
     try {
-      const success = await newsletterApi.subscribe(email);
+      const success = await newsletterApi.subscribe(email.trim());
 
       if (success) {
         setSubscriptionStatus('success');
         setEmail('');
+        setErrorMessage('');
         // Track successful newsletter signup
-        trackNewsletterSignup(email);
+        trackNewsletterSignup(email.trim());
       } else {
         setSubscriptionStatus('error');
+        setErrorMessage('Subscription failed. Please try again.');
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
       setSubscriptionStatus('error');
+      setErrorMessage('Something went wrong. Please try again later.');
     } finally {
       setIsSubscribing(false);
     }
@@ -91,9 +132,11 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
                     <Input
                       type="email"
                       placeholder={t('newsletter.emailPlaceholder')}
-                      className="flex-1 h-11 focus:border-primary focus:ring-primary focus:outline-none"
+                      className={`flex-1 h-11 focus:border-primary focus:ring-primary focus:outline-none ${
+                        !isEmailValid && email.length > 0 ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''
+                      }`}
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       disabled={isSubscribing}
                       required
                       pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
@@ -102,7 +145,7 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
                     <Button
                       type="submit"
                       className="h-11 px-6 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-                      disabled={isSubscribing || !email}
+                      disabled={isSubscribing || !email || !isEmailValid}
                     >
                       {isSubscribing ? (
                         <>
@@ -117,7 +160,7 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
 
                   {subscriptionStatus === 'error' && (
                     <p className="text-sm text-destructive mt-3">
-                      Please check your email and try again.
+                      {errorMessage || 'Please check your email and try again.'}
                     </p>
                   )}
                 </form>

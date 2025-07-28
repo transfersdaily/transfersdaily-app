@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { TrendingUp, Calendar } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -157,7 +157,7 @@ export function ArticlesLineChart({
                 allowDecimals={false}
               />
               <ChartTooltip
-                content={({ active, payload, label }) => {
+                content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     const data = payload[0].payload as DailyData
                     return (

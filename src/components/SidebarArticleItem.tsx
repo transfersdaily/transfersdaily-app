@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import { Clock } from 'lucide-react';
 import Link from 'next/link';
 import { type Transfer } from '@/lib/api';
@@ -25,11 +25,12 @@ export function SidebarArticleItem({
       {/* Article Image - Consistent fixed size, centered, fills space */}
       <div className="flex-shrink-0 w-[50px] h-[70px] rounded-lg overflow-hidden bg-muted">
         {article.imageUrl ? (
-          <img
+          <Image
             className="w-full h-full object-cover object-center block group-hover:scale-105 transition-transform duration-200"
-            loading="lazy"
             src={article.imageUrl}
             alt={article.title}
+            width={50}
+            height={70}
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">

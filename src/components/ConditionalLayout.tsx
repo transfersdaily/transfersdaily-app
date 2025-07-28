@@ -26,7 +26,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       </main>
       <Footer />
       <MobileBottomNav />
-      <MobileSidebarDrawer />
+      <MobileSidebarDrawer locale={locale} dict={dict} />
     </>
   )
 }

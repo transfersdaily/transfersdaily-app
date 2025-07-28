@@ -97,9 +97,9 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
   if (!mounted) {
     return (
       <Button 
-        variant="outline" 
+        variant="ghost" 
         size="sm" 
-        className="h-8 px-2 text-xs font-medium"
+        className="h-8 px-2 text-xs font-medium text-foreground"
         disabled
       >
         <Globe className="h-3 w-3 mr-1" />
@@ -116,9 +116,9 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="sm" 
-            className="h-8 px-2 text-xs font-medium hover:bg-muted"
+            className="h-8 px-2 text-xs font-medium text-foreground hover:bg-secondary hover:text-primary"
           >
             <Globe className="h-3 w-3 mr-1" />
             {currentLang.shortCode}
@@ -148,7 +148,7 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
       <DropdownMenuTrigger asChild>
         <Button 
           variant="ghost" 
-          className="flex items-center space-x-2 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted"
+          className="flex items-center space-x-2 px-3 py-2 text-foreground hover:text-primary hover:bg-secondary"
         >
           <Globe className="h-4 w-4" />
           <span className="font-medium">{currentLang.shortCode}</span>

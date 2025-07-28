@@ -1,7 +1,9 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import Image from 'next/image'
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Sidebar } from "@/components/Sidebar"
 import { TransferCard } from "@/components/TransferCard"
@@ -15,7 +17,7 @@ import Link from "next/link"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ArticleClientComponents } from './ArticleClientComponents'
-import { typography, responsive } from "@/lib/typography"
+import { typography } from "@/lib/typography"
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -91,7 +93,7 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
 }
 
 // Server-side function to get related articles
-async function getRelatedArticles(limit: number = 3): Promise<Transfer[]> {
+async function getRelatedArticles(limit: number = 4): Promise<Transfer[]> {
   try {
     const articles = await transfersApi.getLatest(limit)
     return articles
@@ -109,9 +111,6 @@ export async function generateMetadata({
   const { locale, slug } = await params
   const searchParamsResolved = await searchParams
   const isPreview = searchParamsResolved.preview === 'true'
-  
-  // Get translations
-  const dict = await getDictionary(locale)
   
   try {
     // Fetch article data for metadata
@@ -215,7 +214,7 @@ export async function generateMetadata({
         modifiedTime,
         authors: ['Transfer Daily'],
         section: article.league || 'Football Transfer News',
-        tags: article.tags || [article.league, 'Football Transfer', 'Soccer News'].filter(Boolean),
+        tags: article.tags || [article.league, 'Football Transfer', 'Soccer News'].filter((tag): tag is string => Boolean(tag)),
         images: article.image_url ? [
           {
             url: article.image_url,
@@ -283,7 +282,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
   // Get article and related data server-side
   const [article, relatedArticles] = await Promise.all([
     getArticleBySlug(slug, locale),
-    getRelatedArticles(3)
+    getRelatedArticles(4)
   ])
   
   // If article not found, show 404
@@ -378,14 +377,14 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         }}
       />
       
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Article Content - 70% */}
-          <article className="lg:col-span-7 bg-card">
-            <div className="py-8">
+          <article className="lg:col-span-7 bg-card rounded-lg shadow-sm border border-border">
+            <div className="p-8 sm:p-10 lg:p-12 max-w-4xl mx-auto">
               {/* Back Button */}
               {isPreview ? (
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-8">
                   <Link href={`/${locale}/admin/articles/edit/${slug}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
                     <ArrowLeft className="h-4 w-4" />
                     <span>{getTranslation(dict, 'article.backToEdit', 'Back to Edit')}</span>
@@ -395,32 +394,32 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                   </Badge>
                 </div>
               ) : (
-                <Link href={`/${locale}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-6 transition-colors">
+                <Link href={`/${locale}`} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary mb-8 transition-colors">
                   <ArrowLeft className="h-4 w-4" />
                   <span>{getTranslation(dict, 'common.backToHome', 'Back to Home')}</span>
                 </Link>
               )}
 
               {/* Article Header */}
-              <header className="mb-8">
-                <Badge variant="outline" className={`mb-4 bg-muted text-muted-foreground border-border ${typography.badge}`}>
+              <header className="mb-10">
+                <Badge variant="outline" className={`mb-6 bg-muted text-muted-foreground border-border ${typography.badge}`}>
                   {article.league || 'Transfer News'}
                 </Badge>
                 
-                <h1 className={`${typography.article.title} mb-6 text-foreground`}>
+                <h1 className="text-4xl sm:text-5xl font-bold mb-8 text-foreground leading-tight tracking-tight">
                   {article.title}
                 </h1>
 
                 {/* Article Meta */}
-                <div className={`flex flex-wrap items-center gap-6 ${typography.article.meta} mb-6`}>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
+                <div className="flex flex-wrap items-center gap-8 text-base mb-8 text-muted-foreground">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5" />
                     <time dateTime={article.published_at}>
                       {new Date(article.published_at).toLocaleDateString()}
                     </time>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4" />
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-5 w-5" />
                     <span>5 {getTranslation(dict, 'article.minRead', 'min read')}</span>
                   </div>
                 </div>
@@ -432,33 +431,76 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                   dict={dict}
                 />
 
-                <Separator />
+                <Separator className="bg-border mt-8" />
               </header>
 
               {/* Featured Image */}
-              <div className="mb-8">
-                <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+              <div className="mb-12">
+                <div className="aspect-video bg-muted rounded-xl overflow-hidden border border-border shadow-sm">
                   {article.image_url ? (
-                    <img
+                    <Image
                       src={article.image_url}
                       alt={`${article.title} - ${article.league || 'Transfer News'}`}
+                      width={800}
+                      height={450}
                       className="w-full h-full object-cover"
-                      loading="eager"
-                      fetchPriority="high"
+                      priority
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center">
-                      <span className="text-muted-foreground">Article Image</span>
+                      <span className="text-muted-foreground text-lg">Article Image</span>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Article Content */}
-              <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-foreground prose-headings:font-bold prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4">
-                {article.content?.split('\n').map((paragraph, index) => (
-                  paragraph.trim() && <p key={index} className={`mb-4 ${typography.article.body} text-foreground`}>{paragraph}</p>
-                )) || <p className={`${typography.body.base} text-muted-foreground`}>Content not available.</p>}
+              <div className="prose prose-xl max-w-none prose-headings:text-foreground prose-p:text-foreground prose-headings:font-bold prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-8 prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6 prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-foreground prose-blockquote:border-l-border prose-blockquote:border-l-4 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-lg prose-code:text-foreground prose-pre:bg-muted prose-pre:text-foreground prose-ul:mb-6 prose-ol:mb-6 prose-li:mb-2 prose-li:text-lg prose-li:leading-relaxed">
+                {article.content?.split('\n').map((paragraph, index) => {
+                  const trimmedParagraph = paragraph.trim();
+                  if (!trimmedParagraph) return null;
+                  
+                  // Check if it's a heading (starts with #)
+                  if (trimmedParagraph.startsWith('# ')) {
+                    return (
+                      <h1 key={index} className="text-4xl font-bold text-foreground mt-8 mb-6 first:mt-0">
+                        {trimmedParagraph.substring(2)}
+                      </h1>
+                    );
+                  }
+                  if (trimmedParagraph.startsWith('## ')) {
+                    return (
+                      <h2 key={index} className="text-3xl font-bold text-foreground mt-10 mb-6 first:mt-0">
+                        {trimmedParagraph.substring(3)}
+                      </h2>
+                    );
+                  }
+                  if (trimmedParagraph.startsWith('### ')) {
+                    return (
+                      <h3 key={index} className="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">
+                        {trimmedParagraph.substring(4)}
+                      </h3>
+                    );
+                  }
+                  
+                  // Regular paragraph with enhanced readability
+                  return (
+                    <p 
+                      key={index} 
+                      className="text-lg leading-relaxed text-foreground mb-6 max-w-none tracking-wide"
+                      style={{ 
+                        lineHeight: '1.8',
+                        letterSpacing: '0.01em'
+                      }}
+                    >
+                      {trimmedParagraph}
+                    </p>
+                  );
+                }) || (
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    Content not available.
+                  </p>
+                )}
               </div>
 
               {/* Tags */}
@@ -474,35 +516,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                   </div>
                 </div>
               )}
-
-              {/* Related Articles */}
-              <section className="mt-12">
-                <h2 className="text-2xl font-bold mb-6 text-foreground">{getTranslation(dict, 'article.relatedArticles', 'Related Articles')}</h2>
-                <Suspense fallback={<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="animate-pulse">
-                      <div className="bg-muted aspect-video rounded-lg mb-4"></div>
-                      <div className="h-4 bg-muted rounded mb-2"></div>
-                      <div className="h-4 bg-muted rounded w-3/4"></div>
-                    </div>
-                  ))}
-                </div>}>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {relatedArticles.map((transfer) => (
-                      <TransferCard
-                        key={transfer.id}
-                        title={transfer.title}
-                        excerpt={transfer.excerpt}
-                        primaryBadge={transfer.league}
-                        timeAgo={formatTimeAgo(transfer.publishedAt)}
-                        href={`/${locale}/article/${transfer.slug || transfer.id}`}
-                        imageUrl={transfer.imageUrl}
-                        imageAlt={`${transfer.title} - ${transfer.league}`}
-                      />
-                    ))}
-                  </div>
-                </Suspense>
-              </section>
             </div>
           </article>
 
@@ -513,6 +526,39 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             </Suspense>
           </aside>
         </div>
+
+        {/* Related Articles - Outside the main card, full width with background color */}
+        <section className="mt-12 lg:col-span-7 lg:max-w-none">
+          <Card className="bg-background border-none shadow-none">
+            <CardContent className="p-6 sm:p-8 lg:p-10">
+              <h2 className="text-2xl font-bold mb-6 text-foreground">{getTranslation(dict, 'article.relatedArticles', 'Related Articles')}</h2>
+              <Suspense fallback={<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[1, 2, 3, 4].map(i => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-muted aspect-video rounded-lg mb-4 border border-border"></div>
+                    <div className="h-4 bg-muted rounded mb-2"></div>
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                  </div>
+                ))}
+              </div>}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {relatedArticles.slice(0, 4).map((transfer) => (
+                    <TransferCard
+                      key={transfer.id}
+                      title={transfer.title}
+                      excerpt={transfer.excerpt}
+                      primaryBadge={transfer.league}
+                      timeAgo={formatTimeAgo(transfer.publishedAt)}
+                      href={`/${locale}/article/${transfer.slug || transfer.id}`}
+                      imageUrl={transfer.imageUrl}
+                      imageAlt={`${transfer.title} - ${transfer.league}`}
+                    />
+                  ))}
+                </div>
+              </Suspense>
+            </CardContent>
+          </Card>
+        </section>
       </div>
     </main>
   )

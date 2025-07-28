@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { locales, defaultLocale, isValidLocale } from './lib/i18n'
+import { locales, defaultLocale, isValidLocale, type Locale } from './lib/i18n'
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -29,7 +29,7 @@ export function middleware(request: NextRequest) {
   }
 
   // No locale in pathname, determine the appropriate locale
-  let locale = defaultLocale
+  let locale: Locale = defaultLocale
 
   // 1. Check for locale in cookie
   const localeCookie = request.cookies.get('locale')?.value

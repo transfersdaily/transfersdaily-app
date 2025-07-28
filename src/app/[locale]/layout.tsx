@@ -1,12 +1,9 @@
-import { Inter } from 'next/font/google'
 import { ConditionalLayout } from '@/components/ConditionalLayout'
 import { locales, type Locale, getDictionary } from '@/lib/i18n'
 import { DictionaryProvider } from '@/lib/dictionary-provider'
 import { ServerNavbar } from '@/components/ServerNavbar'
 import { notFound } from 'next/navigation'
 import '../globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }))

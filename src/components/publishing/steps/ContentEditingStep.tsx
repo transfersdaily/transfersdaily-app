@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import dynamic from 'next/dynamic';
 
 // Dynamically import MDEditor to avoid SSR issues
@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Save, 
-  Image, 
+  Image as ImageIcon, 
   Globe, 
   Eye,
   Upload,
@@ -21,6 +21,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { API_CONFIG, getApiUrl } from '@/lib/config';
+import { getAuthHeaders } from '@/lib/api';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ArticleData {
@@ -87,11 +88,15 @@ export default function ContentEditingStep({
       const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       console.log('🔍 Loading article from URL:', url);
       
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
+      
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          ...authHeaders
         }
       });
       
@@ -106,7 +111,7 @@ export default function ContentEditingStep({
         try {
           errorText = await response.text();
           console.error('Error response body:', errorText);
-        } catch (e) {
+        } catch (_e) {
           console.error('Could not read error response body');
         }
         
@@ -216,13 +221,19 @@ export default function ContentEditingStep({
       setIsUploading(true);
       console.log('🚀 Starting image upload...');
       
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
+      
+      // Remove Content-Type header for FormData uploads (browser sets it automatically)
+      const { 'Content-Type': _, ...uploadHeaders } = authHeaders as any;
+      
       // Create FormData for file upload
       const formData = new FormData();
       formData.append('file', file);
       formData.append('articleId', articleId);
       formData.append('type', 'featured');
       
-      // Use the correct API endpoint
+      // Use the correct API endpoint with Authorization header
       const uploadUrl = getApiUrl(API_CONFIG.endpoints.admin.media.upload);
       console.log('📤 Uploading to:', uploadUrl);
       console.log('📦 FormData contents:', {
@@ -233,6 +244,7 @@ export default function ContentEditingStep({
       
       const uploadResponse = await fetch(uploadUrl, {
         method: 'POST',
+        headers: uploadHeaders, // Only Authorization header, no Content-Type
         body: formData
       });
       
@@ -275,10 +287,15 @@ export default function ContentEditingStep({
   const updateArticleImage = async (imageUrl: string) => {
     try {
       const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
+      
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
+      
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders
         },
         body: JSON.stringify({
           image_url: imageUrl
@@ -300,12 +317,16 @@ export default function ContentEditingStep({
       setIsSaving(true);
       console.log('💾 Saving article changes...');
       
+      // Get authentication headers
+      const authHeaders = await getAuthHeaders();
+      
       // Save article data
       const url = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       const response = await fetch(url, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...authHeaders
         },
         body: JSON.stringify({
           title: article.translations[activeLanguage]?.title || article.title,
@@ -353,7 +374,7 @@ export default function ContentEditingStep({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
@@ -485,7 +506,7 @@ export default function ContentEditingStep({
             
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Image className="h-4 w-4 text-orange-500" />
+                <ImageIcon className="h-4 w-4 text-orange-500" />
                 <span className="text-sm">Image</span>
               </div>
               <span className="font-semibold">{featuredImage ? '✓' : '✗'}</span>
@@ -497,7 +518,7 @@ export default function ContentEditingStep({
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <Image className="h-4 w-4" />
+              <ImageIcon className="h-4 w-4" />
               Featured Image
             </CardTitle>
           </CardHeader>
@@ -505,9 +526,11 @@ export default function ContentEditingStep({
             {featuredImage && (
               <div className="space-y-2">
                 <div className="relative">
-                  <img
+                  <Image
                     src={featuredImage}
                     alt="Featured"
+                    width={400}
+                    height={128}
                     className="w-full h-32 object-cover rounded-lg border"
                     onError={(e) => {
                       console.error('Failed to load featured image:', featuredImage);
@@ -534,7 +557,7 @@ export default function ContentEditingStep({
                       
                       // Create error message
                       const errorDiv = document.createElement('div');
-                      errorDiv.className = 'w-full h-32 bg-red-50 border border-red-200 rounded-lg flex items-center justify-center text-red-600';
+                      errorDiv.className = 'w-full h-32 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center justify-center text-destructive';
                       errorDiv.innerHTML = `
                         <div class="text-center">
                           <div class="text-2xl mb-2">⚠️</div>

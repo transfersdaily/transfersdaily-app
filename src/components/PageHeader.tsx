@@ -26,12 +26,12 @@ export function PageHeader({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 flex-1">
           {logoSrc ? (
-            <div className="w-5 h-5 flex items-center justify-center">
+            <div className="w-6 h-6 flex items-center justify-center">
               <Image
                 src={logoSrc}
                 alt={logoAlt || 'Logo'}
-                width={20}
-                height={20}
+                width={24}
+                height={24}
                 className="object-contain"
               />
             </div>

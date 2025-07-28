@@ -15,10 +15,11 @@ interface HoverDropdownProps {
 
 export function HoverDropdown({ children, trigger, className }: HoverDropdownProps) {
   const [open, setOpen] = React.useState(false)
-  const timeoutRef = React.useRef<NodeJS.Timeout>()
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null)
   
-  const enhancedTrigger = React.cloneElement(trigger as React.ReactElement, {
-    className: `${(trigger as React.ReactElement).props.className} [&_svg]:transition-transform [&_svg]:duration-200 ${open ? '[&_svg]:rotate-180' : ''}`
+  const triggerElement = trigger as React.ReactElement<any>
+  const enhancedTrigger = React.cloneElement(triggerElement, {
+    className: `${triggerElement.props.className || ''} [&_svg]:transition-transform [&_svg]:duration-200 ${open ? '[&_svg]:rotate-180' : ''}`
   })
 
   const handleMouseEnter = () => {

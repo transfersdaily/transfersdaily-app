@@ -15,8 +15,6 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const resolvedSearchParams = await searchParams
-  const dict = await getDictionary(locale)
-  const t = createTranslator(dict)
   
   // Get current page and league filter for dynamic metadata
   const currentPage = parseInt(resolvedSearchParams.page as string) || 1
