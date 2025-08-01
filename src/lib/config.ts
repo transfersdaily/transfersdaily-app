@@ -1,6 +1,9 @@
-// API Configuration
+// API Configuration - Custom domain primary, API Gateway fallback
 export const API_CONFIG = {
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod',
+  // Custom domain as primary (will fallback automatically if not available)
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.transfersdaily.com',
+  // API Gateway as reliable fallback
+  fallbackUrl: process.env.NEXT_PUBLIC_API_URL_FALLBACK || 'https://e1si3naehh.execute-api.us-east-1.amazonaws.com/prod',
   // Use local API routes for client-side requests during development
   localApiUrl: typeof window !== 'undefined' 
     ? `${window.location.protocol}//${window.location.host}/api`
@@ -27,7 +30,8 @@ export const API_CONFIG = {
     newsletter: {
       subscribe: '/newsletter',
       list: '/newsletter',
-      unsubscribe: '/newsletter'
+      unsubscribe: '/newsletter',
+      send: '/newsletter/send'
     },
     user: {
       profile: '/user/profile',
@@ -75,10 +79,10 @@ export function getApiUrl(endpoint: string): string {
   return `${API_CONFIG.baseUrl}${endpoint}`;
 }
 
-// Auth Configuration - Using Admin User Pool
+// Auth Configuration - Updated with new backend deployment
 export const AUTH_CONFIG = {
   userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID || 'us-east-1_l7nRMdlIM',
-  userPoolClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '7tap3rig4oim99d0btf24l0rih',
+  userPoolClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || 'lgi51cc7dt8jlrovcpilom0r0',
   region: 'us-east-1',
   // Cognito endpoints
   cognitoUrl: `https://cognito-idp.us-east-1.amazonaws.com/`,

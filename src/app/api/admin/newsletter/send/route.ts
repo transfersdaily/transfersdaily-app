@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://e1si3naehh.execute-api.us-east-1.amazonaws.com/prod';
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
-    console.log('🔄 Proxying GET request to AWS API for newsletter subscriptions');
+    const body = await request.json();
+    
+    console.log('📧 Proxying POST request to AWS API for newsletter send');
+    console.log('📦 Request body:', body);
     
     // Get Authorization header from the incoming request
     const authHeader = request.headers.get('Authorization');
@@ -20,13 +23,14 @@ export async function GET(request: NextRequest) {
     
     // Forward request to AWS backend with auth header
     try {
-      const response = await fetch(`${API_BASE_URL}/newsletter`, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/newsletter/send`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': authHeader
-        }
+        },
+        body: JSON.stringify(body)
       });
       
       console.log('📡 AWS API response status:', response.status);
@@ -45,17 +49,16 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         success: false,
-        error: 'Failed to fetch newsletter subscriptions',
+        error: 'Failed to send newsletter',
         details: awsError instanceof Error ? awsError.message : 'Unknown error'
       }, { status: 500 });
     }
     
   } catch (error) {
-    console.error('💥 Error in newsletter proxy:', error);
-    
+    console.error('💥 Error in newsletter send proxy:', error);
     return NextResponse.json({
       success: false,
-      error: 'Failed to fetch newsletter subscriptions',
+      error: 'Failed to send newsletter',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }

@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { newsletterApi } from '@/lib/api';
-import { trackNewsletterSignup } from '@/lib/analytics';
+import { useAnalytics } from '@/lib/analytics'; // Updated import
 import { Loader2, CheckCircle, Mail, Users } from 'lucide-react';
 import { type Locale, type Dictionary, getTranslation } from '@/lib/i18n';
 
@@ -22,6 +22,9 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
   >('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [isEmailValid, setIsEmailValid] = useState(true);
+  
+  // Initialize analytics hook
+  const { trackNewsletterSubscribe } = useAnalytics();
 
   const t = (key: string) => getTranslation(dict, key);
 
@@ -79,8 +82,8 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
         setSubscriptionStatus('success');
         setEmail('');
         setErrorMessage('');
-        // Track successful newsletter signup
-        trackNewsletterSignup(email.trim());
+        // Track successful newsletter signup with new analytics system
+        trackNewsletterSubscribe(email.trim());
       } else {
         setSubscriptionStatus('error');
         setErrorMessage('Subscription failed. Please try again.');

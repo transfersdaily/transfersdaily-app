@@ -181,8 +181,6 @@ async function apiRequest<T>(
   endpoint: string, 
   options: RequestInit = {}
 ): Promise<T> {
-  const url = `${API_CONFIG.baseUrl}${endpoint}`
-  
   const config: RequestInit = {
     ...options,
     headers: {
@@ -191,31 +189,65 @@ async function apiRequest<T>(
     }
   }
 
-  console.log('🌐 Making API request:');
-  console.log('  - URL:', url);
-  console.log('  - Method:', config.method || 'GET');
-  console.log('  - Headers:', config.headers);
+  // Try custom domain first, then fallback to API Gateway
+  const urls = [API_CONFIG.baseUrl, API_CONFIG.fallbackUrl];
+  
+  for (let i = 0; i < urls.length; i++) {
+    const baseUrl = urls[i];
+    const url = `${baseUrl}${endpoint}`;
+    const isLastAttempt = i === urls.length - 1;
+    const urlType = i === 0 ? 'custom domain' : 'API Gateway fallback';
+    
+    console.log(`🌐 Making API request to ${urlType} (attempt ${i + 1}/${urls.length}):`);
+    console.log('  - URL:', url);
+    console.log('  - Method:', config.method || 'GET');
 
-  try {
-    const response = await fetch(url, config)
-    
-    console.log('📡 API response received:');
-    console.log('  - Status:', response.status);
-    console.log('  - Status Text:', response.statusText);
-    console.log('  - Headers:', Object.fromEntries(response.headers.entries()));
-    
-    if (!response.ok) {
-      console.error(`API request failed: ${response.status} ${response.statusText}`)
-      throw new Error(`HTTP error! status: ${response.status}`)
+    try {
+      const response = await fetch(url, {
+        ...config,
+        // Add timeout to prevent hanging on DNS resolution
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
+      
+      console.log(`📡 API response received from ${urlType}:`);
+      console.log('  - Status:', response.status);
+      console.log('  - Status Text:', response.statusText);
+      
+      if (!response.ok) {
+        console.error(`API request failed on ${urlType}: ${response.status} ${response.statusText}`);
+        if (isLastAttempt) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        console.log('🔄 Trying next URL...');
+        continue; // Try next URL
+      }
+      
+      const data = await response.json();
+      console.log(`✅ API request successful via ${urlType}`);
+      return data;
+      
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.error(`API request failed for ${urlType} (${url}):`, errorMessage);
+      
+      // Check if it's a DNS resolution error or network error
+      if (errorMessage.includes('ERR_NAME_NOT_RESOLVED') || 
+          errorMessage.includes('Failed to fetch') ||
+          errorMessage.includes('NetworkError') ||
+          errorMessage.includes('TimeoutError')) {
+        console.log(`🔄 ${urlType} not available, trying fallback...`);
+      }
+      
+      if (isLastAttempt) {
+        console.error('❌ All API endpoints failed');
+        throw error;
+      }
+      
+      continue; // Try next URL
     }
-    
-    const data = await response.json()
-    console.log('✅ API request successful');
-    return data
-  } catch (error) {
-    console.error(`API request failed for ${endpoint}:`, error)
-    throw error
   }
+  
+  throw new Error('All API endpoints failed');
 }
 
 // Helper function to get current language
@@ -1563,6 +1595,46 @@ export const newsletterApi = {
     } catch (error) {
       console.error('💥 Error unsubscribing user:', error)
       throw error
+    }
+  },
+
+  // Send newsletter email (admin only)
+  async sendNewsletter(data: {
+    subject: string
+    articleId?: string
+    articleTitle?: string
+    articleUrl?: string
+    customContent?: string
+    recipientType?: 'all' | 'active' | 'test'
+    testEmail?: string
+  }): Promise<{ success: boolean; message?: string; sentCount?: number }> {
+    try {
+      console.log('📧 Sending newsletter:', data)
+      
+      const response = await apiRequest<{
+        success: boolean
+        message?: string
+        data?: { sentCount: number }
+      }>(API_CONFIG.endpoints.newsletter.send, {
+        method: 'POST',
+        body: JSON.stringify(data)
+      })
+      
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to send newsletter')
+      }
+      
+      return {
+        success: true,
+        message: response.message,
+        sentCount: response.data?.sentCount
+      }
+    } catch (error) {
+      console.error('💥 Error sending newsletter:', error)
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }
     }
   }
 }

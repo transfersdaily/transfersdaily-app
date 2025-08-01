@@ -18,6 +18,7 @@ import { transfersApi, type Transfer } from "@/lib/api"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ArticleClientComponents } from './ArticleClientComponents'
 import { typography } from "@/lib/typography"
+import { getBestDate, formatDisplayDate, getValidDateForMeta } from '@/lib/date-utils'
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -168,8 +169,10 @@ export async function generateMetadata({
     const dynamicMeta = getDynamicMetaTags(article)
     const title = `${article.title} | Transfer Daily`
     const description = article.meta_description || article.content?.substring(0, 160) + '...' || 'Latest football transfer news and updates'
-    const publishedTime = article.published_at
-    const modifiedTime = article.published_at // Backend doesn't have updated_at in this response
+    
+    // Use utility functions for date handling
+    const publishedTime = getValidDateForMeta(article.published_at) || getValidDateForMeta(article.updated_at) || getValidDateForMeta(article.created_at)
+    const modifiedTime = getValidDateForMeta(article.updated_at) || publishedTime
     
     return {
       title,
@@ -414,8 +417,12 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                 <div className="flex flex-wrap items-center gap-8 text-base mb-8 text-muted-foreground">
                   <div className="flex items-center gap-3">
                     <Calendar className="h-5 w-5" />
-                    <time dateTime={article.published_at}>
-                      {new Date(article.published_at).toLocaleDateString()}
+                    <time dateTime={getBestDate(article.published_at, article.updated_at, article.created_at)}>
+                      {formatDisplayDate(
+                        getBestDate(article.published_at, article.updated_at, article.created_at),
+                        locale,
+                        'Recently published'
+                      )}
                     </time>
                   </div>
                   <div className="flex items-center gap-3">

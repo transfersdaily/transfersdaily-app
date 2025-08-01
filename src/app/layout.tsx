@@ -2,6 +2,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/lib/auth'
+import PlausibleProvider from 'next-plausible'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -43,11 +44,12 @@ export default function RootLayout({
           }}
         />
         
-        {/* Plausible Analytics - Privacy-focused, GDPR compliant */}
-        <script 
-          defer 
-          data-domain="transferdaily.com" 
-          src="https://plausible.io/js/script.js"
+        {/* Plausible Analytics - Now handled by PlausibleProvider component */}
+        <PlausibleProvider 
+          domain="transfersdaily.com"
+          trackOutboundLinks={true}
+          trackFileDownloads={true}
+          enabled={process.env.NODE_ENV === 'production'}
         />
         
         {/* Google AdSense */}

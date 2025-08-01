@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { ViewAllButton } from '@/components/ViewAllButton';
 import { NewsletterSection } from '@/components/NewsletterSection';
 import { type Locale, getDictionary, locales } from '@/lib/i18n';
+import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
 
@@ -594,7 +595,7 @@ async function getInitialData(language = 'en') {
       // Direct API call to backend with proper error handling
       const apiUrl = `${
         process.env.NEXT_PUBLIC_API_URL ||
-        'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'
+        'https://e1si3naehh.execute-api.us-east-1.amazonaws.com/prod'
       }/public/articles`;
       const params = new URLSearchParams({
         limit: '15',
@@ -616,6 +617,7 @@ async function getInitialData(language = 'en') {
       });
 
       console.log('📊 API Response status:', response.status);
+      console.log('📊 API Response headers:', Object.fromEntries(response.headers.entries()));
 
       if (response.ok) {
         const data = await response.json();
@@ -623,29 +625,43 @@ async function getInitialData(language = 'en') {
           success: data.success,
           hasData: !!data.data,
           articlesCount: data.data?.articles?.length || 0,
+          fullResponse: data, // Log the full response to see structure
         });
 
         if (data.success && data.data?.articles?.length > 0) {
           const articles = data.data.articles;
 
+          console.log('🔍 Debug: First article raw data:', {
+            id: articles[0]?.id,
+            title: articles[0]?.title?.substring(0, 50) + '...',
+            published_at: articles[0]?.published_at,
+            updated_at: articles[0]?.updated_at,
+            created_at: articles[0]?.created_at,
+          });
+
           // Transform articles to the expected format
-          const transformedArticles = articles.map((article: any) => ({
-            id: article.id,
-            title: article.title,
-            excerpt: article.content
-              ? article.content.substring(0, 200) + '...'
-              : article.meta_description || '',
-            content: article.content,
-            league: article.league || 'Unknown',
-            transferValue: article.transfer_fee,
-            playerName: article.player_name,
-            fromClub: article.from_club,
-            toClub: article.to_club,
-            status: article.transfer_status || 'rumor',
-            publishedAt: article.published_at || article.created_at,
-            imageUrl: article.image_url,
-            slug: article.slug || generateSlug(article.title || ''),
-          }));
+          const transformedArticles = articles.map((article: any) => {
+            // Since we're fetching with status=published, these are all published articles
+            const bestDate = getBestDate(article.published_at, article.updated_at, article.created_at, true);
+
+            return {
+              id: article.id,
+              title: article.title,
+              excerpt: article.content
+                ? article.content.substring(0, 200) + '...'
+                : article.meta_description || '',
+              content: article.content,
+              league: article.league || 'Unknown',
+              transferValue: article.transfer_fee,
+              playerName: article.player_name,
+              fromClub: article.from_club,
+              toClub: article.to_club,
+              status: article.transfer_status || 'rumor',
+              publishedAt: bestDate,
+              imageUrl: article.image_url,
+              slug: article.slug || generateSlug(article.title || ''),
+            };
+          });
 
           console.log(
             '🔄 Using real data from API:',
@@ -659,11 +675,20 @@ async function getInitialData(language = 'en') {
           // Set latest transfers (next 6 articles)
           latestTransfers = transformedArticles.slice(1, 7);
 
-          // Set trending transfers (articles 7-12 or repeat if not enough)
-          trendingTransfers =
-            transformedArticles.slice(7, 13).length > 0
-              ? transformedArticles.slice(7, 13)
-              : transformedArticles.slice(1, 7); // Fallback to latest if not enough articles
+          // Set trending transfers with better logic
+          if (transformedArticles.length >= 13) {
+            // If we have enough articles, use articles 7-12
+            trendingTransfers = transformedArticles.slice(7, 13);
+          } else if (transformedArticles.length >= 7) {
+            // If we have 7-12 articles, use the remaining ones and fill with earlier ones
+            const remaining = transformedArticles.slice(7);
+            const needed = 6 - remaining.length;
+            const filler = transformedArticles.slice(1, 1 + needed);
+            trendingTransfers = [...remaining, ...filler];
+          } else {
+            // If we have fewer than 7 articles, duplicate some of the latest
+            trendingTransfers = transformedArticles.slice(1).concat(transformedArticles.slice(1)).slice(0, 6);
+          }
         }
       } else {
         console.error(
@@ -746,19 +771,4 @@ function TransferGrid({ transfers, locale, dict }: any) {
       ))}
     </div>
   );
-}
-
-function formatTimeAgo(dateString: string, t: any) {
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInHours = Math.floor(
-    (now.getTime() - date.getTime()) / (1000 * 60 * 60)
-  );
-
-  if (diffInHours < 1) return t('common.justNow');
-  if (diffInHours < 24) return `${diffInHours} ${t('common.hoursAgo')}`;
-  const diffInDays = Math.floor(diffInHours / 24);
-  if (diffInDays < 7) return `${diffInDays} ${t('common.daysAgo')}`;
-  const diffInWeeks = Math.floor(diffInDays / 7);
-  return `${diffInWeeks} ${t('common.weeksAgo')}`;
 }

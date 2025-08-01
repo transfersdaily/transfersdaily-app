@@ -14,7 +14,7 @@ import {
   Edit,
   Share2
 } from 'lucide-react';
-import { adminApi } from '@/lib/api';
+import { adminApi, newsletterApi } from '@/lib/api';
 
 // Step Components
 import ContentEditingStep from '@/components/publishing/steps/ContentEditingStep';
@@ -116,17 +116,58 @@ export default function PublishingWizardPage({
     try {
       console.log('🚀 Publishing article:', articleId);
       
-      // Use the existing updateArticleStatus function instead of custom publish endpoint
+      // Step 1: Update article status to published (this should set published_at in backend)
       const success = await adminApi.updateArticleStatus(articleId, 'published');
       
-      if (success) {
-        console.log('✅ Article published successfully');
-        
-        // Redirect to success page
-        router.push(`/admin/articles/publish/${articleId}/success`);
-      } else {
+      if (!success) {
         throw new Error('Failed to publish article');
       }
+      
+      console.log('✅ Article published successfully');
+      
+      // Step 2: Send newsletter to subscribers
+      try {
+        console.log('📧 Sending newsletter for published article...');
+        
+        // First, get the article details for the newsletter
+        const articleResponse = await fetch(`/api/admin/articles/${articleId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (articleResponse.ok) {
+          const articleData = await articleResponse.json();
+          const article = articleData.data?.article;
+          
+          if (article) {
+            // Send newsletter with article details
+            const newsletterResult = await newsletterApi.sendNewsletter({
+              subject: `New Transfer News: ${article.title}`,
+              articleId: articleId,
+              articleTitle: article.title,
+              articleUrl: `${window.location.origin}/en/article/${article.slug || articleId}`,
+              recipientType: 'active'
+            });
+            
+            if (newsletterResult.success) {
+              console.log('✅ Newsletter sent successfully to', newsletterResult.sentCount, 'subscribers');
+            } else {
+              console.warn('⚠️ Newsletter sending failed:', newsletterResult.message);
+              // Don't fail the entire publish process if newsletter fails
+            }
+          }
+        } else {
+          console.warn('⚠️ Could not fetch article details for newsletter');
+        }
+      } catch (newsletterError) {
+        console.warn('⚠️ Newsletter sending failed:', newsletterError);
+        // Don't fail the entire publish process if newsletter fails
+      }
+      
+      // Step 3: Redirect to success page
+      router.push(`/admin/articles/publish/${articleId}/success`);
       
     } catch (err) {
       console.error('💥 Error publishing article:', err);

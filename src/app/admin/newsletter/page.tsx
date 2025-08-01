@@ -20,6 +20,7 @@ import {
 import { newsletterApi, getAuthHeaders } from "@/lib/api"
 import { API_CONFIG } from "@/lib/config"
 import { cn } from "@/lib/utils"
+import { NewsletterTestPanel } from "@/components/admin/NewsletterTestPanel"
 
 interface NewsletterSubscriber {
   id: string
@@ -253,6 +254,9 @@ export default function NewsletterPage() {
             })
           )}
         </div>
+
+        {/* Newsletter Test Panel */}
+        <NewsletterTestPanel />
 
         {/* Subscribers Table */}
         <Card>
