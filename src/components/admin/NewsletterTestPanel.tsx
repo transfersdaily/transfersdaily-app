@@ -64,7 +64,11 @@ export function NewsletterTestPanel({
       
       const response = await newsletterApi.sendNewsletter(newsletterData);
       
-      setResult(response);
+      setResult({
+        success: response.success,
+        message: response.message || 'Newsletter sent successfully',
+        sentCount: response.sentCount
+      });
       
     } catch (error) {
       console.error('💥 Error sending newsletter:', error);

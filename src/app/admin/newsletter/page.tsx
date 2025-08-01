@@ -57,7 +57,7 @@ export default function NewsletterPage() {
       // Check if we have authentication before making the call
       const headers = await getAuthHeaders()
       
-      if (!headers.Authorization) {
+      if (!headers || (typeof headers === 'object' && !('Authorization' in headers))) {
         console.warn('⚠️ No authentication token available, skipping newsletter API call')
         setError('Authentication required')
         return

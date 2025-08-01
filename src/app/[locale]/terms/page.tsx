@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+import Link from 'next/link'
 import { type Locale, getDictionary } from '@/lib/i18n'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -21,6 +22,14 @@ export async function generateMetadata({
     it: {
       title: 'Termini di Servizio - Transfer Daily | Termini e Condizioni',
       description: 'Leggi i termini di servizio e le condizioni di Transfer Daily per utilizzare il nostro sito web di notizie di calciomercato.',
+    },
+    fr: {
+      title: 'Conditions d\'Utilisation - Transfer Daily | Termes et Conditions',
+      description: 'Lisez les conditions d\'utilisation de Transfer Daily pour utiliser notre site web d\'actualités de transferts de football.',
+    },
+    de: {
+      title: 'Nutzungsbedingungen - Transfer Daily | Geschäftsbedingungen',
+      description: 'Lesen Sie die Nutzungsbedingungen von Transfer Daily für die Nutzung unserer Website mit Fußball-Transfer-Nachrichten.',
     }
   }
 
@@ -169,7 +178,7 @@ export default async function TermsOfServicePage({
                 Your privacy is important to us. Our collection and use of personal information is governed by our Privacy Policy, which is incorporated into these Terms by reference. By using our Service, you consent to the collection and use of your information as outlined in our Privacy Policy.
               </p>
               <p>
-                <a href="/privacy" className="text-primary hover:underline">View our Privacy Policy</a>
+                <Link href="/privacy" className="text-primary hover:underline">View our Privacy Policy</Link>
               </p>
             </section>
 

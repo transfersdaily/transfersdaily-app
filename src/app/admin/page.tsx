@@ -40,7 +40,9 @@ interface DashboardStats {
   }>
   dailyActivity?: Array<{
     date: string
-    count: number
+    draftCount: number
+    publishedCount: number
+    totalCount: number
   }>
 }
 
@@ -88,12 +90,12 @@ export default function AdminDashboard() {
           console.log('  - Sample date format:', typeof dashboardStats.dailyActivity[0].date);
         }
         
-        // Ensure dailyActivity is properly formatted
-        const formattedDailyActivity = (dashboardStats.dailyActivity || []).map(item => ({
+        // Ensure dailyActivity is properly formatted for chart component
+        const formattedDailyActivity = (dashboardStats.dailyActivity || []).map((item: any) => ({
           date: item.date,
-          draftCount: parseInt(item.draftCount) || 0,
-          publishedCount: parseInt(item.publishedCount) || 0,
-          totalCount: parseInt(item.totalCount) || 0
+          draftCount: parseInt(item.draftCount || item.count || 0),
+          publishedCount: parseInt(item.publishedCount || item.count || 0),
+          totalCount: parseInt(item.totalCount || item.count || 0)
         }));
         
         console.log('  - Formatted dailyActivity:', formattedDailyActivity);

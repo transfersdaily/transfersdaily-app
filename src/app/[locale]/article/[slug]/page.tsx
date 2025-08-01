@@ -50,6 +50,7 @@ interface Article {
   from_club?: string
   to_club?: string
   published_at: string
+  updated_at?: string
   created_at: string
   image_url?: string
   slug: string
@@ -199,7 +200,7 @@ export async function generateMetadata({
         'article:tag': dynamicMeta.articleTag || '',
         'article:section': dynamicMeta.articleSection || '',
         'article:author': 'Transfer Daily',
-        'article:published_time': publishedTime,
+        'article:published_time': publishedTime || '',
         ...(dynamicMeta.geoRegion && { 'geo.region': dynamicMeta.geoRegion }),
         'sport': 'Football',
         'category': 'Sports'
@@ -213,8 +214,8 @@ export async function generateMetadata({
         siteName: 'Transfer Daily',
         locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
         type: 'article',
-        publishedTime,
-        modifiedTime,
+        publishedTime: publishedTime || undefined,
+        modifiedTime: modifiedTime || undefined,
         authors: ['Transfer Daily'],
         section: article.league || 'Football Transfer News',
         tags: article.tags || [article.league, 'Football Transfer', 'Soccer News'].filter((tag): tag is string => Boolean(tag)),

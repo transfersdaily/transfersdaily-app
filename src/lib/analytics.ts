@@ -104,3 +104,11 @@ export function trackPageView(url: string, referrer?: string) {
     console.log(`Page view tracked: ${url}`)
   }
 }
+
+// Standalone function for contact form tracking
+export function trackContactSubmission(email?: string, subject?: string) {
+  if (typeof window !== 'undefined' && ANALYTICS_CONFIG.enabled) {
+    // You can implement direct tracking here if needed
+    console.log('Contact form submitted:', { email, subject })
+  }
+}

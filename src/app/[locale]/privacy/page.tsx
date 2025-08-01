@@ -21,6 +21,14 @@ export async function generateMetadata({
     it: {
       title: 'Informativa sulla Privacy - Transfer Daily | Come Proteggiamo i Tuoi Dati',
       description: 'Scopri come Transfer Daily raccoglie, utilizza e protegge le tue informazioni personali. La nostra informativa sulla privacy spiega i tuoi diritti.',
+    },
+    fr: {
+      title: 'Politique de Confidentialité - Transfer Daily | Comment Nous Protégeons Vos Données',
+      description: 'Découvrez comment Transfer Daily collecte, utilise et protège vos informations personnelles. Notre politique de confidentialité explique vos droits.',
+    },
+    de: {
+      title: 'Datenschutzrichtlinie - Transfer Daily | Wie Wir Ihre Daten Schützen',
+      description: 'Erfahren Sie, wie Transfer Daily Ihre persönlichen Informationen sammelt, verwendet und schützt. Unsere Datenschutzrichtlinie erklärt Ihre Rechte.',
     }
   }
 
