@@ -391,10 +391,10 @@ export default async function HomePage({
                             <Badge className="mb-4 bg-primary/10 text-primary border-none">
                               {initialData.featuredTransfer.league?.toUpperCase()}
                             </Badge>
-                            <h3 className="text-2xl font-bold mb-4 leading-tight text-white drop-shadow-lg">
+                            <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
                               {initialData.featuredTransfer.title}
                             </h3>
-                            <p className="text-white text-base leading-relaxed line-clamp-2 mb-6 drop-shadow-md">
+                            <p className="text-white text-sm md:text-base leading-relaxed line-clamp-2 mb-4 md:mb-6 drop-shadow-md">
                               {initialData.featuredTransfer.excerpt}
                             </p>
                             <div className="flex items-center gap-2 text-sm text-white drop-shadow-md">
@@ -501,7 +501,7 @@ export default async function HomePage({
                 <div>
                   <h2
                     id="trending-transfers"
-                    className="text-2xl font-bold mb-3 text-foreground"
+                    className="text-base md:text-lg lg:text-xl font-bold mb-3 text-foreground"
                   >
                     {t('homepage.trendingArticles')}
                   </h2>

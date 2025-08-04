@@ -463,7 +463,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
               </div>
 
               {/* Article Content */}
-              <div className="prose prose-xl max-w-none prose-headings:text-foreground prose-p:text-foreground prose-headings:font-bold prose-h1:text-4xl prose-h1:mb-6 prose-h1:mt-8 prose-h2:text-3xl prose-h2:mt-10 prose-h2:mb-6 prose-h3:text-2xl prose-h3:mt-8 prose-h3:mb-4 prose-h4:text-xl prose-h4:mt-6 prose-h4:mb-3 prose-p:text-lg prose-p:leading-relaxed prose-p:mb-6 prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-foreground prose-blockquote:border-l-border prose-blockquote:border-l-4 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-lg prose-code:text-foreground prose-pre:bg-muted prose-pre:text-foreground prose-ul:mb-6 prose-ol:mb-6 prose-li:mb-2 prose-li:text-lg prose-li:leading-relaxed">
+              <div className="prose prose-sm md:prose-lg lg:prose-xl max-w-none prose-headings:text-foreground prose-p:text-foreground prose-headings:font-bold prose-h1:text-2xl md:prose-h1:text-3xl lg:prose-h1:text-4xl prose-h1:mb-4 md:prose-h1:mb-6 prose-h1:mt-6 md:prose-h1:mt-8 prose-h2:text-xl md:prose-h2:text-2xl lg:prose-h2:text-3xl prose-h2:mt-8 md:prose-h2:mt-10 prose-h2:mb-4 md:prose-h2:mb-6 prose-h3:text-lg md:prose-h3:text-xl lg:prose-h3:text-2xl prose-h3:mt-6 md:prose-h3:mt-8 prose-h3:mb-3 md:prose-h3:mb-4 prose-h4:text-base md:prose-h4:text-lg lg:prose-h4:text-xl prose-h4:mt-4 md:prose-h4:mt-6 prose-h4:mb-2 md:prose-h4:mb-3 prose-p:text-sm md:prose-p:text-base lg:prose-p:text-lg prose-p:leading-relaxed prose-p:mb-4 md:prose-p:mb-6 prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-foreground prose-blockquote:border-l-border prose-blockquote:border-l-4 prose-blockquote:pl-4 md:prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-sm md:prose-blockquote:text-base lg:prose-blockquote:text-lg prose-code:text-foreground prose-pre:bg-muted prose-pre:text-foreground prose-ul:mb-4 md:prose-ul:mb-6 prose-ol:mb-4 md:prose-ol:mb-6 prose-li:mb-1 md:prose-li:mb-2 prose-li:text-sm md:prose-li:text-base lg:prose-li:text-lg prose-li:leading-relaxed">
                 {article.content?.split('\n').map((paragraph, index) => {
                   const trimmedParagraph = paragraph.trim();
                   if (!trimmedParagraph) return null;
@@ -485,7 +485,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                   }
                   if (trimmedParagraph.startsWith('### ')) {
                     return (
-                      <h3 key={index} className="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">
+                      <h3 key={index} className="text-lg md:text-xl lg:text-2xl font-bold text-foreground mt-6 md:mt-8 mb-3 md:mb-4 first:mt-0">
                         {trimmedParagraph.substring(4)}
                       </h3>
                     );
@@ -539,7 +539,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         <section className="mt-12 lg:col-span-7 lg:max-w-none">
           <Card className="bg-background border-none shadow-none">
             <CardContent className="p-6 sm:p-8 lg:p-10">
-              <h2 className="text-2xl font-bold mb-6 text-foreground">{getTranslation(dict, 'article.relatedArticles', 'Related Articles')}</h2>
+              <h2 className="text-base md:text-lg lg:text-xl font-bold mb-4 md:mb-6 text-foreground">{getTranslation(dict, 'article.relatedArticles', 'Related Articles')}</h2>
               <Suspense fallback={<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[1, 2, 3, 4].map(i => (
                   <div key={i} className="animate-pulse">

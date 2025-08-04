@@ -38,7 +38,7 @@ export function PageHeader({
           ) : Icon ? (
             <Icon className={iconClassName} />
           ) : null}
-          <h1 id="page-header" className="text-xl font-bold">{title}</h1>
+          <h1 id="page-header" className="text-base md:text-lg lg:text-xl font-bold">{title}</h1>
         </div>
         
         {children && (

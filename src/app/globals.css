@@ -114,3 +114,21 @@
     overscroll-behavior: contain; /* Prevent scroll chaining */
   }
 }
+/* Mobile-optimized content spacing */
+@layer components {
+  .mobile-content-padding {
+    @apply px-4 md:px-6 lg:px-8;
+  }
+  
+  .mobile-card-padding {
+    @apply p-3 md:p-4;
+  }
+  
+  .mobile-section-spacing {
+    @apply py-6 md:py-8 lg:py-12;
+  }
+  
+  .mobile-touch-target {
+    @apply min-h-[44px] flex items-center;
+  }
+}
