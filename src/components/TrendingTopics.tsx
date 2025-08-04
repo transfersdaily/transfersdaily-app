@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { TrendingUp, Loader2, Clock, X } from "lucide-react"
+import { TrendingUp, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { searchApi } from "@/lib/api"
 import { type Locale, type Dictionary, getTranslation } from "@/lib/i18n"
@@ -20,34 +20,137 @@ interface TrendingTopicsProps {
   dict?: Dictionary
 }
 
-// Recent searches management
-const RECENT_SEARCHES_KEY = 'transfersdaily_recent_searches'
-const MAX_RECENT_SEARCHES = 5
+export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsProps) {
+  const [topics, setTopics] = useState<TrendingTopic[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [hasError, setHasError] = useState(false)
 
-function getRecentSearches(): string[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const stored = localStorage.getItem(RECENT_SEARCHES_KEY)
-    return stored ? JSON.parse(stored) : []
-  } catch {
-    return []
+  const t = (key: string) => {
+    if (dict) {
+      return getTranslation(dict, key)
+    }
+    return getCommonTranslation(key, locale)
   }
-}
 
-function addRecentSearch(query: string) {
-  if (typeof window === 'undefined') return
-  try {
-    const recent = getRecentSearches()
-    const filtered = recent.filter(q => q.toLowerCase() !== query.toLowerCase())
-    const updated = [query, ...filtered].slice(0, MAX_RECENT_SEARCHES)
-    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
-  } catch {
-    // Ignore localStorage errors
+  useEffect(() => {
+    loadMostSearchedTerms()
+  }, [])
+
+  const loadMostSearchedTerms = async () => {
+    try {
+      setIsLoading(true)
+      setHasError(false)
+      
+      // Get most searched terms from API
+      const mostSearchedTerms = await searchApi.getMostSearchedTerms({ 
+        limit: 8,
+        days: 30 // Last 30 days
+      })
+      
+      if (mostSearchedTerms && mostSearchedTerms.length > 0) {
+        // Convert the format to match what the component expects
+        const formattedTopics = mostSearchedTerms.map(item => ({
+          name: item.term,
+          query: item.query,
+          count: item.displayCount || `${item.count} searches`,
+          search_count: item.count
+        }))
+        setTopics(formattedTopics)
+      } else {
+        // No most searched terms available
+        setTopics([])
+      }
+    } catch (error) {
+      console.error('Error loading most searched terms:', error)
+      setHasError(true)
+      setTopics([])
+    } finally {
+      setIsLoading(false)
+    }
   }
-}
 
-function removeRecentSearch(query: string) {
-  if (typeof window === 'undefined') return
+  const handleTopicClick = (query: string) => {
+    // Track the search when user clicks on a trending topic
+    searchApi.trackSearch(query).catch(console.error)
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-blue-600" />
+            <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
+          </div>
+          <div className="space-y-2">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="h-4 bg-gray-200 rounded animate-pulse flex-1 mr-2" />
+                <div className="h-3 bg-gray-200 rounded animate-pulse w-12" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (hasError) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-blue-600" />
+            <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
+          </div>
+          <p className="text-sm text-gray-500">{t('errorLoadingTrends')}</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (topics.length === 0) {
+    return (
+      <Card className="w-full">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-blue-600" />
+            <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
+          </div>
+          <p className="text-sm text-gray-500">{t('noTrendingTopics')}</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return (
+    <Card className="w-full">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <TrendingUp className="h-4 w-4 text-blue-600" />
+          <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
+        </div>
+        <div className="space-y-2">
+          {topics.map((topic, index) => (
+            <Link
+              key={`${topic.query}-${index}`}
+              href={`/${locale}/search?q=${encodeURIComponent(topic.query)}`}
+              onClick={() => handleTopicClick(topic.query)}
+              className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors group"
+            >
+              <span className="text-sm text-gray-700 group-hover:text-blue-600 truncate flex-1 mr-2">
+                {topic.name}
+              </span>
+              <span className="text-xs text-gray-500 whitespace-nowrap">
+                {topic.count}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
   try {
     const recent = getRecentSearches()
     const filtered = recent.filter(q => q.toLowerCase() !== query.toLowerCase())

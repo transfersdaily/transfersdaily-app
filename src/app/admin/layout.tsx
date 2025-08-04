@@ -3,9 +3,9 @@
 import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { AdminSidebar } from "@/components/AdminSidebar"
+import { AdminSidebarMobile } from "@/components/AdminSidebarMobile"
 import { SidebarProvider } from "@/components/ui/sidebar"
-
+import { useIsMobile } from "@/lib/mobile-utils"
 
 export default function AdminLayout({
   children,
@@ -14,6 +14,7 @@ export default function AdminLayout({
 }) {
   const { user, isLoading } = useAuth()
   const router = useRouter()
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -36,8 +37,8 @@ export default function AdminLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
-        <AdminSidebar />
-        <main className="flex-1">
+        <AdminSidebarMobile />
+        <main className={`flex-1 ${isMobile ? 'pt-0' : ''}`}>
           {children}
         </main>
       </div>

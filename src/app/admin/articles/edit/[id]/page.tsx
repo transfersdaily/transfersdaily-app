@@ -18,6 +18,7 @@ import { AdminPageHeader } from "@/components/AdminPageHeader"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
+import { MobileArticleEditor } from "@/components/admin/MobileArticleEditor"
 import {
   Save,
   ArrowLeft,
@@ -38,6 +39,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { API_CONFIG } from "@/lib/config"
+import { useIsMobile } from "@/lib/mobile-utils"
 
 interface Article {
   uuid: string
@@ -62,6 +64,7 @@ interface Article {
 export default function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter()
   const { id: articleId } = use(params)
+  const isMobile = useIsMobile()
 
   const [article, setArticle] = useState<Article | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -239,6 +242,30 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     if (numFee >= 1000000) return `€${(numFee / 1000000).toFixed(1)}M`
     if (numFee >= 1000) return `€${(numFee / 1000).toFixed(0)}K`
     return `€${numFee}`
+  }
+
+  // Mobile editor handlers
+  const handleBack = () => router.back()
+  const handlePreview = () => window.open(`/article/${articleId}?preview=true`, '_blank')
+  const handlePublish = () => window.location.href = `/admin/articles/publish/${articleId}/edit`
+
+  // Use mobile editor on mobile devices
+  if (isMobile && !isLoading && article) {
+    return (
+      <MobileArticleEditor
+        article={article}
+        formData={formData}
+        setFormData={setFormData}
+        onSave={handleSave}
+        onDelete={handleDelete}
+        onBack={handleBack}
+        onPreview={handlePreview}
+        onPublish={handlePublish}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        error={error}
+      />
+    )
   }
 
   if (isLoading) {

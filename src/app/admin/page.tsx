@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { adminApi } from "@/lib/api"
 import { DraftVsPublishedChart } from "@/components/DraftVsPublishedChart"
+import { useIsMobile, adminMobileGrid, formatForMobile } from "@/lib/mobile-utils"
 
 interface DashboardStats {
   totalArticles: number
@@ -59,7 +60,7 @@ export default function AdminDashboard() {
   const [recentArticles, setRecentArticles] = useState<RecentArticle[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
+  const isMobile = useIsMobile()
 
 
   useEffect(() => {
@@ -229,7 +230,7 @@ export default function AdminDashboard() {
       
       <div className="space-y-8">
         {/* Hero Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={adminMobileGrid.statsCards}>
           {isLoading ? (
             Array.from({ length: 4 }).map((_, index) => (
               <Card key={index}>
@@ -260,7 +261,7 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <div>
           <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className={adminMobileGrid.quickActions}>
             {quickActions.map((action, index) => {
               const Icon = action.icon
               return (
@@ -269,10 +270,10 @@ export default function AdminDashboard() {
                   className="hover:shadow-lg hover:scale-105 transition-all duration-200 cursor-pointer group"
                   onClick={() => window.location.href = action.href}
                 >
-                  <CardContent className="p-6 text-center">
-                    <Icon className={`h-8 w-8 mx-auto mb-3 ${action.color} group-hover:scale-110 transition-transform`} />
-                    <h3 className="font-semibold mb-1">{action.title}</h3>
-                    <p className="text-sm text-muted-foreground">{action.desc}</p>
+                  <CardContent className={`p-6 text-center ${isMobile ? 'p-4' : ''}`}>
+                    <Icon className={`h-8 w-8 mx-auto mb-3 ${action.color} group-hover:scale-110 transition-transform ${isMobile ? 'h-6 w-6 mb-2' : ''}`} />
+                    <h3 className={`font-semibold mb-1 ${isMobile ? 'text-sm' : ''}`}>{action.title}</h3>
+                    <p className={`text-sm text-muted-foreground ${isMobile ? 'text-xs' : ''}`}>{action.desc}</p>
                   </CardContent>
                 </Card>
               )
@@ -289,7 +290,7 @@ export default function AdminDashboard() {
         />
 
         {/* Content Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className={adminMobileGrid.contentGrid}>
           {/* Recent Articles */}
           <Card>
             <CardHeader className="pb-4">
@@ -316,13 +317,15 @@ export default function AdminDashboard() {
                 <div className="space-y-3">
                   {recentArticles.map((article) => (
                     <div key={article.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors">
-                      <div>
-                        <h4 className="font-medium text-sm leading-tight mb-1">{article.title}</h4>
-                        <p className="text-xs text-muted-foreground">
-                          {formatDate(article.created_at)} • {article.category}
+                      <div className="min-w-0 flex-1">
+                        <h4 className={`font-medium leading-tight mb-1 ${isMobile ? 'text-sm' : 'text-sm'}`}>
+                          {isMobile ? formatForMobile.truncateTitle(article.title, 40) : article.title}
+                        </h4>
+                        <p className={`text-muted-foreground ${isMobile ? 'text-xs' : 'text-xs'}`}>
+                          {formatForMobile.formatMobileDate(article.created_at)} • {article.category}
                         </p>
                       </div>
-                      <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-xs">
+                      <Badge variant={article.status === 'published' ? 'default' : 'secondary'} className="text-xs ml-2">
                         {article.status}
                       </Badge>
                     </div>
@@ -356,12 +359,14 @@ export default function AdminDashboard() {
                         <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
                           <Icon className="h-4 w-4 text-green-600 dark:text-green-400" />
                         </div>
-                        <div>
-                          <p className="font-medium text-sm">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">{item.value}</p>
+                        <div className="min-w-0 flex-1">
+                          <p className={`font-medium ${isMobile ? 'text-sm' : 'text-sm'}`}>{item.name}</p>
+                          <p className={`text-muted-foreground ${isMobile ? 'text-xs' : 'text-xs'}`}>
+                            {isMobile ? formatForMobile.formatMobileNumber(parseInt(item.value.split(' ')[0]) || 0) + ' ' + item.value.split(' ').slice(1).join(' ') : item.value}
+                          </p>
                         </div>
                       </div>
-                      <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
+                      <Badge variant="outline" className="text-green-600 dark:text-green-400 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 text-xs">
                         {item.status}
                       </Badge>
                     </div>

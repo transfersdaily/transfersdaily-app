@@ -2,7 +2,6 @@
 
 import { usePathname } from "next/navigation"
 import { MobileBottomNav } from "@/components/MobileBottomNav"
-import { MobileSidebarDrawer } from "@/components/MobileSidebarDrawer"
 import { useDictionary } from "@/lib/dictionary-provider"
 import { useParams } from "next/navigation"
 import { Footer } from "@/components/Footer"
@@ -26,7 +25,6 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
       </main>
       <Footer />
       <MobileBottomNav />
-      <MobileSidebarDrawer locale={locale} dict={dict} />
     </>
   )
 }
