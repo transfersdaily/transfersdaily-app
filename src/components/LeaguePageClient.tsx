@@ -2,8 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
 import { 
   Pagination
 } from "@/components/ui/pagination"
@@ -11,7 +9,6 @@ import { TransferCard } from "@/components/TransferCard"
 import { Sidebar } from "@/components/Sidebar"
 import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
 import { SidebarSkeleton } from "@/components/SidebarSkeleton"
-import { Filter } from "lucide-react"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { ResultsInfo } from "@/components/ResultsInfo"
 import { type Locale } from "@/lib/i18n"
@@ -65,7 +62,6 @@ interface LeaguePageClientProps {
     }
   }
   initialPage: number
-  initialLeague: string
   leagueName: string
   leagueSlug: string
 }
@@ -75,7 +71,6 @@ export function LeaguePageClient({
   dict, 
   initialData, 
   initialPage, 
-  initialLeague,
   leagueName,
   leagueSlug
 }: LeaguePageClientProps) {
@@ -83,35 +78,28 @@ export function LeaguePageClient({
   const t = createTranslator(dict)
   
   const [currentPage, setCurrentPage] = useState(initialPage)
-  const [selectedLeague, setSelectedLeague] = useState(initialLeague)
   const [isLoading, setIsLoading] = useState(false)
   const [transfers, setTransfers] = useState<Transfer[]>(initialData.transfers)
   const [pagination, setPagination] = useState(initialData.pagination)
   
   const itemsPerPage = 15
 
-  // Update URL when filters change
-  const updateURL = (page: number, league: string) => {
+  // Update URL when page changes
+  const updateURL = (page: number) => {
     const params = new URLSearchParams()
     if (page > 1) params.set('page', page.toString())
-    if (league !== 'all') params.set('league', league)
     
     const newURL = `/${locale}/league/${leagueSlug}${params.toString() ? `?${params.toString()}` : ''}`
     router.push(newURL, { scroll: false })
   }
 
-  // Load transfers when filters change
-  const loadTransfers = async (page: number, league: string) => {
+  // Load transfers when page changes
+  const loadTransfers = async (page: number) => {
     try {
       setIsLoading(true)
       const offset = (page - 1) * itemsPerPage
       
-      let response: { transfers: Transfer[], pagination?: any }
-      if (league === "all") {
-        response = await transfersApi.getByLeagueWithPagination(leagueSlug, itemsPerPage, offset, locale)
-      } else {
-        response = await transfersApi.getByLeagueWithPagination(league.toLowerCase().replace(/\s+/g, '-'), itemsPerPage, offset, locale)
-      }
+      const response = await transfersApi.getByLeagueWithPagination(leagueSlug, itemsPerPage, offset, locale)
       
       setTransfers(response.transfers)
       setPagination(response.pagination || {
@@ -142,26 +130,12 @@ export function LeaguePageClient({
     return `${diffInWeeks} ${t('common.weeksAgo') || 'weeks ago'}`
   }
   
-  const handleFilterChange = (league: string) => {
-    setSelectedLeague(league)
-    setCurrentPage(1)
-    updateURL(1, league)
-    loadTransfers(1, league)
-  }
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
-    updateURL(page, selectedLeague)
-    loadTransfers(page, selectedLeague)
+    updateURL(page)
+    loadTransfers(page)
     // Scroll to top when page changes
     window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const handleClearFilters = () => {
-    setSelectedLeague("all")
-    setCurrentPage(1)
-    updateURL(1, "all")
-    loadTransfers(1, "all")
   }
 
   // Get league logo
@@ -176,28 +150,7 @@ export function LeaguePageClient({
             title={leagueName}
             logoSrc={leagueLogo.src}
             logoAlt={leagueLogo.alt}
-          >
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className={typography.body.small}>{t('common.filter')}:</span>
-            </div>
-            
-            <Separator orientation="vertical" className="h-6" />
-            
-            <Select value={selectedLeague} onValueChange={handleFilterChange}>
-              <SelectTrigger className="w-40" aria-label="Filter by league">
-                <SelectValue placeholder={t('navigation.leagues')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('common.all')} {t('navigation.leagues')}</SelectItem>
-                <SelectItem value="Premier League">Premier League</SelectItem>
-                <SelectItem value="La Liga">La Liga</SelectItem>
-                <SelectItem value="Serie A">Serie A</SelectItem>
-                <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                <SelectItem value="Ligue 1">Ligue 1</SelectItem>
-              </SelectContent>
-            </Select>
-          </PageHeader>
+          />
 
           {/* Results Info - Match Latest Page */}
           <ResultsInfo 
@@ -232,15 +185,9 @@ export function LeaguePageClient({
             ) : (
               <div className="text-center py-12">
                 <h3 className={`${typography.heading.h4} mb-2`}>{t('common.noTransfersFound')}</h3>
-                <p className={`${typography.body.base} text-muted-foreground mb-6`}>
+                <p className={`${typography.body.base} text-muted-foreground`}>
                   {t('common.checkBackLater')}
                 </p>
-                <button 
-                  onClick={handleClearFilters}
-                  className={`px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors ${typography.button.default}`}
-                >
-                  {t('common.clearFilters') || 'Clear all filters'}
-                </button>
               </div>
             )}
           </section>

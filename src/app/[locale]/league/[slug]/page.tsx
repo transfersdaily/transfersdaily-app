@@ -523,7 +523,6 @@ export default async function LeaguePage({
           }
         }}
         initialPage={1}
-        initialLeague="all"
         leagueName={leagueName}
         leagueSlug={slug}
       />
