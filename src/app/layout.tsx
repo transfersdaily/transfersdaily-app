@@ -44,14 +44,6 @@ export default function RootLayout({
           }}
         />
         
-        {/* Plausible Analytics - Now handled by PlausibleProvider component */}
-        <PlausibleProvider 
-          domain="transfersdaily.com"
-          trackOutboundLinks={true}
-          trackFileDownloads={true}
-          enabled={process.env.NODE_ENV === 'production'}
-        />
-        
         {/* Google AdSense */}
         <script 
           async 
@@ -60,17 +52,24 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          storageKey="transfers-daily-theme"
+        <PlausibleProvider 
+          domain="transfersdaily.com"
+          trackOutboundLinks={true}
+          trackFileDownloads={true}
+          enabled={process.env.NODE_ENV === 'production'}
         >
-          <AuthProvider>
-            {children}
-          </AuthProvider>
-        </ThemeProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            storageKey="transfers-daily-theme"
+          >
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </ThemeProvider>
+        </PlausibleProvider>
       </body>
     </html>
   )

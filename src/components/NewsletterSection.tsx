@@ -83,7 +83,7 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
         setEmail('');
         setErrorMessage('');
         // Track successful newsletter signup with new analytics system
-        trackNewsletterSubscribe(email.trim());
+        trackNewsletterSubscribe();
       } else {
         setSubscriptionStatus('error');
         setErrorMessage('Subscription failed. Please try again.');

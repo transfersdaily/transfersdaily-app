@@ -56,7 +56,7 @@ export function useAnalytics() {
     })
   }
   
-  const trackNewsletterSubscribe = (email?: string) => {
+  const trackNewsletterSubscribe = () => {
     trackEvent(ANALYTICS_CONFIG.events.NEWSLETTER_SUBSCRIBE, {
       timestamp: new Date().toISOString(),
     })

@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withPlausibleProxy } from 'next-plausible';
 
 const nextConfig: NextConfig = {
   images: {
@@ -15,4 +16,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Wrap with Plausible proxy to avoid ad blockers
+export default withPlausibleProxy()(nextConfig);
