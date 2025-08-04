@@ -9,13 +9,15 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   title: 'Transfers Daily',
   description: 'Latest football transfer news and updates',
-  // Yandex Webmaster verification
+  // Search engine verification
   verification: {
-    yandex: '37e6e4bf527ef93b'
+    yandex: '37e6e4bf527ef93b',
+    other: {
+      'msvalidate.01': '151EC670865590C0F31CA873198F81E5'
+    }
   },
-  // You can also add other search engine verifications here
+  // You can also add Google verification here when needed
   // google: 'your-google-verification-code',
-  // bing: 'your-bing-verification-code',
 }
 
 // Root layout - handles admin routes and provides global providers
@@ -35,6 +37,8 @@ export default function RootLayout({
         
         {/* Search Engine Verification */}
         <meta name="yandex-verification" content="37e6e4bf527ef93b" />
+        <meta name="msvalidate.01" content="151EC670865590C0F31CA873198F81E5" />
+        {/* <meta name="google-site-verification" content="YOUR_GOOGLE_CODE_HERE" /> */}
         
         {/* Prevent theme flicker by setting initial theme */}
         <script
