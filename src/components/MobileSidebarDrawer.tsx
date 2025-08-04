@@ -27,8 +27,9 @@ export function MobileSidebarDrawer({ locale, dict }: MobileSidebarDrawerProps) 
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-80 p-0">
-          <div className="flex items-center justify-between p-4 border-b">
+        <SheetContent side="right" className="w-80 p-0 mobile-sidebar-content">
+          {/* Fixed Header */}
+          <div className="flex items-center justify-between p-4 border-b bg-background flex-shrink-0 z-10">
             <h2 className="text-lg font-semibold">More Content</h2>
             <Button 
               variant="ghost" 
@@ -39,8 +40,16 @@ export function MobileSidebarDrawer({ locale, dict }: MobileSidebarDrawerProps) 
               <X className="h-4 w-4" />
             </Button>
           </div>
-          <div className="overflow-y-auto h-full">
-            <Sidebar className="border-0 bg-transparent -mr-0 pr-0" locale={locale} dict={dict} />
+          
+          {/* Scrollable Content Area */}
+          <div className="mobile-sidebar-scroll custom-scrollbar">
+            <div className="p-4">
+              <Sidebar 
+                className="border-0 bg-transparent min-w-0 w-full" 
+                locale={locale} 
+                dict={dict} 
+              />
+            </div>
           </div>
         </SheetContent>
       </Sheet>

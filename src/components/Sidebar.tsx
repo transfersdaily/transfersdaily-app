@@ -11,7 +11,7 @@ interface SidebarProps {
 export function Sidebar({ className = '', locale, dict }: SidebarProps) {
   return (
     <div
-      className={`bg-card rounded-lg shadow-sm border border-border min-w-[280px] ${className}`}
+      className={`bg-card rounded-lg shadow-sm border border-border w-full ${className}`}
     >
       <div className="p-4 space-y-6">
         {/* Recommended Articles */}
