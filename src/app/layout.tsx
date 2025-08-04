@@ -9,6 +9,13 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   title: 'Transfers Daily',
   description: 'Latest football transfer news and updates',
+  // Yandex Webmaster verification
+  verification: {
+    yandex: '37e6e4bf527ef93b'
+  },
+  // You can also add other search engine verifications here
+  // google: 'your-google-verification-code',
+  // bing: 'your-bing-verification-code',
 }
 
 // Root layout - handles admin routes and provides global providers
@@ -25,6 +32,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon-32x32.png" sizes="32x32" type="image/png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        
+        {/* Search Engine Verification */}
+        <meta name="yandex-verification" content="37e6e4bf527ef93b" />
         
         {/* Prevent theme flicker by setting initial theme */}
         <script
