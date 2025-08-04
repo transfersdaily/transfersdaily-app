@@ -100,11 +100,7 @@ export function RecommendedArticles({
     return `${diffInWeeks}w`;
   };
 
-  // Don't render anything if there's an error or no articles
-  if (hasError || (!isLoading && articles.length === 0)) {
-    return null;
-  }
-
+  // Always render the section, even if empty or error
   return (
     <div>
       <h3 className="text-sm md:text-base font-semibold text-foreground mb-3 md:mb-4">
@@ -113,6 +109,14 @@ export function RecommendedArticles({
       {isLoading ? (
         <div className="flex items-center justify-center py-6 md:py-8">
           <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin text-muted-foreground" />
+        </div>
+      ) : hasError ? (
+        <div className="text-center py-4">
+          <p className="text-sm text-muted-foreground">Unable to load articles</p>
+        </div>
+      ) : articles.length === 0 ? (
+        <div className="text-center py-4">
+          <p className="text-sm text-muted-foreground">No articles available</p>
         </div>
       ) : (
         <div className="space-y-2 md:space-y-3">
