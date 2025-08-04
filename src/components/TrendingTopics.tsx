@@ -42,6 +42,17 @@ function removeFromRecentSearches(query: string) {
   }
 }
 
+export function addRecentSearch(query: string) {
+  try {
+    const recent = getRecentSearches()
+    const filtered = recent.filter(q => q.toLowerCase() !== query.toLowerCase())
+    const updated = [query, ...filtered].slice(0, 10) // Keep only 10 recent searches
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated))
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsProps) {
   const [topics, setTopics] = useState<TrendingTopic[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -111,64 +122,53 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (isLoading) {
     return (
-      <Card className="w-full">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-            <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
-          </div>
-          <div className="space-y-2">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between">
-                <div className="h-4 bg-gray-200 rounded animate-pulse flex-1 mr-2" />
-                <div className="h-3 bg-gray-200 rounded animate-pulse w-12" />
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      <div className="p-4">
+        <div className="mb-3 md:mb-4">
+          <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+        </div>
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <div className="h-4 bg-gray-200 rounded animate-pulse flex-1 mr-2" />
+              <div className="h-3 bg-gray-200 rounded animate-pulse w-12" />
+            </div>
+          ))}
+        </div>
+      </div>
     )
   }
 
   if (hasError) {
     return (
-      <Card className="w-full">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-            <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
-          </div>
-          <div className="text-center py-4">
-            <p className="text-sm text-gray-500">{t('errorLoadingTrends')}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="p-4">
+        <div className="mb-3 md:mb-4">
+          <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+        </div>
+        <div className="text-center py-4">
+          <p className="text-sm text-gray-500">{t('errorLoadingTrends')}</p>
+        </div>
+      </div>
     )
   }
 
   if (topics.length === 0) {
     return (
-      <Card className="w-full">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <TrendingUp className="h-4 w-4 text-blue-600" />
-            <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
-          </div>
-          <div className="text-center py-4">
-            <p className="text-sm text-gray-500">{t('noTrendingTopics')}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="p-4">
+        <div className="mb-3 md:mb-4">
+          <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+        </div>
+        <div className="text-center py-4">
+          <p className="text-sm text-gray-500">{t('noTrendingTopics')}</p>
+        </div>
+      </div>
     )
   }
 
   return (
-    <Card className="w-full">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <TrendingUp className="h-4 w-4 text-blue-600" />
-          <h3 className="font-semibold text-sm">{t('mostSearched')}</h3>
-        </div>
+    <div className="p-4">
+      <div className="mb-3 md:mb-4">
+        <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+      </div>
         <div className="space-y-2">
           {topics.map((topic, index) => (
             <Link
@@ -186,7 +186,6 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
             </Link>
           ))}
         </div>
-      </CardContent>
-    </Card>
-  )
-}
+      </div>
+    )
+  }

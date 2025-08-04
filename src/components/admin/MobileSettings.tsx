@@ -23,7 +23,7 @@ import {
   Monitor,
   Moon
 } from "lucide-react"
-import { useIsMobile, adminMobileClasses, adminMobileTouchTargets } from "@/lib/mobile-utils"
+import { useIsMobile, adminMobileClasses, adminMobileTouchTargets, adminMobileSpacing } from "@/lib/mobile-utils"
 
 // Mobile-optimized Toggle Component
 function MobileToggle({ 
@@ -42,7 +42,7 @@ function MobileToggle({
   const isMobile = useIsMobile()
   
   return (
-    <div className={`flex items-center justify-between ${adminMobileTouchTargets.touchTarget} ${isMobile ? 'py-4' : 'py-2'}`}>
+    <div className={`flex items-center justify-between ${adminMobileSpacing.touchTarget} ${isMobile ? 'py-4' : 'py-2'}`}>
       <div className="flex-1 min-w-0">
         <Label className={`text-sm font-medium ${isMobile ? 'text-base' : ''}`}>
           {label}
@@ -133,7 +133,7 @@ export function MobileSettings() {
       <Accordion type="single" collapsible className="space-y-4">
         {/* Profile Settings */}
         <AccordionItem value="profile" className="border rounded-lg">
-          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileTouchTargets.touchTarget}`}>
+          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileSpacing.touchTarget}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <User className="h-5 w-5 text-primary" />
@@ -191,7 +191,7 @@ export function MobileSettings() {
 
         {/* Appearance Settings */}
         <AccordionItem value="appearance" className="border rounded-lg">
-          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileTouchTargets.touchTarget}`}>
+          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileSpacing.touchTarget}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Sun className="h-5 w-5 text-primary" />
@@ -236,7 +236,7 @@ export function MobileSettings() {
 
         {/* Notifications Settings */}
         <AccordionItem value="notifications" className="border rounded-lg">
-          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileTouchTargets.touchTarget}`}>
+          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileSpacing.touchTarget}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Bell className="h-5 w-5 text-primary" />
@@ -275,7 +275,7 @@ export function MobileSettings() {
 
         {/* Content Management Settings */}
         <AccordionItem value="content" className="border rounded-lg">
-          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileTouchTargets.touchTarget}`}>
+          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileSpacing.touchTarget}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Database className="h-5 w-5 text-primary" />
@@ -300,7 +300,7 @@ export function MobileSettings() {
 
         {/* Privacy & Security Settings */}
         <AccordionItem value="privacy" className="border rounded-lg">
-          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileTouchTargets.touchTarget}`}>
+          <AccordionTrigger className={`px-4 py-4 hover:no-underline ${adminMobileSpacing.touchTarget}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
                 <Shield className="h-5 w-5 text-primary" />
