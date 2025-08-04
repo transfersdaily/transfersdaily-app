@@ -1,9 +1,9 @@
-// API Configuration - Custom domain primary, API Gateway fallback
+// API Configuration - Direct API Gateway URL (reliable and working)
 export const API_CONFIG = {
-  // Custom domain as primary (will fallback automatically if not available)
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.transfersdaily.com',
-  // API Gateway as reliable fallback
-  fallbackUrl: process.env.NEXT_PUBLIC_API_URL_FALLBACK || 'https://e1si3naehh.execute-api.us-east-1.amazonaws.com/prod',
+  // Direct API Gateway as primary (reliable and working)
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://q8130q5lpd.execute-api.us-east-1.amazonaws.com/prod',
+  // Fallback URL (only if provided in environment)
+  fallbackUrl: process.env.NEXT_PUBLIC_API_URL_FALLBACK || null,
   // Use local API routes for client-side requests during development
   localApiUrl: typeof window !== 'undefined' 
     ? `${window.location.protocol}//${window.location.host}/api`

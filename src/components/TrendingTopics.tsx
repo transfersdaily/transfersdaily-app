@@ -94,10 +94,17 @@ export function TrendingTopics({ locale = 'en', dict }: TrendingTopicsProps) {
       setIsLoading(true)
       setHasError(false)
       
-      // Try to get trending searches from API
-      const trendingSearches = await searchApi.getTrendingSearches({ limit: 8 })
-      if (trendingSearches && trendingSearches.length > 0) {
-        setTopics(trendingSearches)
+      // Try to get most searched terms from API
+      const mostSearchedTerms = await searchApi.getMostSearchedTerms({ limit: 8 })
+      if (mostSearchedTerms && mostSearchedTerms.length > 0) {
+        // Convert the format to match what the component expects
+        const formattedTopics = mostSearchedTerms.map(item => ({
+          name: item.term,
+          query: item.query,
+          count: item.displayCount || item.count.toString(),
+          search_count: item.count
+        }))
+        setTopics(formattedTopics)
       } else {
         setTopics([])
       }

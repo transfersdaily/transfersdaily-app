@@ -189,14 +189,14 @@ async function apiRequest<T>(
     }
   }
 
-  // Try custom domain first, then fallback to API Gateway
-  const urls = [API_CONFIG.baseUrl, API_CONFIG.fallbackUrl];
+  // Try primary API Gateway URL, then fallback if available
+  const urls = [API_CONFIG.baseUrl, API_CONFIG.fallbackUrl].filter(Boolean);
   
   for (let i = 0; i < urls.length; i++) {
     const baseUrl = urls[i];
     const url = `${baseUrl}${endpoint}`;
     const isLastAttempt = i === urls.length - 1;
-    const urlType = i === 0 ? 'custom domain' : 'API Gateway fallback';
+    const urlType = i === 0 ? 'API Gateway primary' : 'fallback URL';
     
     console.log(`🌐 Making API request to ${urlType} (attempt ${i + 1}/${urls.length}):`);
     console.log('  - URL:', url);
@@ -606,67 +606,20 @@ export const articlesApi = {
   async getBySlug(slug: string, locale: string = 'en'): Promise<Article | null> {
     try {
       // Call backend API directly with language parameter
-      const response = await fetch(`${API_CONFIG.baseUrl}/public/articles/${slug}?language=${locale}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
-      })
+      const response = await apiRequest<any>(`/public/articles/${slug}?language=${locale}`)
       
-      if (!response.ok) {
-        console.error(`Article API error: ${response.status} ${response.statusText}`)
-        
-        // If article not found by slug, try searching through latest articles
-        if (response.status === 404 || response.status === 500) {
-          console.log('Article not found by slug, trying fallback search...')
-          
-          const articles = await this.getLatest(100, 0, locale)
-          
-          // Try exact match first
-          let matchingArticle = articles.find(article => {
-            const articleSlug = generateSlug(article.title)
-            return articleSlug === slug
-          })
-          
-          // If no exact match, try partial matching
-          if (!matchingArticle) {
-            matchingArticle = articles.find(article => {
-              const articleSlug = generateSlug(article.title)
-              const slugWords = slug.split('-')
-              const articleWords = articleSlug.split('-')
-              
-              // Check if most words match
-              const matchingWords = slugWords.filter(word => 
-                articleWords.some(articleWord => 
-                  articleWord.includes(word) || word.includes(articleWord)
-                )
-              )
-              
-              return matchingWords.length >= Math.min(3, slugWords.length * 0.6)
-            })
-          }
-          
-          if (matchingArticle) {
-            console.log('Found matching article via fallback search:', matchingArticle.title)
-            return matchingArticle
-          }
-        }
-        
-        return null
+      if (response && response.article) {
+        return response.article
       }
       
-      const data = await response.json()
-      console.log('Article API response:', data)
-      
-      const article = data.data?.article || data.article || data
+      const article = response.data?.article || response.article || response
       return article ? transformArticleToArticle(article) : null
     } catch (error) {
       console.error('Error fetching article by slug:', error)
       
       // Fallback: try to find the article by searching through latest articles
       try {
-        console.log('Network error, attempting fallback: searching articles for slug match')
+        console.log('API error, attempting fallback: searching articles for slug match')
         const articles = await this.getLatest(100, 0, locale) // Get more articles to search through
         
         // Try to find an article that matches the slug exactly
@@ -698,7 +651,6 @@ export const articlesApi = {
           return matchingArticle
         }
         
-        console.log('No matching article found in fallback search')
         return null
       } catch (fallbackError) {
         console.error('Fallback search also failed:', fallbackError)
@@ -959,7 +911,7 @@ export const adminApi = {
       if (params?.sortBy) queryParams.append('sortBy', params.sortBy)
       if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder)
       
-      console.log('Calling admin articles API:', `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}?${queryParams}`)
+      console.log('Calling admin articles API:', `${API_CONFIG.endpoints.admin.articles}?${queryParams}`)
       
       const response = await apiRequest<any>(
         `${API_CONFIG.endpoints.admin.articles}?${queryParams}`
@@ -1464,7 +1416,7 @@ export const searchApi = {
           total: number
         }
       }>(
-        `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.mostSearched}?${queryParams}`
+        `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
       )
       
       return response.data?.mostSearched || []

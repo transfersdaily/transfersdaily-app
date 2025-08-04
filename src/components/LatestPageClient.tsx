@@ -4,14 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
+import { Pagination } from "@/components/ui/pagination"
 import { TransferCard } from "@/components/TransferCard"
 import { Sidebar } from "@/components/Sidebar"
 import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
@@ -209,69 +202,16 @@ export function LatestPageClient({
 
           {/* Pagination */}
           {!isLoading && pagination.totalPages > 1 && (
-            <nav className="pb-6" aria-label="Pagination Navigation">
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage > 1) {
-                          handlePageChange(currentPage - 1)
-                        }
-                      }}
-                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                      aria-disabled={currentPage === 1}
-                    />
-                  </PaginationItem>
-                  
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    let pageNum
-                    if (pagination.totalPages <= 5) {
-                      pageNum = i + 1
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1
-                    } else if (currentPage >= pagination.totalPages - 2) {
-                      pageNum = pagination.totalPages - 4 + i
-                    } else {
-                      pageNum = currentPage - 2 + i
-                    }
-                    
-                    return (
-                      <PaginationItem key={pageNum}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            handlePageChange(pageNum)
-                          }}
-                          isActive={currentPage === pageNum}
-                          aria-label={`Go to page ${pageNum}`}
-                          aria-current={currentPage === pageNum ? 'page' : undefined}
-                        >
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    )
-                  })}
-                  
-                  <PaginationItem>
-                    <PaginationNext 
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage < pagination.totalPages) {
-                          handlePageChange(currentPage + 1)
-                        }
-                      }}
-                      className={currentPage === pagination.totalPages ? "pointer-events-none opacity-50" : ""}
-                      aria-disabled={currentPage === pagination.totalPages}
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
-            </nav>
+            <div className="pb-6">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={pagination.totalPages}
+                totalItems={pagination.total}
+                itemsPerPage={itemsPerPage}
+                onPageChange={handlePageChange}
+                itemName="transfers"
+              />
+            </div>
           )}
         </div>
 
