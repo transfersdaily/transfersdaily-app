@@ -406,7 +406,6 @@ export default async function LatestPage({
         dict={dict}
         initialData={initialData}
         initialPage={currentPage}
-        initialLeague={selectedLeague}
       />
     </main>
   )

@@ -107,15 +107,15 @@ export function RecommendedArticles({
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-foreground mb-4">
+      <h3 className="text-sm md:text-base font-semibold text-foreground mb-3 md:mb-4">
         {t('sidebar.recommended', 'Recommended Articles')}
       </h3>
       {isLoading ? (
-        <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <div className="flex items-center justify-center py-6 md:py-8">
+          <Loader2 className="h-4 w-4 md:h-5 md:w-5 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {articles.map((article) => (
             <SidebarArticleItem
               key={article.id}

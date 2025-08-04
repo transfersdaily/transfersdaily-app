@@ -167,7 +167,7 @@ export function ContactPageClient({ dict }: ContactPageClientProps) {
                           placeholder={getTranslation(dict, 'contact.form.firstNamePlaceholder', 'Enter your first name')}
                           required
                           disabled={isSubmitting}
-                          className="border-border focus:border-primary focus:ring-primary"
+                          className="border-border focus:border-primary focus:ring-primary min-h-[44px] text-base"
                         />
                       </div>
                       <div>
@@ -181,7 +181,7 @@ export function ContactPageClient({ dict }: ContactPageClientProps) {
                           onChange={handleInputChange}
                           placeholder={getTranslation(dict, 'contact.form.lastNamePlaceholder', 'Enter your last name')}
                           disabled={isSubmitting}
-                          className="border-border focus:border-primary focus:ring-primary"
+                          className="border-border focus:border-primary focus:ring-primary min-h-[44px] text-base"
                         />
                       </div>
                     </div>
@@ -199,7 +199,7 @@ export function ContactPageClient({ dict }: ContactPageClientProps) {
                         placeholder={getTranslation(dict, 'contact.form.emailPlaceholder', 'Enter your email address')}
                         required
                         disabled={isSubmitting}
-                        className="border-border focus:border-primary focus:ring-primary"
+                        className="border-border focus:border-primary focus:ring-primary min-h-[44px] text-base"
                       />
                     </div>
                     
@@ -214,7 +214,7 @@ export function ContactPageClient({ dict }: ContactPageClientProps) {
                         onChange={handleInputChange}
                         placeholder={getTranslation(dict, 'contact.form.subjectPlaceholder', "What's this about?")}
                         disabled={isSubmitting}
-                        className="border-border focus:border-primary focus:ring-primary"
+                        className="border-border focus:border-primary focus:ring-primary min-h-[44px] text-base"
                       />
                     </div>
                     
@@ -231,7 +231,7 @@ export function ContactPageClient({ dict }: ContactPageClientProps) {
                         rows={6}
                         required
                         disabled={isSubmitting}
-                        className="border-border focus:border-primary focus:ring-primary resize-none"
+                        className="border-border focus:border-primary focus:ring-primary resize-none text-base"
                       />
                     </div>
 

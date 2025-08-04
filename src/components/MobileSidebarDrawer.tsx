@@ -27,10 +27,13 @@ export function MobileSidebarDrawer({ locale, dict }: MobileSidebarDrawerProps) 
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="right" className="w-80 p-0 mobile-sidebar-content">
+        <SheetContent 
+          side="right" 
+          className="w-80 p-0 mobile-sidebar-container"
+        >
           {/* Fixed Header */}
-          <div className="flex items-center justify-between p-4 border-b bg-background flex-shrink-0 z-10">
-            <h2 className="text-lg font-semibold">More Content</h2>
+          <div className="mobile-sidebar-header flex items-center justify-between p-4">
+            <h2 className="text-base md:text-lg font-semibold">More Content</h2>
             <Button 
               variant="ghost" 
               size="icon" 
@@ -42,13 +45,27 @@ export function MobileSidebarDrawer({ locale, dict }: MobileSidebarDrawerProps) 
           </div>
           
           {/* Scrollable Content Area */}
-          <div className="mobile-sidebar-scroll custom-scrollbar">
-            <div className="p-4">
+          <div className="mobile-sidebar-content">
+            <div className="mobile-sidebar-inner">
               <Sidebar 
                 className="border-0 bg-transparent min-w-0 w-full" 
                 locale={locale} 
                 dict={dict} 
               />
+              
+              {/* Debug: Add extra content to test scrolling */}
+              {process.env.NODE_ENV === 'development' && (
+                <div className="mt-8 p-4 bg-muted/50 rounded-lg">
+                  <h3 className="text-sm font-semibold mb-2">Debug: Scroll Test</h3>
+                  <div className="space-y-2">
+                    {Array.from({ length: 10 }, (_, i) => (
+                      <div key={i} className="text-xs text-muted-foreground">
+                        Test item {i + 1} - This content should be scrollable
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </SheetContent>

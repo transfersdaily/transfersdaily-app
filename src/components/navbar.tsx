@@ -68,7 +68,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
         <nav className="hidden md:flex items-center justify-center flex-1 space-x-8">
           <Link
             href={getLocalizedPath('/latest')}
-            className={`${typography.nav.primary} text-foreground hover:text-primary px-3 py-2 transition-colors`}
+            className={`${typography.nav.primary} text-foreground hover:text-primary px-3 py-2 min-h-[44px] flex items-center transition-colors`}
           >
             {t('navigation.latest', 'Latest')}
           </Link>
@@ -78,7 +78,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className={`flex items-center space-x-1 px-3 py-2 text-foreground hover:bg-secondary hover:text-primary ${typography.nav.primary}`}
+                className={`flex items-center space-x-1 px-3 py-2 min-h-[44px] text-foreground hover:bg-secondary hover:text-primary ${typography.nav.primary}`}
               >
                 <span>{t('navigation.leagues', 'Leagues')}</span>
                 <ChevronDown className="h-3 w-3" />
@@ -87,7 +87,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <DropdownMenuContent align="start" className="w-48">
               {leagues.map((league) => (
                 <DropdownMenuItem key={league.name} asChild>
-                  <Link href={getLocalizedPath(`/league/${league.slug}`)} className={typography.nav.dropdown}>
+                  <Link href={getLocalizedPath(`/league/${league.slug}`)} className={`${typography.nav.dropdown} min-h-[44px] flex items-center`}>
                     {league.name}
                   </Link>
                 </DropdownMenuItem>
