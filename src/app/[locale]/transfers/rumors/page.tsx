@@ -4,6 +4,8 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
+// Ad components
+import { LeaderboardAd } from '@/components/ads';
 
 export async function generateMetadata({ params, searchParams }: { 
   params: Promise<{ locale: Locale }>
@@ -71,5 +73,24 @@ export default async function TransferRumorsPage({ params, searchParams }: { par
   const t = createTranslator(dict)
   const initialData = await getTransferRumorsData(locale, currentPage, selectedLeague)
   const webPageStructuredData = { "@context": "https://schema.org", "@type": "WebPage", "name": "Football Transfer Rumors", "description": "Latest football transfer rumors, breaking news, and speculation from all major leagues", "url": locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors`, "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" }, "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` }, { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` }, { "@type": "ListItem", "position": 3, "name": t('transfers.rumors') || "Rumors", "item": locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors` }] } }
-  return (<main className="min-h-screen bg-background"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} /><TransferStatusPageClient locale={locale} dict={dict} initialData={initialData} initialPage={currentPage} initialLeague={selectedLeague} transferType="rumors" pageTitle={t('transfers.rumors') || 'Transfer Rumors'} pageDescription={t('transfers.rumorsDescription') || 'Latest football transfer rumors, breaking news, and speculation'} icon="MessageCircle" /></main>)
+  return (
+    <main className="min-h-screen bg-background">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} />
+      
+      {/* Ad: Leaderboard at top */}
+      <LeaderboardAd position="top" />
+      
+      <TransferStatusPageClient 
+        locale={locale} 
+        dict={dict} 
+        initialData={initialData} 
+        initialPage={currentPage} 
+        initialLeague={selectedLeague} 
+        transferType="rumors" 
+        pageTitle={t('transfers.rumors') || 'Transfer Rumors'} 
+        pageDescription={t('transfers.rumorsDescription') || 'Latest football transfer rumors, breaking news, and speculation'} 
+        icon="MessageCircle" 
+      />
+    </main>
+  )
 }

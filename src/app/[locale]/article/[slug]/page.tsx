@@ -19,6 +19,8 @@ import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ArticleClientComponents } from './ArticleClientComponents'
 import { typography } from "@/lib/typography"
 import { getBestDate, formatDisplayDate, getValidDateForMeta } from '@/lib/date-utils'
+// Ad components
+import { LeaderboardAd, RectangleAd } from '@/components/ads';
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -382,6 +384,9 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Ad: Leaderboard at top of article */}
+        <LeaderboardAd position="top" />
+        
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Article Content - 70% */}
           <article className="lg:col-span-7 bg-card rounded-lg shadow-sm border border-border">
@@ -524,6 +529,11 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                   </div>
                 </div>
               )}
+
+              {/* Ad: Rectangle after article content */}
+              <div className="mt-8">
+                <RectangleAd position="after-content" />
+              </div>
             </div>
           </article>
 
@@ -534,6 +544,9 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
             </Suspense>
           </aside>
         </div>
+
+        {/* Ad: Leaderboard before related articles */}
+        <LeaderboardAd position="before-newsletter" />
 
         {/* Related Articles - Outside the main card, full width with background color */}
         <section className="mt-12 lg:col-span-7 lg:max-w-none">

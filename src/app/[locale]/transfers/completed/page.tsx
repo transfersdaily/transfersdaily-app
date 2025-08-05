@@ -4,6 +4,8 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
+// Ad components
+import { LeaderboardAd } from '@/components/ads';
 
 export async function generateMetadata({ params, searchParams }: { 
   params: Promise<{ locale: Locale }>
@@ -71,5 +73,24 @@ export default async function CompletedTransfersPage({ params, searchParams }: {
   const t = createTranslator(dict)
   const initialData = await getCompletedTransfersData(locale, currentPage, selectedLeague)
   const webPageStructuredData = { "@context": "https://schema.org", "@type": "WebPage", "name": "Completed Football Transfers", "description": "Browse completed football transfers and finalized deals from all major leagues", "url": locale === 'en' ? 'https://transferdaily.com/transfers/completed' : `https://transferdaily.com/${locale}/transfers/completed`, "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" }, "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` }, { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` }, { "@type": "ListItem", "position": 3, "name": t('transfers.completed') || "Completed", "item": locale === 'en' ? 'https://transferdaily.com/transfers/completed' : `https://transferdaily.com/${locale}/transfers/completed` }] } }
-  return (<main className="min-h-screen bg-background"><script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} /><TransferStatusPageClient locale={locale} dict={dict} initialData={initialData} initialPage={currentPage} initialLeague={selectedLeague} transferType="completed" pageTitle={t('transfers.completed') || 'Completed Transfers'} pageDescription={t('transfers.completedDescription') || 'Browse completed football transfers and finalized deals'} icon="CheckCircle2" /></main>)
+  return (
+    <main className="min-h-screen bg-background">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} />
+      
+      {/* Ad: Leaderboard at top */}
+      <LeaderboardAd position="top" />
+      
+      <TransferStatusPageClient 
+        locale={locale} 
+        dict={dict} 
+        initialData={initialData} 
+        initialPage={currentPage} 
+        initialLeague={selectedLeague} 
+        transferType="completed" 
+        pageTitle={t('transfers.completed') || 'Completed Transfers'} 
+        pageDescription={t('transfers.completedDescription') || 'Browse completed football transfers and finalized deals'} 
+        icon="CheckCircle2" 
+      />
+    </main>
+  )
 }

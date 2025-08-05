@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Pagination } from "@/components/ui/pagination"
 import { TransferCard } from "@/components/TransferCard"
+import { TransferGridWithAds } from "@/components/TransferGridWithAds"
 import { Sidebar } from "@/components/Sidebar"
 import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
 import { SidebarSkeleton } from "@/components/SidebarSkeleton"
@@ -13,6 +14,8 @@ import { ResultsInfo } from "@/components/ResultsInfo"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { PageHeader } from "@/components/PageHeader"
+// Ad components
+import { RectangleAd } from "@/components/ads"
 
 interface LatestPageClientProps {
   locale: Locale
@@ -124,20 +127,19 @@ export function LatestPageClient({
             {isLoading ? (
               <TransferGridSkeleton count={15} />
             ) : transfers.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                {transfers.map((transfer) => (
-                  <TransferCard
-                    key={transfer.id}
-                    title={transfer.title}
-                    excerpt={transfer.excerpt}
-                    primaryBadge={transfer.league}
-                    timeAgo={formatTimeAgo(transfer.publishedAt)}
-                    href={`/${locale}/article/${transfer.slug}`}
-                    imageUrl={transfer.imageUrl}
-                    imageAlt={transfer.title}
-                  />
-                ))}
-              </div>
+              <>
+                <TransferGridWithAds
+                  transfers={transfers}
+                  locale={locale}
+                  dict={dict}
+                  adPosition="in-latest"
+                />
+                
+                {/* Ad: Rectangle after transfer grid */}
+                <div className="mt-8 mb-8">
+                  <RectangleAd position="after-latest" />
+                </div>
+              </>
             ) : (
               <div className="text-center py-12">
                 <h3 className="text-lg font-semibold mb-2">{t('common.notFound')}</h3>

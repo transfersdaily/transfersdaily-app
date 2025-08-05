@@ -56,7 +56,7 @@ export function Footer() {
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted opacity-50"></div>
 
-        <div className="container mx-auto px-6 py-16 relative z-10">
+        <div className="container mx-auto px-4 md:px-6 py-8 md:py-16 pb-20 md:pb-8 relative z-10">
           {/* Desktop Layout */}
           <div className="hidden md:grid md:grid-cols-4 gap-12 lg:gap-16">
             {/* Brand & Links */}
@@ -154,14 +154,14 @@ export function Footer() {
           </div>
 
           {/* Mobile Layout */}
-          <div className="md:hidden space-y-8">
+          <div className="md:hidden space-y-4 md:space-y-8">
             {/* Brand */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-2 md:space-y-4">
               <div className="flex items-center justify-center gap-3">
-                <div className="bg-primary p-2 rounded-lg">
+                <div className="bg-primary p-2 rounded-lg hidden md:block">
                   <Trophy className="h-6 w-6 text-primary-foreground" />
                 </div>
-                <div className="text-2xl font-bold">
+                <div className="text-xl md:text-2xl font-bold">
                   <span className="text-primary">Transfers</span>
                   <span className="text-foreground">Daily</span>
                 </div>
@@ -171,71 +171,8 @@ export function Footer() {
               </p>
             </div>
 
-            {/* Collapsible Sections */}
-            {[
-              {
-                key: 'links',
-                title: 'Quick Links', 
-                content: (
-                  <ul className="space-y-3 text-sm text-muted-foreground">
-                    <li><Link href="/latest" className="block py-2 hover:text-foreground transition-colors">Latest News</Link></li>
-                    <li><Link href="/search" className="block py-2 hover:text-foreground transition-colors">Search</Link></li>
-                    <li><Link href="/about" className="block py-2 hover:text-foreground transition-colors">About</Link></li>
-                    <li><Link href="/contact" className="block py-2 hover:text-foreground transition-colors">Contact</Link></li>
-                  </ul>
-                )
-              },
-              {
-                key: 'leagues',
-                title: 'Leagues',
-                content: (
-                  <div className="space-y-4">
-                    <ul className="space-y-3 text-sm text-muted-foreground">
-                      <li><Link href="/league/premier-league" className="block py-2 hover:text-foreground transition-colors">Premier League</Link></li>
-                      <li><Link href="/league/la-liga" className="block py-2 hover:text-foreground transition-colors">La Liga</Link></li>
-                      <li><Link href="/league/serie-a" className="block py-2 hover:text-foreground transition-colors">Serie A</Link></li>
-                      <li><Link href="/league/bundesliga" className="block py-2 hover:text-foreground transition-colors">Bundesliga</Link></li>
-                      <li><Link href="/league/ligue-1" className="block py-2 hover:text-foreground transition-colors">Ligue 1</Link></li>
-                    </ul>
-                  </div>
-                )
-              },
-              {
-                key: 'contact',
-                title: 'Contact & Legal', 
-                content: (
-                  <div className="space-y-4 text-sm text-muted-foreground">
-                    <a href="mailto:info@transfersdaily.com" className="block py-2 font-medium hover:text-foreground transition-colors">
-                      info@transfersdaily.com
-                    </a>
-                    <Link href="/privacy" className="block py-2 hover:text-foreground transition-colors">Privacy Policy</Link>
-                    <Link href="/terms" className="block py-2 hover:text-foreground transition-colors">Terms of Service</Link>
-                  </div>
-                )
-              }
-            ].map(section => (
-              <div key={section.key} className="border-b border-border pb-4">
-                <button
-                  onClick={() => toggleSection(section.key)}
-                  className="flex items-center justify-between w-full py-3 text-left text-foreground font-medium uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded"
-                >
-                  {section.title}
-                  <ChevronDown 
-                    className={`h-4 w-4 transition-transform ${
-                      openSections.includes(section.key) ? 'rotate-180' : ''
-                    }`} 
-                  />
-                </button>
-                {openSections.includes(section.key) && (
-                  <div className="mt-4">
-                    {section.content}
-                  </div>
-                )}
-              </div>
-            ))}
-
             {/* Social Media - Mobile */}
-            <div className="text-center space-y-4">
+            <div className="text-center space-y-2 md:space-y-4">
               <h4 className="font-medium text-primary uppercase tracking-wider text-sm">Follow Us</h4>
               <div className="flex items-center justify-center gap-4">
                 <Link href="https://twitter.com/transfersdaily" className="bg-muted hover:bg-blue-500 p-3 rounded-full transition-all duration-200 hover:scale-110">
@@ -252,6 +189,69 @@ export function Footer() {
                 </Link>
               </div>
             </div>
+
+            {/* Collapsible Sections */}
+            {[
+              {
+                key: 'links',
+                title: 'Quick Links', 
+                content: (
+                  <ul className="space-y-1 md:space-y-3 text-sm text-muted-foreground">
+                    <li><Link href="/latest" className="block py-1 md:py-2 hover:text-foreground transition-colors">Latest News</Link></li>
+                    <li><Link href="/search" className="block py-1 md:py-2 hover:text-foreground transition-colors">Search</Link></li>
+                    <li><Link href="/about" className="block py-1 md:py-2 hover:text-foreground transition-colors">About</Link></li>
+                    <li><Link href="/contact" className="block py-1 md:py-2 hover:text-foreground transition-colors">Contact</Link></li>
+                  </ul>
+                )
+              },
+              {
+                key: 'leagues',
+                title: 'Leagues',
+                content: (
+                  <div className="space-y-2 md:space-y-4">
+                    <ul className="space-y-1 md:space-y-3 text-sm text-muted-foreground">
+                      <li><Link href="/league/premier-league" className="block py-1 md:py-2 hover:text-foreground transition-colors">Premier League</Link></li>
+                      <li><Link href="/league/la-liga" className="block py-1 md:py-2 hover:text-foreground transition-colors">La Liga</Link></li>
+                      <li><Link href="/league/serie-a" className="block py-1 md:py-2 hover:text-foreground transition-colors">Serie A</Link></li>
+                      <li><Link href="/league/bundesliga" className="block py-1 md:py-2 hover:text-foreground transition-colors">Bundesliga</Link></li>
+                      <li><Link href="/league/ligue-1" className="block py-1 md:py-2 hover:text-foreground transition-colors">Ligue 1</Link></li>
+                    </ul>
+                  </div>
+                )
+              },
+              {
+                key: 'contact',
+                title: 'Contact & Legal', 
+                content: (
+                  <div className="space-y-2 md:space-y-4 text-sm text-muted-foreground">
+                    <a href="mailto:info@transfersdaily.com" className="block py-1 md:py-2 font-medium hover:text-foreground transition-colors">
+                      info@transfersdaily.com
+                    </a>
+                    <Link href="/privacy" className="block py-1 md:py-2 hover:text-foreground transition-colors">Privacy Policy</Link>
+                    <Link href="/terms" className="block py-1 md:py-2 hover:text-foreground transition-colors">Terms of Service</Link>
+                  </div>
+                )
+              }
+            ].map(section => (
+              <div key={section.key} className="border-b border-border pb-2 md:pb-4">
+                <button
+                  onClick={() => toggleSection(section.key)}
+                  className="flex items-center justify-between w-full py-2 md:py-3 text-left text-foreground font-medium uppercase tracking-wider text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded"
+                >
+                  {section.title}
+                  <ChevronDown 
+                    className={`h-4 w-4 transition-transform ${
+                      openSections.includes(section.key) ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
+                {openSections.includes(section.key) && (
+                  <div className="mt-2 md:mt-4">
+                    {section.content}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       </footer>

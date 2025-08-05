@@ -114,22 +114,22 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
               </div>
             ) : (
               <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-6">
-                  <div className="bg-primary p-3 rounded-full">
+                <div className="flex items-center justify-center gap-3 mb-3 md:mb-6">
+                  <div className="bg-primary p-3 rounded-full hidden md:block">
                     <Mail className="h-7 w-7 text-primary-foreground" />
                   </div>
-                  <h3 className="text-2xl font-bold">
+                  <h3 className="text-xl md:text-2xl font-bold">
                     {t('newsletter.title')}
                   </h3>
                 </div>
 
-                <p className="text-muted-foreground mb-6 text-sm max-w-2xl mx-auto">
+                <p className="text-muted-foreground mb-4 md:mb-6 text-sm max-w-2xl mx-auto">
                   {t('newsletter.description')}
                 </p>
 
                 <form
                   onSubmit={handleNewsletterSubmit}
-                  className="mb-6 max-w-md mx-auto"
+                  className="mb-4 md:mb-6 max-w-md mx-auto"
                 >
                   <div className="flex flex-col sm:flex-row gap-3">
                     <Input

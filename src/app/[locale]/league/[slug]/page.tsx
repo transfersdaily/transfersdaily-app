@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { LeaguePageClient } from '@/components/LeaguePageClient'
+// Ad components
+import { LeaderboardAd } from '@/components/ads';
 
 // Helper function to generate slug from title
 function generateSlug(title: string): string {
@@ -492,6 +494,9 @@ export default async function LeaguePage({
           }}
         />
       )}
+      
+      {/* Ad: Leaderboard at top */}
+      <LeaderboardAd position="top" />
       
       {/* Client-side component with server-side data */}
       <LeaguePageClient 

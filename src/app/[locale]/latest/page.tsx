@@ -4,6 +4,8 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { type Transfer } from "@/lib/api"
 import { LatestPageClient } from '@/components/LatestPageClient'
+// Ad components
+import { LeaderboardAd } from '@/components/ads';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
@@ -394,6 +396,9 @@ export default async function LatestPage({
           }}
         />
       )}
+      
+      {/* Ad: Leaderboard at top */}
+      <LeaderboardAd position="top" />
       
       {/* Client-side component with server-side data */}
       <LatestPageClient 

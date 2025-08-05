@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { TransferCard } from '@/components/TransferCard';
+import { TransferGridWithAds } from '@/components/TransferGridWithAds';
 import { Sidebar } from '@/components/Sidebar';
 import { TransferGridSkeleton } from '@/components/TransferCardSkeleton';
 import { SidebarSkeleton } from '@/components/SidebarSkeleton';
@@ -17,6 +18,8 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n';
 import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
+// Ad components
+import { LeaderboardAd, RectangleAd } from '@/components/ads';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({
@@ -346,7 +349,7 @@ export default async function HomePage({
           <div className="col-span-1 lg:col-span-7">
             {/* Hero Section - Featured */}
             <section className="py-8" aria-labelledby="featured-transfer">
-              <div className="mb-6">
+              <div className="mb-3 md:mb-6">
                 <h2
                   id="featured-transfer"
                   className="text-base md:text-xl font-bold mb-3 text-foreground"
@@ -392,7 +395,7 @@ export default async function HomePage({
                             <Badge className="mb-4 bg-primary/10 text-primary border-none">
                               {initialData.featuredTransfer.league?.toUpperCase()}
                             </Badge>
-                            <h3 className="text-base md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
+                            <h3 className="text-sm md:text-base lg:text-xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
                               {initialData.featuredTransfer.title}
                             </h3>
                             <p className="text-white text-sm md:text-base leading-relaxed line-clamp-2 mb-4 md:mb-6 drop-shadow-md">
@@ -428,9 +431,12 @@ export default async function HomePage({
               </Suspense>
             </section>
 
+            {/* Ad: Leaderboard after hero section */}
+            <LeaderboardAd position="top" />
+
             {/* Latest Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="latest-transfers">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-3 md:mb-6">
                 <div>
                   <h2
                     id="latest-transfers"
@@ -448,17 +454,21 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGrid
+                <TransferGridWithAds
                   transfers={initialData.latestTransfers}
                   locale={locale}
                   dict={dict}
+                  adPosition="in-latest"
                 />
               </Suspense>
             </section>
 
+            {/* Ad: Rectangle after latest transfers */}
+            <RectangleAd position="after-latest" />
+
             {/* Browse by League Section */}
             <section className="py-4 md:py-8" aria-labelledby="browse-leagues">
-              <div className="mb-6">
+              <div className="mb-3 md:mb-6">
                 <h2
                   id="browse-leagues"
                   className="text-base md:text-xl font-bold mb-3 text-foreground"
@@ -496,9 +506,12 @@ export default async function HomePage({
               </div>
             </section>
 
+            {/* Ad: Rectangle after browse by league */}
+            <RectangleAd position="after-leagues" />
+
             {/* Trending Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-start mb-3 md:mb-6">
                 <div>
                   <h2
                     id="trending-transfers"
@@ -516,16 +529,23 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGrid
+                <TransferGridWithAds
                   transfers={initialData.trendingTransfers}
                   locale={locale}
                   dict={dict}
+                  adPosition="in-trending"
                 />
               </Suspense>
             </section>
 
+            {/* Ad: Leaderboard before newsletter */}
+            <LeaderboardAd position="before-newsletter" />
+
             {/* Newsletter Section */}
             <NewsletterSection locale={locale} dict={dict} />
+
+            {/* Ad: Rectangle after newsletter */}
+            <RectangleAd position="after-newsletter" />
           </div>
 
           {/* Sidebar - 30% */}

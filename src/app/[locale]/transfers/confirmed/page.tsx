@@ -4,6 +4,8 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
+// Ad components
+import { LeaderboardAd } from '@/components/ads';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
@@ -193,6 +195,10 @@ export default async function ConfirmedTransfersPage({ params, searchParams }: {
   return (
     <main className="min-h-screen bg-background">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} />
+      
+      {/* Ad: Leaderboard at top */}
+      <LeaderboardAd position="top" />
+      
       <TransferStatusPageClient 
         locale={locale} dict={dict} initialData={initialData} initialPage={currentPage} initialLeague={selectedLeague}
         transferType="confirmed" pageTitle={t('transfers.confirmed') || 'Confirmed Transfers'}
