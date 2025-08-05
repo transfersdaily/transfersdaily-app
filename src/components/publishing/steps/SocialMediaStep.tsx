@@ -479,7 +479,7 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
                               <span className="font-semibold text-xs">
                                 {localeNames[locale].nativeName}
                               </span>
-                              {!hasTranslation && locale !== 'en' && (
+                              {!hasTranslation && (locale as string) !== 'en' && (
                                 <Badge variant="secondary" className="text-xs py-0 px-1">
                                   English
                                 </Badge>

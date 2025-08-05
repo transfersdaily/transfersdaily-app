@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,17 +59,25 @@ export default function PublishSuccessPage({
   params: Promise<{ articleId: string }> 
 }) {
   const router = useRouter();
-  const { articleId } = use(params);
+  const [articleId, setArticleId] = useState<string>('');
   
   const [article, setArticle] = useState<ArticleData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadArticle();
+    params.then(({ articleId }) => {
+      setArticleId(articleId);
+    });
+  }, [params]);
+
+  useEffect(() => {
+    if (articleId) {
+      loadArticle();
+    }
   }, [articleId]);
 
-  const loadArticle = async () => {
+  async function loadArticle() {
     try {
       setIsLoading(true);
       setError(null);
@@ -115,9 +123,9 @@ export default function PublishSuccessPage({
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
-  const getArticleUrl = () => {
+  function getArticleUrl() {
     if (!article) return `https://transfersdaily.com/en/article/loading-${articleId}`;
     
     // Try to get slug from translations (English first, then any available)
@@ -133,9 +141,9 @@ export default function PublishSuccessPage({
     
     // Use slug instead of UUID for the URL
     return `https://transfersdaily.com/en/article/${slug}`;
-  };
+  }
 
-  const generateHashtags = () => {
+  function generateHashtags() {
     if (!article) return [];
     
     const hashtags = [];
@@ -171,10 +179,10 @@ export default function PublishSuccessPage({
     hashtags.push('Football', 'TransfersDaily', 'TransferNews');
     
     return hashtags.slice(0, 8); // Limit to 8 hashtags
-  };
+  }
 
   // Generate Twitter post for specific language
-  const generateTwitterPost = (locale: string = 'en') => {
+  function generateTwitterPost(locale: string = 'en') {
     if (!article) return '';
     
     let title = article.title;
@@ -196,19 +204,19 @@ export default function PublishSuccessPage({
     const hashtagString = hashtags.map(tag => `#${tag}`).join(' ');
     
     return `${title}\n\n${articleUrl}\n\n${hashtagString}`;
-  };
+  }
 
-  const handleTwitterPost = (locale: string = 'en') => {
+  function handleTwitterPost(locale: string = 'en') {
     const tweetText = generateTwitterPost(locale);
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(twitterUrl, '_blank', 'width=550,height=420');
-  };
+  }
 
-  const copyToClipboard = async (text: string, locale: string) => {
+  async function copyToClipboard(text: string, locale: string) {
     try {
       await navigator.clipboard.writeText(text);
       // Simple feedback - you could enhance this with a toast notification
-      const button = document.querySelector(`[data-copy-${locale}]`);
+      const button = document.querySelector(`[data-copy="${locale}"]`);
       if (button) {
         const originalText = button.textContent;
         button.textContent = 'Copied!';
@@ -226,15 +234,15 @@ export default function PublishSuccessPage({
       document.execCommand('copy');
       document.body.removeChild(textArea);
     }
-  };
+  }
 
-  const handleViewArticle = () => {
+  function handleViewArticle() {
     window.open(getArticleUrl(), '_blank');
-  };
+  }
 
-  const handleBackToDrafts = () => {
+  function handleBackToDrafts() {
     router.push('/admin/articles/drafts');
-  };
+  }
 
   if (isLoading) {
     return (
@@ -383,7 +391,7 @@ export default function PublishSuccessPage({
                   Twitter Posts for All Languages
                 </h3>
                 
-                {locales.map((locale) => {
+                {locales.map((locale: Locale) => {
                   const twitterPost = generateTwitterPost(locale);
                   const hasTranslation = locale === 'en' || (article.translations && article.translations[locale]);
                   
@@ -396,7 +404,7 @@ export default function PublishSuccessPage({
                           <span className="font-semibold text-sm">
                             {localeNames[locale].nativeName}
                           </span>
-                          {!hasTranslation && locale !== 'en' && (
+                          {!hasTranslation && (locale as string) !== 'en' && (
                             <Badge variant="secondary" className="text-xs">
                               Using English
                             </Badge>
@@ -407,7 +415,7 @@ export default function PublishSuccessPage({
                             size="sm"
                             variant="outline"
                             onClick={() => copyToClipboard(twitterPost, locale)}
-                            data-copy-{locale}="true"
+                            data-copy={locale}
                             className="text-xs"
                           >
                             <Copy className="w-3 h-3 mr-1" />

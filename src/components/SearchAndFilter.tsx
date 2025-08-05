@@ -1,6 +1,7 @@
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, Filter } from "lucide-react"
+import { adminMobileClasses } from "@/lib/mobile-utils"
 
 interface SearchAndFilterProps {
   searchTerm: string
@@ -39,7 +40,7 @@ export function SearchAndFilter({
           
           {/* Filters */}
           {filters.length > 0 && (
-            <div className="flex gap-4 items-center">
+            <div className={`flex gap-4 items-center ${adminMobileClasses.desktopOnly}`}>
               <div className="flex items-center gap-2">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <span className="text-sm font-medium">Filter by:</span>

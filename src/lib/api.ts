@@ -112,9 +112,6 @@ export async function getAuthHeaders(): Promise<HeadersInit> {
   // Use ID token for Cognito User Pool Authorizer (not access token)
   let token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.idToken) : null;
   
-  // Debug logging
-  const token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.idToken) : null;
-  
   if (token) {
     // Check token expiration
     const decoded = decodeJWT(token);

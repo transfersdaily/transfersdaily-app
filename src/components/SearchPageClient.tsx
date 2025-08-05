@@ -14,6 +14,7 @@ import { Sidebar } from "@/components/Sidebar"
 import { addRecentSearch } from "@/components/TrendingTopics"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
+import { adminMobileClasses } from "@/lib/mobile-utils"
 
 const trendingSearches = [
   "Kylian Mbappé", "Manchester United transfers", "Real Madrid", "Premier League", 
@@ -197,7 +198,7 @@ export function SearchPageClient({
               </div>
               
               {/* Filters */}
-              <div className="flex flex-wrap gap-4 items-center">
+              <div className={`flex flex-wrap gap-4 items-center ${adminMobileClasses.desktopOnly}`}>
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">{t('search.filters') || t('common.filter') || 'Filters'}:</span>

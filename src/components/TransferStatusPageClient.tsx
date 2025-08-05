@@ -17,6 +17,7 @@ import { ResultsInfo } from "@/components/ResultsInfo"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { typography, responsive } from "@/lib/typography"
+import { adminMobileClasses } from "@/lib/mobile-utils"
 import { PageHeader } from "@/components/PageHeader"
 
 interface TransferStatusPageClientProps {
@@ -169,26 +170,28 @@ export function TransferStatusPageClient({
             title={pageTitle}
             icon={IconComponent}
           >
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className={typography.body.small}>{t('common.filter')}:</span>
+            <div className={`flex items-center gap-2 ${adminMobileClasses.desktopOnly}`}>
+              <div className="flex items-center gap-2">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <span className={typography.body.small}>{t('common.filter')}:</span>
+              </div>
+              
+              <Separator orientation="vertical" className="h-6" />
+              
+              <Select value={selectedLeague} onValueChange={handleFilterChange}>
+                <SelectTrigger className="w-40" aria-label="Filter by league">
+                  <SelectValue placeholder={t('navigation.leagues')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t('common.all')} {t('navigation.leagues')}</SelectItem>
+                  <SelectItem value="Premier League">Premier League</SelectItem>
+                  <SelectItem value="La Liga">La Liga</SelectItem>
+                  <SelectItem value="Serie A">Serie A</SelectItem>
+                  <SelectItem value="Bundesliga">Bundesliga</SelectItem>
+                  <SelectItem value="Ligue 1">Ligue 1</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            
-            <Separator orientation="vertical" className="h-6" />
-            
-            <Select value={selectedLeague} onValueChange={handleFilterChange}>
-              <SelectTrigger className="w-40" aria-label="Filter by league">
-                <SelectValue placeholder={t('navigation.leagues')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('common.all')} {t('navigation.leagues')}</SelectItem>
-                <SelectItem value="Premier League">Premier League</SelectItem>
-                <SelectItem value="La Liga">La Liga</SelectItem>
-                <SelectItem value="Serie A">Serie A</SelectItem>
-                <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                <SelectItem value="Ligue 1">Ligue 1</SelectItem>
-              </SelectContent>
-            </Select>
           </PageHeader>
 
           {/* Results Info - Match Latest Page */}
