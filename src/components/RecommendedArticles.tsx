@@ -6,6 +6,7 @@ import { transfersApi, type Transfer } from '@/lib/api';
 import { SidebarArticleItem } from '@/components/SidebarArticleItem';
 import { type Locale, type Dictionary, getTranslation } from '@/lib/i18n';
 import { getTranslation as getCommonTranslation } from '@/lib/translations';
+import { mobileTypography } from '@/lib/mobile-utils';
 
 interface RecommendedArticlesProps {
   locale?: Locale;
@@ -112,11 +113,11 @@ export function RecommendedArticles({
         </div>
       ) : hasError ? (
         <div className="text-center py-4">
-          <p className="text-sm text-muted-foreground">Unable to load articles</p>
+          <p className="text-sm text-muted-foreground">{t('sidebar.errorLoadingArticles')}</p>
         </div>
       ) : articles.length === 0 ? (
         <div className="text-center py-4">
-          <p className="text-sm text-muted-foreground">No articles available</p>
+          <p className="text-sm text-muted-foreground">{t('sidebar.noRecommendedArticles')}</p>
         </div>
       ) : (
         <div className="space-y-2 md:space-y-3">

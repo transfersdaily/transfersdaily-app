@@ -189,6 +189,34 @@ async function apiRequest<T>(
     }
   }
 
+  // Check if this is a local API route (starts with /api/)
+  if (endpoint.startsWith('/api/')) {
+    const url = endpoint; // Use endpoint as-is for local API routes
+    console.log('🏠 Making local API request:', url);
+    
+    try {
+      const response = await fetch(url, {
+        ...config,
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
+
+      console.log('📡 Local API response received:');
+      console.log('  - Status:', response.status);
+      console.log('  - Status Text:', response.statusText);
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Local API request successful');
+      return data;
+    } catch (error) {
+      console.error('❌ Local API request failed:', error);
+      throw error;
+    }
+  }
+
   // Try primary API Gateway URL, then fallback if available
   const urls = [API_CONFIG.baseUrl, API_CONFIG.fallbackUrl].filter(Boolean);
   
@@ -1403,6 +1431,15 @@ export const searchApi = {
       if (params?.limit) queryParams.append('limit', params.limit.toString())
       if (params?.days) queryParams.append('days', params.days.toString())
 
+      // Use local API route during development to avoid CORS issues
+      const isLocalDev = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+      const endpoint = isLocalDev 
+        ? `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
+        : `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
+      
+      console.log('🔍 getMostSearchedTerms: Calling endpoint:', endpoint)
+      console.log('🌐 Is local development:', isLocalDev)
+
       const response = await apiRequest<{
         success: boolean
         data: {
@@ -1415,13 +1452,17 @@ export const searchApi = {
           }>
           total: number
         }
-      }>(
-        `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
-      )
+      }>(endpoint)
+      
+      console.log('📊 getMostSearchedTerms: Raw response:', response)
       
       return response.data?.mostSearched || []
     } catch (error) {
-      console.error('Error getting most searched terms:', error)
+      console.error('❌ Error getting most searched terms:', error)
+      console.error('❌ Error details:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
       throw error
     }
   },

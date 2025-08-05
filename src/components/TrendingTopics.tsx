@@ -5,8 +5,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { TrendingUp, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { searchApi } from "@/lib/api"
+import { API_CONFIG } from "@/lib/config"
 import { type Locale, type Dictionary, getTranslation } from "@/lib/i18n"
 import { getTranslation as getCommonTranslation } from "@/lib/translations"
+import { mobileTypography } from "@/lib/mobile-utils"
 
 interface TrendingTopic {
   name: string
@@ -81,6 +83,9 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
       setHasError(false)
       
       console.log('🔍 TrendingTopics: Loading most searched terms...')
+      console.log('🌐 API Config baseUrl:', API_CONFIG.baseUrl)
+      console.log('🔗 Most searched endpoint:', API_CONFIG.endpoints.mostSearched)
+      console.log('📡 Full URL will be:', `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.mostSearched}`)
       
       // Get most searched terms from API
       const mostSearchedTerms = await searchApi.getMostSearchedTerms({ 
@@ -145,7 +150,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
           <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
         </div>
         <div className="text-center py-4">
-          <p className="text-sm text-gray-500">{t('errorLoadingTrends')}</p>
+          <p className="text-sm text-gray-500">{t('sidebar.errorLoadingTrends')}</p>
         </div>
       </div>
     )
@@ -158,7 +163,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
           <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
         </div>
         <div className="text-center py-4">
-          <p className="text-sm text-gray-500">{t('noTrendingTopics')}</p>
+          <p className="text-sm text-gray-500">{t('sidebar.noTrendingTopics')}</p>
         </div>
       </div>
     )

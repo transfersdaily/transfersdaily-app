@@ -123,7 +123,6 @@ export function AdminSidebar() {
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold text-foreground">TransfersDaily</span>
-            <span className="truncate text-xs text-muted-foreground">Admin Panel</span>
           </div>
         </div>
       </SidebarHeader>

@@ -125,7 +125,11 @@
   "sidebar": {
     "recommended": "Articoli Consigliati",
     "trending": "Più Cercati",
-    "recentTransfers": "Trasferimenti Recenti"
+    "recentTransfers": "Trasferimenti Recenti",
+    "noTrendingTopics": "Nessuna ricerca di tendenza ancora",
+    "noRecommendedArticles": "Nessun articolo consigliato disponibile",
+    "errorLoadingTrends": "Impossibile caricare le ricerche di tendenza",
+    "errorLoadingArticles": "Impossibile caricare gli articoli consigliati"
   },
   "footer": {
     "description": "La tua destinazione definitiva per le ultime notizie di calciomercato, voci e analisi dai campionati di tutto il mondo.",

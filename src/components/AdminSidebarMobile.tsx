@@ -16,6 +16,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import {
@@ -133,7 +134,6 @@ function MobileAdminMenu() {
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold text-foreground">TransfersDaily</span>
-            <span className="truncate text-xs text-muted-foreground">Admin Panel</span>
           </div>
         </div>
       </div>
@@ -251,8 +251,7 @@ function MobileAdminMenu() {
 function MobileAdminHeader() {
   return (
     <div className={`${adminMobileClasses.mobileOnly} ${adminMobileClasses.stickyTop} bg-background border-b ${adminMobileSpacing.card} z-50`}>
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-bold">Admin Panel</h1>
+      <div className="flex items-center justify-end">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="sm" className="p-2">
@@ -261,6 +260,7 @@ function MobileAdminHeader() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className={adminMobileClasses.mobileDrawer}>
+            <SheetTitle className="sr-only">Admin Navigation Menu</SheetTitle>
             <MobileAdminMenu />
           </SheetContent>
         </Sheet>
@@ -282,7 +282,6 @@ function DesktopAdminSidebar() {
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
             <span className="truncate font-semibold text-foreground">TransfersDaily</span>
-            <span className="truncate text-xs text-muted-foreground">Admin Panel</span>
           </div>
         </div>
       </SidebarHeader>

@@ -170,7 +170,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
-                  <Link href="/admin">Admin Panel</Link>
+                  <Link href="/admin">Admin</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/profile">Profile</Link>

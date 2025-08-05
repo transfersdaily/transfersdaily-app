@@ -1,4 +1,5 @@
 import { Suspense } from 'react';
+import { mobileTypography, mobileSpacing } from '@/lib/mobile-utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -428,12 +429,12 @@ export default async function HomePage({
             </section>
 
             {/* Latest Transfer News Section */}
-            <section className="py-8" aria-labelledby="latest-transfers">
+            <section className="py-4 md:py-8" aria-labelledby="latest-transfers">
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2
                     id="latest-transfers"
-                    className="text-xl font-bold mb-3 text-foreground"
+                    className="text-base md:text-xl font-bold mb-3 text-foreground"
                   >
                     {t('homepage.latestTransfers')}
                   </h2>
@@ -456,11 +457,11 @@ export default async function HomePage({
             </section>
 
             {/* Browse by League Section */}
-            <section className="py-8" aria-labelledby="browse-leagues">
+            <section className="py-4 md:py-8" aria-labelledby="browse-leagues">
               <div className="mb-6">
                 <h2
                   id="browse-leagues"
-                  className="text-xl font-bold mb-3 text-foreground"
+                  className="text-base md:text-xl font-bold mb-3 text-foreground"
                 >
                   {t('homepage.browseByLeague')}
                 </h2>
@@ -496,7 +497,7 @@ export default async function HomePage({
             </section>
 
             {/* Trending Transfer News Section */}
-            <section className="py-8" aria-labelledby="trending-transfers">
+            <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2

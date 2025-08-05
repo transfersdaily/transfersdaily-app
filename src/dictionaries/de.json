@@ -125,7 +125,11 @@
   "sidebar": {
     "recommended": "Empfohlene Artikel",
     "trending": "Meistgesucht",
-    "recentTransfers": "Aktuelle Transfers"
+    "recentTransfers": "Aktuelle Transfers",
+    "noTrendingTopics": "Noch keine beliebten Suchanfragen",
+    "noRecommendedArticles": "Keine empfohlenen Artikel verfügbar",
+    "errorLoadingTrends": "Beliebte Suchanfragen können nicht geladen werden",
+    "errorLoadingArticles": "Empfohlene Artikel können nicht geladen werden"
   },
   "footer": {
     "description": "Ihr ultimatives Ziel für die neuesten Fußball-Transfer-Nachrichten, Gerüchte und Analysen aus Ligen auf der ganzen Welt.",

@@ -125,7 +125,11 @@
   "sidebar": {
     "recommended": "Recommended Articles",
     "trending": "Most Searched",
-    "recentTransfers": "Recent Transfers"
+    "recentTransfers": "Recent Transfers",
+    "noTrendingTopics": "No trending searches yet",
+    "noRecommendedArticles": "No recommended articles available",
+    "errorLoadingTrends": "Unable to load trending searches",
+    "errorLoadingArticles": "Unable to load recommended articles"
   },
   "footer": {
     "description": "Your ultimate destination for the latest football transfer news, rumors, and analysis from leagues around the world.",

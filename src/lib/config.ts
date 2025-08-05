@@ -45,7 +45,9 @@ export const API_CONFIG = {
       track: '/search/track',
       stats: '/search/stats'
     },
-    mostSearched: '/most-searched',
+    mostSearched: typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+      ? '/api/most-searched'  // Use local API route during development
+      : '/most-searched',     // Use direct API Gateway in production
     admin: {
       stats: '/admin/stats',
       articles: '/admin/articles',
