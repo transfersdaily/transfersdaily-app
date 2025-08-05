@@ -4,12 +4,19 @@ import { AdSenseAd } from './AdSenseAd';
 import { AD_SLOTS, isAdSlotEnabled } from '@/lib/ads';
 
 interface LeaderboardAdProps {
-  position: 'top' | 'before-newsletter';
+  position: 'top' | 'before-newsletter' | 'mid-content' | 'below-navbar';
   className?: string;
 }
 
 export function LeaderboardAd({ position, className = '' }: LeaderboardAdProps) {
-  const slotKey = position === 'top' ? 'LEADERBOARD_TOP' : 'BANNER_BEFORE_NEWSLETTER';
+  const slotKeyMap = {
+    'top': 'LEADERBOARD_TOP',
+    'before-newsletter': 'BANNER_BEFORE_NEWSLETTER',
+    'mid-content': 'LEADERBOARD_MID_CONTENT',
+    'below-navbar': 'LEADERBOARD_BELOW_NAVBAR'
+  };
+  
+  const slotKey = slotKeyMap[position];
   const slot = AD_SLOTS[slotKey];
 
   if (!isAdSlotEnabled(slotKey)) {

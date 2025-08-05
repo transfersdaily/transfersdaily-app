@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ContactPageClient } from './ContactPageClient'
+// Ad components
+import { LeaderboardAd } from '@/components/ads';
 
 interface ContactPageProps {
   params: Promise<{ locale: Locale }>
@@ -226,6 +228,9 @@ export default async function ContactPage({ params }: ContactPageProps) {
           __html: JSON.stringify(faqStructuredData)
         }}
       />
+      
+      {/* Ad: Leaderboard at top */}
+      <LeaderboardAd position="top" />
       
       {/* Client-side interactive component */}
       <ContactPageClient locale={locale} dict={dict} />

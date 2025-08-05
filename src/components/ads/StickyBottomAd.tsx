@@ -3,17 +3,15 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { AdSenseAd } from './AdSenseAd';
-import { AD_SLOTS, isAdSlotEnabled } from '@/lib/ads';
+import { AD_SLOTS } from '@/lib/ads';
 
 export function StickyBottomAd() {
   const [isVisible, setIsVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  
-  const slot = AD_SLOTS.STICKY_BOTTOM_MOBILE;
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024); // lg breakpoint
     };
     
     checkMobile();
@@ -21,13 +19,14 @@ export function StickyBottomAd() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Don't show if not enabled, not mobile, or user closed it
-  if (!isAdSlotEnabled('STICKY_BOTTOM_MOBILE') || !isMobile || !isVisible) {
-    return null;
-  }
+  // Only show on mobile
+  if (!isMobile || !isVisible) return null;
+
+  const slot = AD_SLOTS.STICKY_BOTTOM_MOBILE;
+  if (!slot.enabled) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-lg md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border shadow-lg lg:hidden">
       <div className="relative">
         {/* Close button */}
         <button
@@ -35,11 +34,11 @@ export function StickyBottomAd() {
           className="absolute top-1 right-1 z-10 p-1 bg-background/80 rounded-full hover:bg-background transition-colors"
           aria-label="Close ad"
         >
-          <X className="h-3 w-3 text-muted-foreground" />
+          <X className="h-3 w-3" />
         </button>
         
         {/* Ad content */}
-        <div className="flex justify-center py-2">
+        <div className="p-2">
           <AdSenseAd 
             slot={slot}
             className="sticky-bottom-ad"

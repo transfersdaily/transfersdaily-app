@@ -2,6 +2,8 @@ import { ConditionalLayout } from '@/components/ConditionalLayout'
 import { locales, type Locale, getDictionary } from '@/lib/i18n'
 import { DictionaryProvider } from '@/lib/dictionary-provider'
 import { ServerNavbar } from '@/components/ServerNavbar'
+import { StickyBottomAd } from '@/components/ads'
+import { MobileTopFloatingAd, MobileBottomFloatingAd, MobileAutoAds } from '@/components/ads/MobileFloatingAds'
 import { notFound } from 'next/navigation'
 import '../globals.css'
 
@@ -33,7 +35,15 @@ export default async function LocaleLayout({
     <DictionaryProvider dictionary={dictionary}>
       <ConditionalLayout>
         <ServerNavbar locale={locale} dictionary={dictionary} />
+        
+        {/* Mobile floating ads */}
+        <MobileTopFloatingAd />
+        <MobileAutoAds />
+        
         {children}
+        
+        {/* Mobile sticky bottom ad (fallback if not using auto ads) */}
+        <MobileBottomFloatingAd />
       </ConditionalLayout>
     </DictionaryProvider>
   )

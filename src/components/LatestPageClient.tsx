@@ -15,7 +15,7 @@ import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { PageHeader } from "@/components/PageHeader"
 // Ad components
-import { RectangleAd } from "@/components/ads"
+import { RectangleAd, LeaderboardAd } from "@/components/ads"
 
 interface LatestPageClientProps {
   locale: Locale
@@ -114,6 +114,9 @@ export function LatestPageClient({
             icon={Clock}
           />
 
+          {/* Ad: Rectangle after header */}
+          <RectangleAd position="after-header" />
+
           {/* Results Info */}
           <ResultsInfo 
             currentPage={currentPage}
@@ -135,6 +138,11 @@ export function LatestPageClient({
                   adPosition="in-latest"
                 />
                 
+                {/* Ad: Leaderboard mid-content */}
+                <div className="my-8">
+                  <LeaderboardAd position="mid-content" />
+                </div>
+                
                 {/* Ad: Rectangle after transfer grid */}
                 <div className="mt-8 mb-8">
                   <RectangleAd position="after-latest" />
@@ -152,16 +160,23 @@ export function LatestPageClient({
 
           {/* Pagination */}
           {!isLoading && pagination.totalPages > 1 && (
-            <div className="pb-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={pagination.totalPages}
-                totalItems={pagination.total}
-                itemsPerPage={itemsPerPage}
-                onPageChange={handlePageChange}
-                itemName="transfers"
-              />
-            </div>
+            <>
+              {/* Ad: Rectangle before pagination */}
+              <div className="mb-6">
+                <RectangleAd position="before-pagination" />
+              </div>
+              
+              <div className="pb-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={pagination.totalPages}
+                  totalItems={pagination.total}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={handlePageChange}
+                  itemName="transfers"
+                />
+              </div>
+            </>
           )}
         </div>
 

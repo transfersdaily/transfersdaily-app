@@ -343,6 +343,11 @@ export default async function HomePage({
         }}
       />
 
+      {/* PREMIUM AD: Below navbar, before content - HIGHEST VALUE POSITION */}
+      <div className="container mx-auto pt-4">
+        <LeaderboardAd position="below-navbar" className="mb-4" />
+      </div>
+
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Content - 70% */}
@@ -430,9 +435,6 @@ export default async function HomePage({
                 )}
               </Suspense>
             </section>
-
-            {/* Ad: Leaderboard after hero section */}
-            <LeaderboardAd position="top" />
 
             {/* Latest Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="latest-transfers">

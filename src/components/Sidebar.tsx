@@ -27,6 +27,12 @@ export function Sidebar({ className = '', locale, dict }: SidebarProps) {
       <div className="bg-card rounded-lg shadow-sm border border-border">
         <TrendingTopics locale={locale} dict={dict} />
       </div>
+
+      {/* Ad: Sidebar bottom 1 */}
+      <RectangleAd position="sidebar-bottom-1" />
+
+      {/* Ad: Sidebar bottom 2 */}
+      <RectangleAd position="sidebar-bottom-2" />
     </div>
   );
 }

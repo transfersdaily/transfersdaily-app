@@ -17,7 +17,7 @@ import { createTranslator } from "@/lib/dictionary-server"
 import { typography, responsive } from "@/lib/typography"
 import { PageHeader } from "@/components/PageHeader"
 // Ad components
-import { RectangleAd } from "@/components/ads"
+import { RectangleAd, LeaderboardAd } from "@/components/ads"
 
 // Helper function to get league logo
 function getLeagueLogo(leagueSlug: string): { src: string; alt: string } {
@@ -155,6 +155,9 @@ export function LeaguePageClient({
             logoAlt={leagueLogo.alt}
           />
 
+          {/* Ad: Rectangle after header */}
+          <RectangleAd position="after-header" />
+
           {/* Results Info - Match Latest Page */}
           <ResultsInfo 
             currentPage={currentPage}
@@ -178,6 +181,11 @@ export function LeaguePageClient({
                   adPosition="in-latest"
                 />
                 
+                {/* Ad: Leaderboard mid-content */}
+                <div className="my-8">
+                  <LeaderboardAd position="mid-content" />
+                </div>
+                
                 {/* Ad: Rectangle after transfer grid */}
                 <div className="mt-8 mb-8">
                   <RectangleAd position="after-latest" />
@@ -195,16 +203,23 @@ export function LeaguePageClient({
 
           {/* Pagination */}
           {!isLoading && pagination.totalPages > 1 && (
-            <div className="pb-6">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={pagination.totalPages}
+            <>
+              {/* Ad: Rectangle before pagination */}
+              <div className="mb-6">
+                <RectangleAd position="before-pagination" />
+              </div>
+              
+              <div className="pb-6">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={pagination.totalPages}
                 totalItems={pagination.total}
                 itemsPerPage={itemsPerPage}
                 onPageChange={handlePageChange}
                 itemName="transfers"
               />
-            </div>
+              </div>
+            </>
           )}
         </div>
 

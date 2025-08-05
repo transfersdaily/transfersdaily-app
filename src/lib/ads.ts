@@ -25,6 +25,18 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     position: 'after-hero',
     enabled: false // Set to true when approved
   },
+
+  LEADERBOARD_BELOW_NAVBAR: {
+    id: 'leaderboard-below-navbar',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[728, 90], [970, 250], [970, 90]],
+      mobile: [[320, 50], [300, 50]]
+    },
+    format: 'display',
+    position: 'below-navbar',
+    enabled: false
+  },
   
   RECTANGLE_AFTER_LATEST: {
     id: 'rectangle-after-latest',
@@ -86,6 +98,42 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     enabled: false
   },
 
+  SIDEBAR_BOTTOM: {
+    id: 'sidebar-bottom',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[300, 250], [336, 280]],
+      mobile: [] // Hidden on mobile (sidebar not shown)
+    },
+    format: 'display',
+    position: 'sidebar-bottom',
+    enabled: false
+  },
+
+  SIDEBAR_BOTTOM_1: {
+    id: 'sidebar-bottom-1',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[300, 250], [336, 280]],
+      mobile: [] // Hidden on mobile
+    },
+    format: 'display',
+    position: 'sidebar-bottom-1',
+    enabled: false
+  },
+
+  SIDEBAR_BOTTOM_2: {
+    id: 'sidebar-bottom-2',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[300, 250], [336, 280]],
+      mobile: [] // Hidden on mobile
+    },
+    format: 'display',
+    position: 'sidebar-bottom-2',
+    enabled: false
+  },
+
   NATIVE_IN_TRENDING: {
     id: 'native-in-trending',
     slotId: 'YOUR_SLOT_ID_HERE',
@@ -143,6 +191,55 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'sticky',
     position: 'bottom-sticky',
+    enabled: false
+  },
+
+  // Additional high-value ad slots
+  LEADERBOARD_MID_CONTENT: {
+    id: 'leaderboard-mid-content',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[728, 90], [970, 250]],
+      mobile: [[320, 50], [300, 50]]
+    },
+    format: 'display',
+    position: 'mid-content',
+    enabled: false
+  },
+
+  RECTANGLE_BEFORE_PAGINATION: {
+    id: 'rectangle-before-pagination',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[300, 250], [336, 280]],
+      mobile: [[300, 250]]
+    },
+    format: 'display',
+    position: 'before-pagination',
+    enabled: false
+  },
+
+  NATIVE_IN_SEARCH_RESULTS: {
+    id: 'native-in-search-results',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[300, 250]],
+      mobile: [[300, 250]]
+    },
+    format: 'native',
+    position: 'in-search-results',
+    enabled: false
+  },
+
+  RECTANGLE_AFTER_HEADER: {
+    id: 'rectangle-after-header',
+    slotId: 'YOUR_SLOT_ID_HERE',
+    sizes: {
+      desktop: [[300, 250], [336, 280]],
+      mobile: [[300, 250]]
+    },
+    format: 'display',
+    position: 'after-header',
     enabled: false
   }
 };

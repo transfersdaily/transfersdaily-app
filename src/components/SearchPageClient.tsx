@@ -10,11 +10,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, TrendingUp, History } from "lucide-react"
 import { searchApi, transfersApi, type Transfer } from "@/lib/api"
 import { TransferCard } from "@/components/TransferCard"
+import { TransferGridWithAds } from "@/components/TransferGridWithAds"
 import { Sidebar } from "@/components/Sidebar"
 import { addRecentSearch } from "@/components/TrendingTopics"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { adminMobileClasses } from "@/lib/mobile-utils"
+// Ad components
+import { RectangleAd, LeaderboardAd, NativeAd } from "@/components/ads"
 
 const trendingSearches = [
   "Kylian Mbappé", "Manchester United transfers", "Real Madrid", "Premier League", 
@@ -310,20 +313,22 @@ export function SearchPageClient({
                   <div className="mb-4 text-sm text-muted-foreground">
                     {searchResults.length} {t('search.resultsFound')} for &quot;{searchTerm}&quot;
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {searchResults.map((transfer) => (
-                      <article key={transfer.id}>
-                        <TransferCard
-                          title={transfer.title}
-                          excerpt={transfer.excerpt}
-                          primaryBadge={transfer.league}
-                          timeAgo={formatTimeAgo(transfer.publishedAt)}
-                          href={`/${locale}/article/${transfer.slug}`}
-                          imageUrl={transfer.imageUrl}
-                          imageAlt={`${transfer.title} - Transfer News`}
-                        />
-                      </article>
-                    ))}
+                  
+                  {/* Ad: Rectangle after search info */}
+                  <div className="mb-6">
+                    <RectangleAd position="after-header" />
+                  </div>
+                  
+                  <TransferGridWithAds
+                    transfers={searchResults}
+                    locale={locale}
+                    dict={dict}
+                    adPosition="in-search-results"
+                  />
+                  
+                  {/* Ad: Leaderboard after search results */}
+                  <div className="mt-8">
+                    <LeaderboardAd position="mid-content" />
                   </div>
                 </>
               ) : (

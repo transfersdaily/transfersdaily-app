@@ -383,6 +383,11 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         }}
       />
       
+      {/* PREMIUM AD: Below navbar, before content */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+        <LeaderboardAd position="below-navbar" className="mb-4" />
+      </div>
+      
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Ad: Leaderboard at top of article */}
         <LeaderboardAd position="top" />

@@ -41,6 +41,9 @@ export default function RootLayout({
         <meta name="msvalidate.01" content="151EC670865590C0F31CA873198F81E5" />
         {/* <meta name="google-site-verification" content="YOUR_GOOGLE_CODE_HERE" /> */}
         
+        {/* Google AdSense */}
+        <meta name="google-adsense-account" content="ca-pub-6269937543968234" />
+        
         {/* Prevent theme flicker by setting initial theme */}
         <script
           dangerouslySetInnerHTML={{
