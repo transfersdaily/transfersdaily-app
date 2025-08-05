@@ -349,7 +349,7 @@ export default async function HomePage({
               <div className="mb-6">
                 <h2
                   id="featured-transfer"
-                  className="text-xl font-bold mb-3 text-foreground"
+                  className="text-base md:text-xl font-bold mb-3 text-foreground"
                 >
                   {t('homepage.featuredArticle')}
                 </h2>
@@ -392,7 +392,7 @@ export default async function HomePage({
                             <Badge className="mb-4 bg-primary/10 text-primary border-none">
                               {initialData.featuredTransfer.league?.toUpperCase()}
                             </Badge>
-                            <h3 className="text-lg md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
+                            <h3 className="text-base md:text-xl lg:text-2xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
                               {initialData.featuredTransfer.title}
                             </h3>
                             <p className="text-white text-sm md:text-base leading-relaxed line-clamp-2 mb-4 md:mb-6 drop-shadow-md">
@@ -509,7 +509,7 @@ export default async function HomePage({
                   <div className="w-24 h-1 bg-primary rounded-full"></div>
                 </div>
                 <ViewAllButton
-                  href={`/${locale}/trending`}
+                  href={`/${locale}/latest`}
                 >
                   {t('common.viewAll')}
                 </ViewAllButton>
@@ -588,11 +588,6 @@ async function getInitialData(language = 'en') {
     let trendingTransfers = [];
 
     try {
-      console.log(
-        '🔍 Fetching articles from backend API for language:',
-        language
-      );
-
       // Direct API call to backend with proper error handling
       const apiUrl = `${
         process.env.NEXT_PUBLIC_API_URL ||
@@ -605,8 +600,6 @@ async function getInitialData(language = 'en') {
         language: language,
       });
 
-      console.log('📡 Making API request to:', `${apiUrl}?${params}`);
-
       const response = await fetch(`${apiUrl}?${params}`, {
         method: 'GET',
         headers: {
@@ -617,28 +610,10 @@ async function getInitialData(language = 'en') {
         signal: AbortSignal.timeout(10000), // 10 second timeout
       });
 
-      console.log('📊 API Response status:', response.status);
-      console.log('📊 API Response headers:', Object.fromEntries(response.headers.entries()));
-
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ API Response received:', {
-          success: data.success,
-          hasData: !!data.data,
-          articlesCount: data.data?.articles?.length || 0,
-          fullResponse: data, // Log the full response to see structure
-        });
-
         if (data.success && data.data?.articles?.length > 0) {
           const articles = data.data.articles;
-
-          console.log('🔍 Debug: First article raw data:', {
-            id: articles[0]?.id,
-            title: articles[0]?.title?.substring(0, 50) + '...',
-            published_at: articles[0]?.published_at,
-            updated_at: articles[0]?.updated_at,
-            created_at: articles[0]?.created_at,
-          });
 
           // Transform articles to the expected format
           const transformedArticles = articles.map((article: any) => {
@@ -663,12 +638,6 @@ async function getInitialData(language = 'en') {
               slug: article.slug || generateSlug(article.title || ''),
             };
           });
-
-          console.log(
-            '🔄 Using real data from API:',
-            transformedArticles.length,
-            'articles'
-          );
 
           // Set featured transfer (first article)
           featuredTransfer = transformedArticles[0];
@@ -705,17 +674,6 @@ async function getInitialData(language = 'en') {
       );
     }
 
-    // Log what we're returning
-    console.log('📋 Final data summary:', {
-      featuredTransfer: featuredTransfer
-        ? `"${featuredTransfer.title}"`
-        : 'None (API failed)',
-      latestTransfersCount: latestTransfers.length,
-      trendingTransfersCount: trendingTransfers.length,
-      leaguesCount: staticLeagues.length,
-      apiWorking: featuredTransfer !== null,
-    });
-
     const finalData = {
       featuredTransfer,
       latestTransfers,
@@ -726,7 +684,6 @@ async function getInitialData(language = 'en') {
     return finalData;
   } catch (error) {
     console.error('💥 Error in getInitialData:', error);
-    console.error('💥 Returning empty data due to error');
     return {
       featuredTransfer: null,
       latestTransfers: [],

@@ -10,10 +10,13 @@ import {
   CheckCircle, 
   ArrowLeft,
   Share2,
-  Eye
+  Eye,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { API_CONFIG } from '@/lib/config';
 import { getAuthHeaders } from '@/lib/api';
+import { locales, localeNames, type Locale } from '@/lib/i18n';
 
 // Helper function to generate slug from title (same as in api.ts)
 function generateSlug(title: string): string {
@@ -170,17 +173,59 @@ export default function PublishSuccessPage({
     return hashtags.slice(0, 8); // Limit to 8 hashtags
   };
 
-  const handleTwitterPost = () => {
-    if (!article) return;
+  // Generate Twitter post for specific language
+  const generateTwitterPost = (locale: string = 'en') => {
+    if (!article) return '';
+    
+    let title = article.title;
+    let articleUrl = getArticleUrl();
+    
+    // Use translation if available
+    if (locale !== 'en' && article.translations?.[locale]) {
+      title = article.translations[locale].title;
+      // Update URL to use localized version
+      const slug = article.translations[locale].slug || generateSlug(title);
+      articleUrl = `https://transfersdaily.com/${locale}/article/${slug}`;
+    } else if (locale !== 'en') {
+      // If no translation available, use localized URL with English slug
+      const slug = article.slug || generateSlug(article.title);
+      articleUrl = `https://transfersdaily.com/${locale}/article/${slug}`;
+    }
     
     const hashtags = generateHashtags();
-    const tweetText = `${article.title}\n\n${getArticleUrl()}\n\n${hashtags.map(tag => `#${tag}`).join(' ')}`;
+    const hashtagString = hashtags.map(tag => `#${tag}`).join(' ');
     
-    // Twitter Web Intent URL
+    return `${title}\n\n${articleUrl}\n\n${hashtagString}`;
+  };
+
+  const handleTwitterPost = (locale: string = 'en') => {
+    const tweetText = generateTwitterPost(locale);
     const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
-    
-    // Open in new tab
     window.open(twitterUrl, '_blank', 'width=550,height=420');
+  };
+
+  const copyToClipboard = async (text: string, locale: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Simple feedback - you could enhance this with a toast notification
+      const button = document.querySelector(`[data-copy-${locale}]`);
+      if (button) {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+          button.textContent = originalText;
+        }, 2000);
+      }
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+      // Fallback: select the text for manual copying
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
   };
 
   const handleViewArticle = () => {
@@ -332,41 +377,80 @@ export default function PublishSuccessPage({
                 Share your published article on social media to reach more readers.
               </p>
 
-              {/* Twitter Preview */}
-              <div className="bg-card border border-border rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-muted-foreground">TD</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold text-sm text-foreground">TransfersDaily</span>
-                      <span className="text-muted-foreground text-sm">@transfersdaily</span>
+              {/* Multi-Language Twitter Posts */}
+              <div className="space-y-4">
+                <h3 className="text-sm font-semibold text-foreground mb-3">
+                  Twitter Posts for All Languages
+                </h3>
+                
+                {locales.map((locale) => {
+                  const twitterPost = generateTwitterPost(locale);
+                  const hasTranslation = locale === 'en' || (article.translations && article.translations[locale]);
+                  
+                  return (
+                    <div key={locale} className="bg-card border border-border rounded-lg p-4">
+                      {/* Language Header */}
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{localeNames[locale].flag}</span>
+                          <span className="font-semibold text-sm">
+                            {localeNames[locale].nativeName}
+                          </span>
+                          {!hasTranslation && locale !== 'en' && (
+                            <Badge variant="secondary" className="text-xs">
+                              Using English
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => copyToClipboard(twitterPost, locale)}
+                            data-copy-{locale}="true"
+                            className="text-xs"
+                          >
+                            <Copy className="w-3 h-3 mr-1" />
+                            Copy
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleTwitterPost(locale)}
+                            className="bg-black hover:bg-gray-800 text-white text-xs"
+                          >
+                            <ExternalLink className="w-3 h-3 mr-1" />
+                            Tweet
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Twitter Preview */}
+                      <div className="bg-white dark:bg-gray-900 border rounded-lg p-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-xs font-bold text-muted-foreground">TD</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="font-semibold text-xs text-foreground">TransfersDaily</span>
+                              <span className="text-muted-foreground text-xs">@transfersdaily_{locale}</span>
+                            </div>
+                            <div className="text-xs break-words whitespace-pre-line text-foreground">
+                              {twitterPost}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-sm mb-3 break-words">
-                      <p className="mb-2 text-foreground">{article.title}</p>
-                      <p className="text-primary break-all text-xs">{getArticleUrl()}</p>
-                    </div>
-                    <div className="text-primary text-sm mb-3 break-words">
-                      {generateHashtags().map(tag => `#${tag}`).join(' ')}
-                    </div>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
 
-              <Button
-                onClick={handleTwitterPost}
-                className="w-full bg-black hover:bg-gray-800 dark:bg-gray-900 dark:hover:bg-gray-800 text-white flex items-center justify-center gap-2"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                </svg>
-                Post to Twitter
-              </Button>
-
-              <p className="text-xs text-muted-foreground text-center">
-                Opens Twitter with your content pre-filled
-              </p>
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <p className="text-xs text-muted-foreground text-center">
+                  💡 <strong>Tip:</strong> Copy each post and paste it into your corresponding language Twitter accounts for maximum reach!
+                </p>
+              </div>
             </CardContent>
           </Card>
         </div>

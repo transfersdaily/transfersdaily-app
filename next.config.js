@@ -23,6 +23,18 @@ const nextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'd1ix9g9onn4adc.cloudfront.net',
+        port: '',
+        pathname: '/articles/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.cloudfront.net',
+        port: '',
+        pathname: '/articles/**',
+      },
+      {
+        protocol: 'https',
         hostname: '*.amazonaws.com',
         port: '',
         pathname: '/**',

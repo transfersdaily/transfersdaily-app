@@ -113,14 +113,9 @@ export async function getAuthHeaders(): Promise<HeadersInit> {
   let token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.idToken) : null;
   
   // Debug logging
-  console.log('🔐 getAuthHeaders called');
-  console.log('  - Window available:', typeof window !== 'undefined');
-  console.log('  - ID Token present:', !!token);
+  const token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.idToken) : null;
   
   if (token) {
-    console.log('  - Token length:', token.length);
-    console.log('  - Token preview:', `${token.substring(0, 50)}...`);
-    
     // Check token expiration
     const decoded = decodeJWT(token);
     if (decoded && decoded.exp) {
@@ -189,34 +184,6 @@ async function apiRequest<T>(
     }
   }
 
-  // Check if this is a local API route (starts with /api/)
-  if (endpoint.startsWith('/api/')) {
-    const url = endpoint; // Use endpoint as-is for local API routes
-    console.log('🏠 Making local API request:', url);
-    
-    try {
-      const response = await fetch(url, {
-        ...config,
-        signal: AbortSignal.timeout(10000) // 10 second timeout
-      });
-
-      console.log('📡 Local API response received:');
-      console.log('  - Status:', response.status);
-      console.log('  - Status Text:', response.statusText);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log('✅ Local API request successful');
-      return data;
-    } catch (error) {
-      console.error('❌ Local API request failed:', error);
-      throw error;
-    }
-  }
-
   // Try primary API Gateway URL, then fallback if available
   const urls = [API_CONFIG.baseUrl, API_CONFIG.fallbackUrl].filter(Boolean);
   
@@ -226,20 +193,12 @@ async function apiRequest<T>(
     const isLastAttempt = i === urls.length - 1;
     const urlType = i === 0 ? 'API Gateway primary' : 'fallback URL';
     
-    console.log(`🌐 Making API request to ${urlType} (attempt ${i + 1}/${urls.length}):`);
-    console.log('  - URL:', url);
-    console.log('  - Method:', config.method || 'GET');
-
     try {
       const response = await fetch(url, {
         ...config,
         // Add timeout to prevent hanging on DNS resolution
         signal: AbortSignal.timeout(10000) // 10 second timeout
       });
-      
-      console.log(`📡 API response received from ${urlType}:`);
-      console.log('  - Status:', response.status);
-      console.log('  - Status Text:', response.statusText);
       
       if (!response.ok) {
         console.error(`API request failed on ${urlType}: ${response.status} ${response.statusText}`);
@@ -251,7 +210,6 @@ async function apiRequest<T>(
       }
       
       const data = await response.json();
-      console.log(`✅ API request successful via ${urlType}`);
       return data;
       
     } catch (error) {
@@ -263,7 +221,7 @@ async function apiRequest<T>(
           errorMessage.includes('Failed to fetch') ||
           errorMessage.includes('NetworkError') ||
           errorMessage.includes('TimeoutError')) {
-        console.log(`🔄 ${urlType} not available, trying fallback...`);
+        // Try fallback silently
       }
       
       if (isLastAttempt) {
@@ -389,7 +347,6 @@ export const transfersApi = {
   async getLatest(limit = 10, offset = 0, language?: string): Promise<Transfer[]> {
     try {
       const currentLang = language || getCurrentLanguage()
-      console.log('🌐 transfersApi.getLatest: Using language:', currentLang)
       
       const params = new URLSearchParams({
         limit: limit.toString(),
@@ -398,14 +355,11 @@ export const transfersApi = {
         language: currentLang  // Changed from 'lang' to 'language' to match backend
       })
       
-      console.log('📡 transfersApi.getLatest: API params:', Object.fromEntries(params))
-      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.transfers.latest}?${params}`
       )
       
       const articles = response.data?.articles || (response as any).articles || []
-      console.log('✅ transfersApi.getLatest: Received', articles.length, 'articles for language:', currentLang)
       
       return articles.map(transformArticleToTransfer)
     } catch (error) {
@@ -647,7 +601,6 @@ export const articlesApi = {
       
       // Fallback: try to find the article by searching through latest articles
       try {
-        console.log('API error, attempting fallback: searching articles for slug match')
         const articles = await this.getLatest(100, 0, locale) // Get more articles to search through
         
         // Try to find an article that matches the slug exactly
@@ -675,7 +628,6 @@ export const articlesApi = {
         }
         
         if (matchingArticle) {
-          console.log('Found matching article via fallback search:', matchingArticle.title)
           return matchingArticle
         }
         
@@ -696,8 +648,6 @@ export const articlesApi = {
         language: language // Add language parameter
       })
       
-      console.log('Fetching recommended articles for language:', language)
-      
       const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.articles.latest}?${params}`
       )
@@ -716,8 +666,6 @@ export const articlesApi = {
   // Get trending articles (redirects to latest for now)
   async getTrending(limit = 5, language = 'en'): Promise<Article[]> {
     try {
-      console.log('Trending articles redirecting to latest articles for language:', language)
-      
       // Redirect trending to latest articles for now
       return await this.getLatest(limit, 0, language)
     } catch (error) {
@@ -1431,14 +1379,7 @@ export const searchApi = {
       if (params?.limit) queryParams.append('limit', params.limit.toString())
       if (params?.days) queryParams.append('days', params.days.toString())
 
-      // Use local API route during development to avoid CORS issues
-      const isLocalDev = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-      const endpoint = isLocalDev 
-        ? `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
-        : `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
-      
-      console.log('🔍 getMostSearchedTerms: Calling endpoint:', endpoint)
-      console.log('🌐 Is local development:', isLocalDev)
+      const endpoint = `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
 
       const response = await apiRequest<{
         success: boolean
@@ -1453,8 +1394,6 @@ export const searchApi = {
           total: number
         }
       }>(endpoint)
-      
-      console.log('📊 getMostSearchedTerms: Raw response:', response)
       
       return response.data?.mostSearched || []
     } catch (error) {
@@ -1602,8 +1541,6 @@ export const newsletterApi = {
     testEmail?: string
   }): Promise<{ success: boolean; message?: string; sentCount?: number }> {
     try {
-      console.log('📧 Sending newsletter:', data)
-      
       const response = await apiRequest<{
         success: boolean
         message?: string

@@ -11,10 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { 
   Twitter, 
   Calendar,
-  Sparkles
+  Sparkles,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { API_CONFIG } from '@/lib/config';
 import { getAuthHeaders } from '@/lib/api';
+import { locales, localeNames, type Locale } from '@/lib/i18n';
 
 // Helper function to generate slug from title
 function generateSlug(title: string): string {
@@ -301,6 +304,56 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
     return `https://transfersdaily.com/en/article/${slug}`;
   };
 
+  // Generate Twitter post for specific language
+  const generateTwitterPost = (locale: string = 'en') => {
+    if (!article) return '';
+    
+    let title = article.title;
+    let articleUrl = getArticleUrl();
+    
+    // Use translation if available
+    if (locale !== 'en' && article.translations?.[locale]) {
+      title = article.translations[locale].title;
+      // Update URL to use localized version
+      const slug = article.translations[locale].slug || generateSlug(title);
+      articleUrl = `https://transfersdaily.com/${locale}/article/${slug}`;
+    } else if (locale !== 'en') {
+      // If no translation available, use localized URL with English slug
+      const slug = article.slug || generateSlug(article.title);
+      articleUrl = `https://transfersdaily.com/${locale}/article/${slug}`;
+    }
+    
+    // Get hashtags from the current Twitter platform
+    const twitterPlatform = socialState.platforms.find(p => p.id === 'twitter');
+    const hashtags = twitterPlatform?.hashtags || [];
+    const hashtagString = hashtags.map(tag => `#${tag}`).join(' ');
+    
+    return `${title}\n\n${articleUrl}\n\n${hashtagString}`;
+  };
+
+  const copyToClipboard = async (text: string, locale: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // Simple feedback
+      console.log(`Copied ${locale.toUpperCase()} Twitter post to clipboard`);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  };
+
+  const handleTwitterPost = (locale: string = 'en') => {
+    const tweetText = generateTwitterPost(locale);
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+    window.open(twitterUrl, '_blank', 'width=550,height=420');
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -408,52 +461,74 @@ export default function SocialMediaStep({ articleId }: { articleId: string }) {
                   </div>
                 </div>
 
-                {/* Single Combined Preview */}
+                {/* Multi-Language Twitter Posts Preview */}
                 <div className="border rounded-lg p-4 bg-muted">
-                  <p className="text-sm font-medium mb-3">Social Media Preview:</p>
+                  <p className="text-sm font-medium mb-4">Multi-Language Twitter Posts:</p>
                   
-                  {/* Twitter Post Preview */}
-                  <div className="bg-white border rounded-lg p-3 mb-3">
-                    <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                        <Twitter className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-semibold text-sm">TransfersDaily</span>
-                          <span className="text-gray-500 text-sm">@transfersdaily</span>
+                  <div className="space-y-3">
+                    {locales.map((locale) => {
+                      const twitterPost = generateTwitterPost(locale);
+                      const hasTranslation = locale === 'en' || (article && article.translations && article.translations[locale]);
+                      
+                      return (
+                        <div key={locale} className="bg-white border rounded-lg p-3">
+                          {/* Language Header */}
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm">{localeNames[locale].flag}</span>
+                              <span className="font-semibold text-xs">
+                                {localeNames[locale].nativeName}
+                              </span>
+                              {!hasTranslation && locale !== 'en' && (
+                                <Badge variant="secondary" className="text-xs py-0 px-1">
+                                  English
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="flex gap-1">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => copyToClipboard(twitterPost, locale)}
+                                className="text-xs h-6 px-2"
+                              >
+                                <Copy className="w-3 h-3 mr-1" />
+                                Copy
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => handleTwitterPost(locale)}
+                                className="bg-black hover:bg-gray-800 text-white text-xs h-6 px-2"
+                              >
+                                <ExternalLink className="w-3 h-3 mr-1" />
+                                Tweet
+                              </Button>
+                            </div>
+                          </div>
+
+                          {/* Twitter Preview */}
+                          <div className="flex items-start gap-2">
+                            <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                              <Twitter className="w-3 h-3 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1 mb-1">
+                                <span className="font-semibold text-xs">TransfersDaily</span>
+                                <span className="text-gray-500 text-xs">@transfersdaily_{locale}</span>
+                              </div>
+                              <div className="text-xs break-words whitespace-pre-line text-gray-800">
+                                {twitterPost}
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm whitespace-pre-wrap mb-3">
-                          {platform.customMessage}
-                        </div>
-                        <div className="text-blue-500 text-sm mb-2">
-                          {platform.hashtags.map(tag => `#${tag}`).join(' ')}
-                        </div>
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
 
-                  {/* Twitter Card Preview */}
-                  {article && (
-                    <div className="border rounded-lg overflow-hidden bg-white">
-                      <div className="flex">
-                        {article.image_url && (
-                          <Image 
-                            src={article.image_url} 
-                            alt="Article preview"
-                            width={96}
-                            height={96}
-                            className="w-24 h-24 object-cover"
-                          />
-                        )}
-                        <div className="flex-1 p-3">
-                          <h3 className="font-semibold text-sm line-clamp-2 mb-1">{article.title}</h3>
-                          <p className="text-xs text-gray-500 mb-1">transfersdaily.com</p>
-                          <p className="text-xs text-gray-400">{getArticleUrl()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <div className="mt-3 p-2 bg-blue-50 rounded text-xs text-blue-700">
+                    💡 <strong>Tip:</strong> Each language has its own Twitter post ready to copy and paste!
+                  </div>
                 </div>
               </CardContent>
             )}

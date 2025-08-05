@@ -168,8 +168,6 @@ export async function generateMetadata({
 // Server-side data fetching for latest articles
 async function getLatestData(language = 'en', page = 1, league = 'all') {
   try {
-    console.log('🔍 SERVER: Fetching latest articles for language:', language, 'page:', page, 'league:', league)
-    
     // Direct API call to backend (same pattern as homepage and league page)
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
     const params = new URLSearchParams({
@@ -195,8 +193,6 @@ async function getLatestData(language = 'en', page = 1, league = 'all') {
       params.append('league', leagueName)
     }
     
-    console.log('📡 SERVER: Making API request to:', `${apiUrl}?${params}`)
-    
     const response = await fetch(`${apiUrl}?${params}`, {
       next: { revalidate: 300 }, // Revalidate every 5 minutes
       headers: {
@@ -210,7 +206,6 @@ async function getLatestData(language = 'en', page = 1, league = 'all') {
     }
     
     const data = await response.json()
-    console.log('✅ SERVER: API response received, articles count:', data.data?.articles?.length || 0)
     
     if (!data.success || !data.data?.articles) {
       console.warn('⚠️ SERVER: Invalid API response structure')

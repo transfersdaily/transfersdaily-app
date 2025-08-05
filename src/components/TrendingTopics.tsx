@@ -82,21 +82,13 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
       setIsLoading(true)
       setHasError(false)
       
-      console.log('🔍 TrendingTopics: Loading most searched terms...')
-      console.log('🌐 API Config baseUrl:', API_CONFIG.baseUrl)
-      console.log('🔗 Most searched endpoint:', API_CONFIG.endpoints.mostSearched)
-      console.log('📡 Full URL will be:', `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.mostSearched}`)
-      
       // Get most searched terms from API
       const mostSearchedTerms = await searchApi.getMostSearchedTerms({ 
         limit: 8,
         days: 30 // Last 30 days
       })
       
-      console.log('📊 TrendingTopics: API response:', mostSearchedTerms)
-      
       if (mostSearchedTerms && mostSearchedTerms.length > 0) {
-        console.log('✅ TrendingTopics: Found', mostSearchedTerms.length, 'search terms')
         // Convert the format to match what the component expects
         const formattedTopics = mostSearchedTerms.map(item => ({
           name: item.term,
@@ -107,7 +99,6 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
         console.log('📝 TrendingTopics: Formatted topics:', formattedTopics)
         setTopics(formattedTopics)
       } else {
-        console.log('⚠️ TrendingTopics: No search terms found')
         // No most searched terms available
         setTopics([])
       }

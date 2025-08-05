@@ -28,8 +28,6 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
   const leagueName = leagueNames[leagueSlug] || leagueSlug
   
   try {
-    console.log('🔍 SERVER: Fetching league articles for:', leagueName, 'in language:', language)
-    
     // Direct API call to backend (same as homepage)
     const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
     const params = new URLSearchParams({
@@ -40,8 +38,6 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
       language: language
     })
     
-    console.log('📡 SERVER: Making API request to:', `${apiUrl}?${params}`)
-    
     const response = await fetch(`${apiUrl}?${params}`, {
       method: 'GET',
       headers: {
@@ -51,17 +47,8 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
       signal: AbortSignal.timeout(15000)
     })
     
-    console.log('📊 SERVER: API Response status:', response.status)
-    
     if (response.ok) {
       const data = await response.json()
-      console.log('✅ SERVER: API Response received:', {
-        success: data.success,
-        hasData: !!data.data,
-        articlesCount: data.data?.articles?.length || 0,
-        language: language,
-        league: leagueName
-      })
       
       if (data.success && data.data?.articles?.length > 0) {
         const articles = data.data.articles
@@ -83,7 +70,6 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
           slug: article.slug || generateSlug(article.title || '')
         }))
         
-        console.log('🔄 SERVER: Using real league data from API:', transformedArticles.length, 'articles')
         return {
           transfers: transformedArticles,
           leagueName
