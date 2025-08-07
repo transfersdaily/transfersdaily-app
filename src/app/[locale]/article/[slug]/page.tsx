@@ -68,8 +68,18 @@ interface ArticlePageProps {
 // Server-side function to fetch article data directly from API
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
   try {
-    const apiUrl = API_CONFIG.baseUrl
-    const response = await fetch(`${apiUrl}/public/articles/${slug}?language=${locale}`, {
+    console.log(`🔍 Fetching article: ${slug} for locale: ${locale}`);
+    
+    // Check if API_CONFIG.baseUrl is available
+    if (!API_CONFIG.baseUrl || API_CONFIG.baseUrl === '') {
+      console.error('❌ NEXT_PUBLIC_API_URL environment variable is not configured');
+      throw new Error('API configuration missing');
+    }
+    
+    const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}`;
+    console.log(`📡 API URL: ${apiUrl}`);
+    
+    const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -77,23 +87,51 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
       },
       // Add timeout to prevent hanging
       signal: AbortSignal.timeout(10000)
-    })
+    });
+    
+    console.log(`📊 API Response Status: ${response.status} ${response.statusText}`);
     
     if (!response.ok) {
-      console.warn(`Article API error: ${response.status} ${response.statusText} for slug: ${slug}`)
-      return null
+      console.error(`❌ Article API error: ${response.status} ${response.statusText} for slug: ${slug}`);
+      
+      // Try to get error details
+      try {
+        const errorText = await response.text();
+        console.error(`❌ Error details: ${errorText}`);
+      } catch (e) {
+        console.error('❌ Could not read error response');
+      }
+      
+      return null;
     }
     
-    const data = await response.json()
+    const data = await response.json();
+    console.log(`✅ API Response received:`, { 
+      success: data.success, 
+      hasArticle: !!data.data?.article,
+      articleTitle: data.data?.article?.title 
+    });
     
     if (data.success && data.data?.article) {
-      return data.data.article
+      return data.data.article;
     }
     
-    return null
+    console.error(`❌ Invalid API response structure:`, data);
+    return null;
+    
   } catch (error) {
-    console.warn(`Error fetching article by slug ${slug}:`, error)
-    return null
+    console.error(`💥 Error fetching article by slug ${slug}:`, error);
+    
+    if (error instanceof Error) {
+      console.error(`💥 Error details:`, {
+        name: error.name,
+        message: error.message,
+        cause: error.cause
+      });
+    }
+    
+    // Re-throw the error for proper error handling
+    throw error;
   }
 }
 
@@ -286,14 +324,38 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
   // Get translations server-side
   const dict = await getDictionary(locale)
   
-  // Get article and related data server-side
-  const [article, relatedArticles] = await Promise.all([
-    getArticleBySlug(slug, locale),
-    getRelatedArticles(4)
-  ])
+  let article: Article | null = null;
+  let relatedArticles: Transfer[] = [];
+  
+  try {
+    // Get article and related data server-side
+    const [articleResult, relatedArticlesResult] = await Promise.allSettled([
+      getArticleBySlug(slug, locale),
+      getRelatedArticles(4)
+    ]);
+    
+    // Handle article result
+    if (articleResult.status === 'fulfilled') {
+      article = articleResult.value;
+    } else {
+      console.error('❌ Failed to fetch article:', articleResult.reason);
+    }
+    
+    // Handle related articles result
+    if (relatedArticlesResult.status === 'fulfilled') {
+      relatedArticles = relatedArticlesResult.value;
+    } else {
+      console.error('❌ Failed to fetch related articles:', relatedArticlesResult.reason);
+      // Continue with empty array for related articles
+    }
+    
+  } catch (error) {
+    console.error('❌ Error in ArticlePage data fetching:', error);
+  }
   
   // If article not found, show 404
   if (!article) {
+    console.error(`❌ Article not found for slug: ${slug}`);
     notFound()
   }
   

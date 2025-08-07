@@ -19,7 +19,7 @@ import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
 // Ad components
-import { LeaderboardAd, RectangleAd } from '@/components/ads';
+import { LeaderboardAd, RectangleAd, ConditionalAdContainer } from '@/components/ads';
 // API configuration
 import { API_CONFIG } from '@/lib/config';
 
@@ -350,9 +350,11 @@ export default async function HomePage({
       />
 
       {/* PREMIUM AD: Below navbar, before content - HIGHEST VALUE POSITION */}
-      <div className="container mx-auto pt-4">
-        <LeaderboardAd position="below-navbar" className="mb-4" />
-      </div>
+      <ConditionalAdContainer position="below-navbar">
+        <div className="container mx-auto pt-4">
+          <LeaderboardAd position="below-navbar" className="mb-4" />
+        </div>
+      </ConditionalAdContainer>
 
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
@@ -472,7 +474,9 @@ export default async function HomePage({
             </section>
 
             {/* Ad: Rectangle after latest transfers */}
-            <RectangleAd position="after-latest" />
+            <ConditionalAdContainer position="after-latest">
+              <RectangleAd position="after-latest" />
+            </ConditionalAdContainer>
 
             {/* Browse by League Section */}
             <section className="py-4 md:py-8" aria-labelledby="browse-leagues">
@@ -515,7 +519,9 @@ export default async function HomePage({
             </section>
 
             {/* Ad: Rectangle after browse by league */}
-            <RectangleAd position="after-leagues" />
+            <ConditionalAdContainer position="after-leagues">
+              <RectangleAd position="after-leagues" />
+            </ConditionalAdContainer>
 
             {/* Trending Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
@@ -547,13 +553,17 @@ export default async function HomePage({
             </section>
 
             {/* Ad: Leaderboard before newsletter */}
-            <LeaderboardAd position="before-newsletter" />
+            <ConditionalAdContainer position="before-newsletter">
+              <LeaderboardAd position="before-newsletter" />
+            </ConditionalAdContainer>
 
             {/* Newsletter Section */}
             <NewsletterSection locale={locale} dict={dict} />
 
             {/* Ad: Rectangle after newsletter */}
-            <RectangleAd position="after-newsletter" />
+            <ConditionalAdContainer position="after-newsletter">
+              <RectangleAd position="after-newsletter" />
+            </ConditionalAdContainer>
           </div>
 
           {/* Sidebar - 30% */}

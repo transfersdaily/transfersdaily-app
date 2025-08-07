@@ -28,36 +28,11 @@ export function TransferGridWithAds({
     );
   }
 
-  // Insert native ad at position 3 (after 2 articles)
-  const adInsertPosition = 2;
-  const transfersWithAd = [...transfers];
-  
-  // Only insert ad if we have enough transfers and ad is enabled
-  if (transfers.length > adInsertPosition) {
-    transfersWithAd.splice(adInsertPosition, 0, { 
-      id: `native-ad-${adPosition}`, 
-      isAd: true 
-    } as any);
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {transfersWithAd.map((item, index) => {
-        // Render native ad
-        if ((item as any).isAd) {
-          return (
-            <div key={item.id} className="col-span-1">
-              <NativeAd 
-                position={adPosition}
-                className="h-full"
-              />
-            </div>
-          );
-        }
-
-        // Render transfer card
-        const transfer = item as Transfer;
-        return (
+  // For search results, show all transfers in a flexible grid
+  if (adPosition === 'in-search-results') {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        {transfers.map((transfer) => (
           <div key={transfer.id} className="col-span-1">
             <TransferCard
               title={transfer.title}
@@ -68,8 +43,52 @@ export function TransferGridWithAds({
               imageUrl={transfer.imageUrl}
             />
           </div>
-        );
-      })}
+        ))}
+      </div>
+    );
+  }
+
+  // For homepage sections, create strict 3x2 grid (6 items total)
+  // Take first 5 transfers + 1 ad = 6 total items
+  const displayTransfers = transfers.slice(0, 5);
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {/* Row 1: 3 transfers */}
+      {displayTransfers.slice(0, 3).map((transfer) => (
+        <div key={transfer.id} className="col-span-1">
+          <TransferCard
+            title={transfer.title}
+            excerpt={transfer.excerpt}
+            primaryBadge={transfer.league}
+            timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+            href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
+            imageUrl={transfer.imageUrl}
+          />
+        </div>
+      ))}
+      
+      {/* Row 2: 2 transfers + 1 ad */}
+      {displayTransfers.slice(3, 5).map((transfer) => (
+        <div key={transfer.id} className="col-span-1">
+          <TransferCard
+            title={transfer.title}
+            excerpt={transfer.excerpt}
+            primaryBadge={transfer.league}
+            timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+            href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
+            imageUrl={transfer.imageUrl}
+          />
+        </div>
+      ))}
+      
+      {/* Native ad in the 6th position (bottom right) */}
+      <div className="col-span-1">
+        <NativeAd 
+          position={adPosition}
+          className="h-full w-full"
+        />
+      </div>
     </div>
   );
 }

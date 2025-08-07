@@ -32,10 +32,11 @@ export function TransferCard({
 }: TransferCardProps) {
   const cardContent = (
     <Card
-      className="overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer min-h-[44px]"
+      className="overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer h-full flex flex-col"
       onClick={onClick}
     >
-      <div className={`${mobile.cardAspect} bg-muted relative overflow-hidden`}>
+      {/* Image section with fixed aspect ratio */}
+      <div className="aspect-[16/10] bg-muted relative overflow-hidden flex-shrink-0">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -53,23 +54,26 @@ export function TransferCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      <CardContent className={mobile.cardPadding}>
-        <div className="space-y-2 md:space-y-3">
+      {/* Content section with flex-grow to fill remaining space */}
+      <CardContent className={`${mobile.cardPadding} flex-grow flex flex-col justify-between`}>
+        <div className="space-y-2 md:space-y-3 flex-grow">
+          {/* Header with badge and time */}
           <div className="flex items-center justify-between">
-            <span className={`${typography.badge} px-2 py-0.5 h-5 rounded bg-muted text-muted-foreground border border-border flex-shrink-0`}>
+            <span className={`${typography.badge} px-2 py-0.5 h-5 rounded bg-muted text-muted-foreground border border-border flex-shrink-0 text-xs`}>
               {primaryBadge}
             </span>
-            <div className={`flex items-center ${mobile.cardContent.meta}`}>
+            <div className={`flex items-center ${mobile.cardContent.meta} text-xs text-muted-foreground`}>
               <Clock className="w-3 h-3 mr-1" />
               {timeAgo}
             </div>
           </div>
 
-          <div>
-            <h3 className={`${mobile.cardContent.title} line-clamp-2 mb-1 md:mb-2 text-foreground group-hover:text-primary transition-colors`}>
+          {/* Title and excerpt with consistent spacing */}
+          <div className="flex-grow">
+            <h3 className={`${mobile.cardContent.title} line-clamp-2 mb-1 md:mb-2 text-foreground group-hover:text-primary transition-colors font-semibold leading-tight`}>
               {title}
             </h3>
-            <p className={`${mobile.cardContent.description} line-clamp-2`}>
+            <p className={`${mobile.cardContent.description} line-clamp-3 text-sm text-muted-foreground leading-relaxed`}>
               {excerpt}
             </p>
           </div>
@@ -80,7 +84,7 @@ export function TransferCard({
 
   if (href) {
     return (
-      <Link href={href} className="block">
+      <Link href={href} className="block h-full">
         {cardContent}
       </Link>
     );
