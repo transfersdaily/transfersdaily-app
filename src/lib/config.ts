@@ -2,8 +2,13 @@
 export const API_CONFIG = {
   // Primary API URL from environment variable (required)
   baseUrl: process.env.NEXT_PUBLIC_API_URL || (() => {
-    console.error('❌ NEXT_PUBLIC_API_URL environment variable is required but not set');
-    throw new Error('NEXT_PUBLIC_API_URL environment variable is required');
+    if (typeof window !== 'undefined' || process.env.NODE_ENV === 'development') {
+      console.error('❌ NEXT_PUBLIC_API_URL environment variable is required but not set');
+    }
+    // During build time, return a placeholder to avoid build failures
+    return process.env.NODE_ENV === 'production' 
+      ? '' // Will cause runtime error if actually used
+      : 'http://localhost:3000/api'; // Development fallback
   })(),
   // Fallback URL (only if provided in environment)
   fallbackUrl: process.env.NEXT_PUBLIC_API_URL_FALLBACK || null,

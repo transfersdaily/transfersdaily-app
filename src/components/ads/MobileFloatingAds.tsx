@@ -87,7 +87,7 @@ export function MobileAutoAds() {
 
   useEffect(() => {
     // Enable Google Auto Ads for mobile
-    if (window.adsbygoogle && window.adsbygoogle.loaded) {
+    if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
       window.adsbygoogle.push({
         google_ad_client: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID,
         enable_page_level_ads: true,

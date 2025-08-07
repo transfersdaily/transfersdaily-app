@@ -1,23 +1,15 @@
 import { TransferCard } from '@/components/TransferCard';
 import { NativeAd } from '@/components/ads';
 import { type Locale, type Dictionary } from '@/lib/i18n';
-
-interface Transfer {
-  id: string;
-  title: string;
-  excerpt: string;
-  slug: string;
-  publishedAt: string;
-  imageUrl?: string;
-  league?: string;
-  status: string;
-}
+import { type Transfer } from '@/lib/api';
+import { formatTimeAgo } from '@/lib/date-utils';
+import { createTranslator } from '@/lib/dictionary-server';
 
 interface TransferGridWithAdsProps {
   transfers: Transfer[];
   locale: Locale;
   dict: Dictionary;
-  adPosition: 'in-latest' | 'in-trending';
+  adPosition: 'in-latest' | 'in-trending' | 'in-search-results';
 }
 
 export function TransferGridWithAds({ 
@@ -26,6 +18,8 @@ export function TransferGridWithAds({
   dict, 
   adPosition 
 }: TransferGridWithAdsProps) {
+  const t = createTranslator(dict);
+  
   if (!transfers || transfers.length === 0) {
     return (
       <div className="text-center py-8">
@@ -66,9 +60,12 @@ export function TransferGridWithAds({
         return (
           <div key={transfer.id} className="col-span-1">
             <TransferCard
-              transfer={transfer}
-              locale={locale}
-              dict={dict}
+              title={transfer.title}
+              excerpt={transfer.excerpt}
+              primaryBadge={transfer.league}
+              timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+              href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
+              imageUrl={transfer.imageUrl}
             />
           </div>
         );
