@@ -3,9 +3,15 @@ import { API_CONFIG } from '@/lib/config';
 
 const API_BASE_URL = API_CONFIG.baseUrl;
 
-export async function GET(request: NextRequest) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    console.log('🔄 Proxying GET request to AWS API for contact submissions');
+    const { id } = await params;
+    const { country } = await request.json();
+
+    console.log(`🔄 Updating league ${id} country to:`, country);
     
     // Get Authorization header from the incoming request
     const authHeader = request.headers.get('Authorization');
@@ -18,22 +24,40 @@ export async function GET(request: NextRequest) {
         error: 'Missing authorization header'
       }, { status: 401 });
     }
-    
-    // Forward request to AWS backend with auth header
+
+    // Validate input
+    if (!country || typeof country !== 'string') {
+      return NextResponse.json({
+        success: false,
+        error: 'Country is required and must be a string'
+      }, { status: 400 });
+    }
+
+    const trimmedCountry = country.trim();
+    if (trimmedCountry.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'Country cannot be empty'
+      }, { status: 400 });
+    }
+
+    // Forward request to AWS backend
     try {
-      const response = await fetch(`${API_BASE_URL}/contact`, {
-        method: 'GET',
+      const response = await fetch(`${API_BASE_URL}/leagues/${id}/country`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
           'Authorization': authHeader
-        }
+        },
+        body: JSON.stringify({ country: trimmedCountry })
       });
       
       console.log('📡 AWS API response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ League country updated successfully');
         return NextResponse.json(data);
       } else {
         console.error('❌ AWS API error:', response.status);
@@ -46,17 +70,17 @@ export async function GET(request: NextRequest) {
       
       return NextResponse.json({
         success: false,
-        error: 'Failed to fetch contact submissions',
+        error: 'Failed to update league country',
         details: awsError instanceof Error ? awsError.message : 'Unknown error'
       }, { status: 500 });
     }
     
   } catch (error) {
-    console.error('💥 Error in contact proxy:', error);
+    console.error('💥 Error in league country update proxy:', error);
     
     return NextResponse.json({
       success: false,
-      error: 'Failed to fetch contact submissions',
+      error: 'Failed to update league country',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }

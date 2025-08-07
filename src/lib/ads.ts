@@ -23,7 +23,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'after-hero',
-    enabled: false // Set to true when approved
+    enabled: true // ✅ ENABLED
   },
 
   LEADERBOARD_BELOW_NAVBAR: {
@@ -35,7 +35,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'below-navbar',
-    enabled: false
+    enabled: true // ✅ ENABLED
   },
   
   RECTANGLE_AFTER_LATEST: {
@@ -47,7 +47,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'after-latest-transfers',
-    enabled: false
+    enabled: true // ✅ ENABLED
   },
 
   NATIVE_IN_LATEST: {
@@ -83,7 +83,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'sidebar-top',
-    enabled: false
+    enabled: true // ✅ ENABLED
   },
 
   SIDEBAR_MIDDLE: {
@@ -95,7 +95,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'sidebar-middle',
-    enabled: false
+    enabled: true // ✅ ENABLED
   },
 
   SIDEBAR_BOTTOM: {
@@ -191,7 +191,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'sticky',
     position: 'bottom-sticky',
-    enabled: false
+    enabled: true // ✅ ENABLED
   },
 
   // Additional high-value ad slots

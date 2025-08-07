@@ -1,7 +1,10 @@
-// API Configuration - Direct API Gateway URL (reliable and working)
+// API Configuration - Uses environment variable only (no hardcoded fallbacks)
 export const API_CONFIG = {
-  // Direct API Gateway as primary (reliable and working)
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://q8130q5lpd.execute-api.us-east-1.amazonaws.com/prod',
+  // Primary API URL from environment variable (required)
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || (() => {
+    console.error('❌ NEXT_PUBLIC_API_URL environment variable is required but not set');
+    throw new Error('NEXT_PUBLIC_API_URL environment variable is required');
+  })(),
   // Fallback URL (only if provided in environment)
   fallbackUrl: process.env.NEXT_PUBLIC_API_URL_FALLBACK || null,
   // Use local API routes for client-side requests during development

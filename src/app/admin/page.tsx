@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { adminApi } from "@/lib/api"
 import { DraftVsPublishedChart } from "@/components/DraftVsPublishedChart"
+import { API_CONFIG } from '@/lib/config';
 import { useIsMobile, adminMobileGrid, formatForMobile } from "@/lib/mobile-utils"
 
 interface DashboardStats {
@@ -75,8 +76,8 @@ export default function AdminDashboard() {
       // Fetch dashboard stats from the dedicated API endpoint
       try {
         console.log('Dashboard: Calling getDashboardStats API')
-        console.log('API Base URL:', process.env.NEXT_PUBLIC_API_URL)
-        console.log('Stats endpoint:', `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/admin/stats`)
+        console.log('API Base URL:', API_CONFIG.baseUrl)
+        console.log('Stats endpoint:', `${API_CONFIG.baseUrl}/admin/stats`)
         const dashboardStats = await adminApi.getDashboardStats()
         console.log('Dashboard stats response:', JSON.stringify(dashboardStats, null, 2))
         

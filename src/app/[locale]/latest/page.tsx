@@ -6,6 +6,7 @@ import { type Transfer } from "@/lib/api"
 import { LatestPageClient } from '@/components/LatestPageClient'
 // Ad components
 import { LeaderboardAd } from '@/components/ads';
+import { API_CONFIG } from '@/lib/config';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
@@ -171,7 +172,7 @@ export async function generateMetadata({
 async function getLatestData(language = 'en', page = 1, league = 'all') {
   try {
     // Direct API call to backend (same pattern as homepage and league page)
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
+    const apiUrl = `${API_CONFIG.baseUrl}/public/articles`
     const params = new URLSearchParams({
       limit: '15',
       page: page.toString(),

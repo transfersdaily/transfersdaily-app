@@ -18,6 +18,7 @@ import { transfersApi, type Transfer } from "@/lib/api"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ArticleClientComponents } from './ArticleClientComponents'
 import { typography } from "@/lib/typography"
+import { API_CONFIG } from '@/lib/config';
 import { getBestDate, formatDisplayDate, getValidDateForMeta } from '@/lib/date-utils'
 // Ad components
 import { LeaderboardAd, RectangleAd } from '@/components/ads';
@@ -67,7 +68,7 @@ interface ArticlePageProps {
 // Server-side function to fetch article data directly from API
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'
+    const apiUrl = API_CONFIG.baseUrl
     const response = await fetch(`${apiUrl}/public/articles/${slug}?language=${locale}`, {
       method: 'GET',
       headers: {

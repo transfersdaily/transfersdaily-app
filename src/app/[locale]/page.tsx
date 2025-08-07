@@ -20,6 +20,12 @@ import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
 // Ad components
 import { LeaderboardAd, RectangleAd } from '@/components/ads';
+// API configuration
+import { API_CONFIG } from '@/lib/config';
+
+// Force dynamic rendering to ensure fresh data
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({
@@ -611,10 +617,7 @@ async function getInitialData(language = 'en') {
 
     try {
       // Direct API call to backend with proper error handling
-      const apiUrl = `${
-        process.env.NEXT_PUBLIC_API_URL ||
-        'https://e1si3naehh.execute-api.us-east-1.amazonaws.com/prod'
-      }/public/articles`;
+      const apiUrl = `${API_CONFIG.baseUrl}/public/articles`;
       const params = new URLSearchParams({
         limit: '15',
         page: '1',

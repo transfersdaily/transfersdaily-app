@@ -5,6 +5,7 @@ import { createTranslator } from '@/lib/dictionary-server'
 import { LeaguePageClient } from '@/components/LeaguePageClient'
 // Ad components
 import { LeaderboardAd } from '@/components/ads';
+import { API_CONFIG } from '@/lib/config';
 
 // Helper function to generate slug from title
 function generateSlug(title: string): string {
@@ -31,7 +32,7 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
   
   try {
     // Direct API call to backend (same as homepage)
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
+    const apiUrl = `${API_CONFIG.baseUrl}/public/articles`
     const params = new URLSearchParams({
       limit: '12',
       page: '1',

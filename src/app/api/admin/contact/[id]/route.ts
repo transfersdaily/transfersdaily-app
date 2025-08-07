@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { API_CONFIG } from '@/lib/config';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod';
+const API_BASE_URL = API_CONFIG.baseUrl;
 
 export async function PUT(
   request: NextRequest,

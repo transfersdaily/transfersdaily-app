@@ -6,6 +6,7 @@ import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 // Ad components
 import { LeaderboardAd } from '@/components/ads';
+import { API_CONFIG } from '@/lib/config';
 
 export async function generateMetadata({ params, searchParams }: { 
   params: Promise<{ locale: Locale }>
@@ -43,7 +44,7 @@ export async function generateMetadata({ params, searchParams }: {
 
 async function getCompletedTransfersData(language = 'en', page = 1, league = 'all') {
   try {
-    const apiUrl = `${process.env.NEXT_PUBLIC_API_URL || 'https://ti7pb2xkjh.execute-api.us-east-1.amazonaws.com/prod'}/public/articles`
+    const apiUrl = `${API_CONFIG.baseUrl}/public/articles`
     const params = new URLSearchParams({ limit: '15', page: page.toString(), status: 'published', language: language, sortBy: 'published_at', sortOrder: 'desc', category: 'completed' })
     if (league !== 'all') {
       const leagueNames: Record<string, string> = { 'premier-league': 'Premier League', 'la-liga': 'La Liga', 'serie-a': 'Serie A', 'bundesliga': 'Bundesliga', 'ligue-1': 'Ligue 1' }

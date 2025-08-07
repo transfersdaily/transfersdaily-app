@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { API_CONFIG } from '@/lib/config';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://e1si3naehh.execute-api.us-east-1.amazonaws.com/prod'
+const API_BASE_URL = API_CONFIG.baseUrl
 
 export async function GET(
   request: NextRequest,
