@@ -147,6 +147,11 @@ export function ArticlesTableMobile({
     onSelectArticles([])
   }
 
+  const handleBulkPublish = () => {
+    selectedArticles.forEach(id => onPublishArticle?.(id))
+    onSelectArticles([])
+  }
+
   const getArticleActions = (article: Article) => {
     const baseActions = [
       {
@@ -406,10 +411,18 @@ export function ArticlesTableMobile({
           </CardDescription>
           <div className="flex items-center space-x-2">
             {selectedArticles.length > 0 && (
-              <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete ({selectedArticles.length})
-              </Button>
+              <>
+                {pageType === "draft" && (
+                  <Button size="sm" variant="default" onClick={handleBulkPublish}>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Publish ({selectedArticles.length})
+                  </Button>
+                )}
+                <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete ({selectedArticles.length})
+                </Button>
+              </>
             )}
           </div>
         </div>
