@@ -58,6 +58,7 @@ export default function ContentEditingStep({
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [translationLoading, setTranslationLoading] = useState<Record<string, boolean>>({});
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -195,6 +196,64 @@ export default function ContentEditingStep({
       }
     }));
     setHasUnsavedChanges(true);
+  };
+
+  const generateTranslation = async (targetLanguage: string) => {
+    if (!article || !article.translations.en?.title || !article.translations.en?.content) {
+      setError('English version must be complete before generating translations');
+      return;
+    }
+
+    setTranslationLoading(prev => ({ ...prev, [targetLanguage]: true }));
+    setError(null);
+
+    try {
+      console.log(`🌍 Generating ${targetLanguage} translation...`);
+      
+      const response = await fetch(getApiUrl('/api/admin/translate-article'), {
+        method: 'POST',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          articleTitle: article.translations.en.title,
+          articleContent: article.translations.en.content,
+          targetLanguage: targetLanguage
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to generate ${targetLanguage} translation`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success && result.translation) {
+        // Update the article with the new translation
+        setArticle(prev => ({
+          ...prev!,
+          translations: {
+            ...prev!.translations,
+            [targetLanguage]: {
+              title: result.translation.title,
+              content: result.translation.content
+            }
+          }
+        }));
+        
+        setHasUnsavedChanges(true);
+        console.log(`✅ ${targetLanguage} translation generated successfully`);
+      } else {
+        throw new Error(result.error || 'Translation generation failed');
+      }
+    } catch (error) {
+      console.error(`❌ Translation generation failed:`, error);
+      setError(`Failed to generate ${targetLanguage} translation: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setTranslationLoading(prev => ({ ...prev, [targetLanguage]: false }));
+    }
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -440,10 +499,39 @@ export default function ContentEditingStep({
 
               {/* Content */}
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Content ({lang.name})</CardTitle>
+                  {lang.code !== 'en' && (
+                    <Button
+                      onClick={() => generateTranslation(lang.code)}
+                      disabled={translationLoading[lang.code] || !article?.translations.en?.title || !article?.translations.en?.content}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      {translationLoading[lang.code] ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Globe className="h-4 w-4" />
+                          Generate Translation
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
+                  {lang.code !== 'en' && (!article?.translations.en?.title || !article?.translations.en?.content) && (
+                    <Alert className="mb-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Complete the English version first to generate translations automatically.
+                      </AlertDescription>
+                    </Alert>
+                  )}
                   <div data-color-mode="light">
                     <MDEditor
                       value={currentTranslation.content}
