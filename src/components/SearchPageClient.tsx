@@ -16,8 +16,6 @@ import { addRecentSearch } from "@/components/TrendingTopics"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { adminMobileClasses } from "@/lib/mobile-utils"
-// Ad components
-import { RectangleAd, LeaderboardAd, NativeAd } from "@/components/ads"
 
 const trendingSearches = [
   "Kylian Mbappé", "Manchester United transfers", "Real Madrid", "Premier League", 
@@ -314,10 +312,6 @@ export function SearchPageClient({
                     {searchResults.length} {t('search.resultsFound')} for &quot;{searchTerm}&quot;
                   </div>
                   
-                  {/* Ad: Rectangle after search info */}
-                  <div className="mb-6">
-                    <RectangleAd position="after-header" />
-                  </div>
                   
                   <TransferGridWithAds
                     transfers={searchResults}
@@ -325,11 +319,6 @@ export function SearchPageClient({
                     dict={dict}
                     adPosition="in-search-results"
                   />
-                  
-                  {/* Ad: Leaderboard after search results */}
-                  <div className="mt-8">
-                    <LeaderboardAd position="mid-content" />
-                  </div>
                 </>
               ) : (
                 <div className="text-center py-12">

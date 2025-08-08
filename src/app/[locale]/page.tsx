@@ -18,8 +18,6 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n';
 import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
-// Ad components
-import { LeaderboardAd, RectangleAd, ConditionalAdContainer } from '@/components/ads';
 // API configuration
 import { API_CONFIG } from '@/lib/config';
 
@@ -349,13 +347,6 @@ export default async function HomePage({
         }}
       />
 
-      {/* PREMIUM AD: Below navbar, before content - HIGHEST VALUE POSITION */}
-      <ConditionalAdContainer position="below-navbar">
-        <div className="container mx-auto pt-4">
-          <LeaderboardAd position="below-navbar" className="mb-4" />
-        </div>
-      </ConditionalAdContainer>
-
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Content - 70% */}
@@ -382,7 +373,7 @@ export default async function HomePage({
                 {initialData.featuredTransfer ? (
                   <article>
                     <Link
-                      href={`/${locale}/article/${initialData.featuredTransfer.slug}?language=${locale}`}
+                      href={`/${locale}/article/${initialData.featuredTransfer.slug}`}
                       className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
                       aria-label={`${t('common.readFullArticle')}: ${
                         initialData.featuredTransfer.title
@@ -473,11 +464,6 @@ export default async function HomePage({
               </Suspense>
             </section>
 
-            {/* Ad: Rectangle after latest transfers */}
-            <ConditionalAdContainer position="after-latest">
-              <RectangleAd position="after-latest" />
-            </ConditionalAdContainer>
-
             {/* Browse by League Section */}
             <section className="py-4 md:py-8" aria-labelledby="browse-leagues">
               <div className="mb-3 md:mb-6">
@@ -518,11 +504,6 @@ export default async function HomePage({
               </div>
             </section>
 
-            {/* Ad: Rectangle after browse by league */}
-            <ConditionalAdContainer position="after-leagues">
-              <RectangleAd position="after-leagues" />
-            </ConditionalAdContainer>
-
             {/* Trending Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
               <div className="flex justify-between items-start mb-3 md:mb-6">
@@ -552,18 +533,8 @@ export default async function HomePage({
               </Suspense>
             </section>
 
-            {/* Ad: Leaderboard before newsletter */}
-            <ConditionalAdContainer position="before-newsletter">
-              <LeaderboardAd position="before-newsletter" />
-            </ConditionalAdContainer>
-
             {/* Newsletter Section */}
             <NewsletterSection locale={locale} dict={dict} />
-
-            {/* Ad: Rectangle after newsletter */}
-            <ConditionalAdContainer position="after-newsletter">
-              <RectangleAd position="after-newsletter" />
-            </ConditionalAdContainer>
           </div>
 
           {/* Sidebar - 30% */}

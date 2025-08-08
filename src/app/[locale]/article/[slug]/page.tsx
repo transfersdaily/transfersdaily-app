@@ -20,8 +20,6 @@ import { ArticleClientComponents } from './ArticleClientComponents'
 import { typography } from "@/lib/typography"
 import { API_CONFIG } from '@/lib/config';
 import { getBestDate, formatDisplayDate, getValidDateForMeta } from '@/lib/date-utils'
-// Ad components
-import { LeaderboardAd, RectangleAd } from '@/components/ads';
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -125,8 +123,7 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     if (error instanceof Error) {
       console.error(`💥 Error details:`, {
         name: error.name,
-        message: error.message,
-        cause: error.cause
+        message: error.message
       });
     }
     
@@ -446,14 +443,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
         }}
       />
       
-      {/* PREMIUM AD: Below navbar, before content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-        <LeaderboardAd position="below-navbar" className="mb-4" />
-      </div>
-      
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Ad: Leaderboard at top of article */}
-        <LeaderboardAd position="top" />
         
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Article Content - 70% */}
@@ -598,10 +588,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                 </div>
               )}
 
-              {/* Ad: Rectangle after article content */}
-              <div className="mt-8">
-                <RectangleAd position="after-content" />
-              </div>
             </div>
           </article>
 
@@ -613,9 +599,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
           </aside>
         </div>
 
-        {/* Ad: Leaderboard before related articles */}
-        <LeaderboardAd position="before-newsletter" />
-
+        
         {/* Related Articles - Outside the main card, full width with background color */}
         <section className="mt-12 lg:col-span-7 lg:max-w-none">
           <Card className="bg-background border-none shadow-none">

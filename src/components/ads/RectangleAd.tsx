@@ -26,6 +26,7 @@ export function RectangleAd({ position, className = '' }: RectangleAdProps) {
   const slotKey = slotKeyMap[position];
   const slot = AD_SLOTS[slotKey];
 
+  // Return null completely - no container, no spacing, nothing
   if (!isAdSlotEnabled(slotKey)) {
     return null;
   }

@@ -5,7 +5,6 @@ import { createTranslator } from '@/lib/dictionary-server'
 import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 // Ad components
-import { LeaderboardAd } from '@/components/ads';
 import { API_CONFIG } from '@/lib/config';
 
 export async function generateMetadata({ params, searchParams }: { 
@@ -79,7 +78,6 @@ export default async function CompletedTransfersPage({ params, searchParams }: {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} />
       
       {/* Ad: Leaderboard at top */}
-      <LeaderboardAd position="top" />
       
       <TransferStatusPageClient 
         locale={locale} 

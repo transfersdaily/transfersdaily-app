@@ -5,7 +5,6 @@ import { createTranslator } from '@/lib/dictionary-server'
 import { type Transfer } from "@/lib/api"
 import { LatestPageClient } from '@/components/LatestPageClient'
 // Ad components
-import { LeaderboardAd } from '@/components/ads';
 import { API_CONFIG } from '@/lib/config';
 
 // Generate comprehensive metadata for SEO optimization
@@ -399,7 +398,6 @@ export default async function LatestPage({
       )}
       
       {/* Ad: Leaderboard at top */}
-      <LeaderboardAd position="top" />
       
       {/* Client-side component with server-side data */}
       <LatestPageClient 

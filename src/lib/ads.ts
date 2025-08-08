@@ -13,7 +13,7 @@ export interface AdSlot {
 
 // Ad slots configuration - Update slotId when you get them from Google
 export const AD_SLOTS: Record<string, AdSlot> = {
-  // High-value positions
+  // High-value positions - DISABLED until real slot IDs are provided
   LEADERBOARD_TOP: {
     id: 'leaderboard-top',
     slotId: 'YOUR_SLOT_ID_HERE', // Replace when approved
@@ -23,7 +23,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'after-hero',
-    enabled: true // ✅ ENABLED
+    enabled: false // ❌ DISABLED - Placeholder slot ID
   },
 
   LEADERBOARD_BELOW_NAVBAR: {
@@ -35,7 +35,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'below-navbar',
-    enabled: true // ✅ ENABLED
+    enabled: false // ❌ DISABLED - Placeholder slot ID
   },
   
   RECTANGLE_AFTER_LATEST: {
@@ -47,7 +47,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'after-latest-transfers',
-    enabled: true // ✅ ENABLED
+    enabled: false // ❌ DISABLED - Placeholder slot ID
   },
 
   NATIVE_IN_LATEST: {
@@ -83,7 +83,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'sidebar-top',
-    enabled: true // ✅ ENABLED
+    enabled: false // ❌ DISABLED - Placeholder slot ID
   },
 
   SIDEBAR_MIDDLE: {
@@ -95,7 +95,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'display',
     position: 'sidebar-middle',
-    enabled: true // ✅ ENABLED
+    enabled: false // ❌ DISABLED - Placeholder slot ID
   },
 
   SIDEBAR_BOTTOM: {
@@ -191,7 +191,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
     },
     format: 'sticky',
     position: 'bottom-sticky',
-    enabled: true // ✅ ENABLED
+    enabled: false // ❌ DISABLED - Placeholder slot ID
   },
 
   // Additional high-value ad slots
@@ -248,7 +248,7 @@ export const AD_SLOTS: Record<string, AdSlot> = {
 export const AD_CONFIG = {
   publisherId: 'ca-pub-6269937543968234',
   testMode: process.env.NODE_ENV === 'development',
-  autoAdsEnabled: false, // Disable auto ads when using manual
+  autoAdsEnabled: true, // ✅ ENABLE auto ads since manual ads are disabled
   adBlockDetection: true,
   lazyLoading: true,
   refreshInterval: 30000, // 30 seconds for refresh
@@ -256,15 +256,21 @@ export const AD_CONFIG = {
 
 // Check if ads are globally enabled (for review period)
 export const areAdsEnabled = (): boolean => {
-  // You can control this via environment variable
-  return process.env.NEXT_PUBLIC_ADS_ENABLED === 'true';
+  // Only enable ads if we have real slot IDs or auto ads are enabled
+  const hasRealSlotIds = Object.values(AD_SLOTS).some(slot => 
+    slot.enabled && !slot.slotId.includes('YOUR_SLOT_ID_HERE')
+  );
+  
+  return process.env.NEXT_PUBLIC_ADS_ENABLED === 'true' && (hasRealSlotIds || AD_CONFIG.autoAdsEnabled);
 };
 
 // Get enabled ad slots only
 export const getEnabledAdSlots = (): AdSlot[] => {
   if (!areAdsEnabled()) return [];
   
-  return Object.values(AD_SLOTS).filter(slot => slot.enabled);
+  return Object.values(AD_SLOTS).filter(slot => 
+    slot.enabled && !slot.slotId.includes('YOUR_SLOT_ID_HERE')
+  );
 };
 
 // Check if specific ad slot is enabled
@@ -272,7 +278,7 @@ export const isAdSlotEnabled = (slotKey: string): boolean => {
   if (!areAdsEnabled()) return false;
   
   const slot = AD_SLOTS[slotKey];
-  return slot ? slot.enabled : false;
+  return slot ? (slot.enabled && !slot.slotId.includes('YOUR_SLOT_ID_HERE')) : false;
 };
 
 // Get responsive ad sizes based on device

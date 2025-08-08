@@ -4,7 +4,6 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { SearchPageClient } from '@/components/SearchPageClient'
 // Ad components
-import { LeaderboardAd } from '@/components/ads';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
@@ -259,7 +258,6 @@ export default async function SearchPage({
       />
       
       {/* Ad: Leaderboard at top */}
-      <LeaderboardAd position="top" />
       
       {/* Client-side component with server-side data */}
       <SearchPageClient 

@@ -19,8 +19,6 @@ import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { typography, responsive } from "@/lib/typography"
 import { adminMobileClasses } from "@/lib/mobile-utils"
-// Ad components
-import { RectangleAd, LeaderboardAd } from "@/components/ads"
 import { PageHeader } from "@/components/PageHeader"
 
 interface TransferStatusPageClientProps {
@@ -206,7 +204,6 @@ export function TransferStatusPageClient({
           />
 
           {/* Ad: Rectangle after header */}
-          <RectangleAd position="after-header" />
 
           {/* Content Section - Match Latest Page Style */}
           <section aria-labelledby="transfers-list">
@@ -225,12 +222,10 @@ export function TransferStatusPageClient({
                 
                 {/* Ad: Leaderboard mid-content */}
                 <div className="my-8">
-                  <LeaderboardAd position="mid-content" />
                 </div>
                 
                 {/* Ad: Rectangle after transfer grid */}
                 <div className="mt-8 mb-8">
-                  <RectangleAd position="after-latest" />
                 </div>
               </>
             ) : (

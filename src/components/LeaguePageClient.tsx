@@ -16,8 +16,6 @@ import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { typography, responsive } from "@/lib/typography"
 import { PageHeader } from "@/components/PageHeader"
-// Ad components
-import { RectangleAd, LeaderboardAd } from "@/components/ads"
 
 // Helper function to get league logo
 function getLeagueLogo(leagueSlug: string): { src: string; alt: string } {
@@ -156,7 +154,6 @@ export function LeaguePageClient({
           />
 
           {/* Ad: Rectangle after header */}
-          <RectangleAd position="after-header" />
 
           {/* Results Info - Match Latest Page */}
           <ResultsInfo 
@@ -183,12 +180,10 @@ export function LeaguePageClient({
                 
                 {/* Ad: Leaderboard mid-content */}
                 <div className="my-8">
-                  <LeaderboardAd position="mid-content" />
                 </div>
                 
                 {/* Ad: Rectangle after transfer grid */}
                 <div className="mt-8 mb-8">
-                  <RectangleAd position="after-latest" />
                 </div>
               </>
             ) : (
@@ -206,7 +201,6 @@ export function LeaguePageClient({
             <>
               {/* Ad: Rectangle before pagination */}
               <div className="mb-6">
-                <RectangleAd position="before-pagination" />
               </div>
               
               <div className="pb-6">
