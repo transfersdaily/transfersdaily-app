@@ -133,8 +133,6 @@ export function LatestPageClient({
                   dict={dict}
                   adPosition="in-latest"
                 />
-                
-                </div>
               </>
             ) : (
               <div className="text-center py-12">

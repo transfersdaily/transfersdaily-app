@@ -6,7 +6,7 @@ import { AdSenseAd } from './AdSenseAd';
 import { AD_SLOTS } from '@/lib/ads';
 import { MOBILE_AD_STRATEGY } from '@/lib/mobile-ads';
 
-// Top floating ad (always visible)
+// Top floating ad (always visible) - DISABLED for auto ads
 export function MobileTopFloatingAd() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -32,7 +32,7 @@ export function MobileTopFloatingAd() {
   );
 }
 
-// Enhanced bottom sticky ad (closeable)
+// Enhanced bottom sticky ad (closeable) - DISABLED for auto ads
 export function MobileBottomFloatingAd() {
   const [isVisible, setIsVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -69,7 +69,7 @@ export function MobileBottomFloatingAd() {
   );
 }
 
-// Auto ads enabler (when using Google's auto ads)
+// Auto ads enabler (when using Google's auto ads) - ENABLED
 export function MobileAutoAds() {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -87,21 +87,29 @@ export function MobileAutoAds() {
 
   useEffect(() => {
     // Enable Google Auto Ads for mobile
-    if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
-      window.adsbygoogle.push({
-        google_ad_client: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID,
-        enable_page_level_ads: true,
-        overlays: {bottom: true}, // Enable bottom anchor ads
-        vignettes: {enabled: true} // Enable full-screen ads between pages
-      });
+    if (typeof window !== 'undefined' && window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
+      try {
+        window.adsbygoogle.push({
+          google_ad_client: process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID,
+          enable_page_level_ads: true,
+          overlays: {bottom: true}, // Enable bottom anchor ads
+          vignettes: {enabled: true} // Enable full-screen ads between pages
+        });
+        console.log('✅ Google Auto Ads enabled for mobile');
+      } catch (error) {
+        console.error('❌ Error enabling Google Auto Ads:', error);
+      }
     }
   }, []);
 
   return (
-    <script
-      async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}`}
-      crossOrigin="anonymous"
-    />
+    <>
+      {/* Google AdSense Auto Ads Script */}
+      <script
+        async
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}`}
+        crossOrigin="anonymous"
+      />
+    </>
   );
 }
