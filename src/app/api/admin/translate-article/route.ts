@@ -9,6 +9,22 @@ const lambda = new LambdaClient({
   },
 });
 
+// CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://transfersdaily.com',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+  'Access-Control-Max-Age': '86400',
+};
+
+// Handle preflight OPTIONS request
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: corsHeaders,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { articleTitle, articleContent, targetLanguage } = await request.json();
@@ -17,7 +33,7 @@ export async function POST(request: NextRequest) {
     if (!articleTitle || !articleContent || !targetLanguage) {
       return NextResponse.json(
         { error: 'Missing required fields: articleTitle, articleContent, or targetLanguage' },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -26,7 +42,7 @@ export async function POST(request: NextRequest) {
     if (!supportedLanguages.includes(targetLanguage)) {
       return NextResponse.json(
         { error: `Unsupported language: ${targetLanguage}. Supported: ${supportedLanguages.join(', ')}` },
-        { status: 400 }
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -54,7 +70,7 @@ export async function POST(request: NextRequest) {
       console.error('Translation Lambda error:', result.error);
       return NextResponse.json(
         { error: result.error || 'Translation generation failed' },
-        { status: 500 }
+        { status: 500, headers: corsHeaders }
       );
     }
 
@@ -63,13 +79,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       translation: result.translation
-    });
+    }, { headers: corsHeaders });
 
   } catch (error) {
     console.error('Translation API error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }
