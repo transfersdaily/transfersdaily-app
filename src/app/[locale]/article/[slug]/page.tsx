@@ -155,9 +155,9 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
 }
 
 // Server-side function to get related articles
-async function getRelatedArticles(limit: number = 4): Promise<Transfer[]> {
+async function getRelatedArticles(limit: number = 4, locale: string = 'en'): Promise<Transfer[]> {
   try {
-    const articles = await transfersApi.getLatest(limit)
+    const articles = await transfersApi.getLatest(limit, 0, locale)
     return articles
   } catch (error) {
     console.error('Error fetching related articles:', error)
@@ -350,7 +350,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     // Get article and related data server-side
     const [articleResult, relatedArticlesResult] = await Promise.allSettled([
       getArticleBySlug(slug, locale),
-      getRelatedArticles(4)
+      getRelatedArticles(4, locale)
     ]);
     
     // Handle article result
