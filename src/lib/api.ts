@@ -155,7 +155,11 @@ export async function getAuthHeaders(): Promise<HeadersInit> {
   }
   
   const headers: HeadersInit = {
-    'Content-Type': 'application/json'
+    'Content-Type': 'application/json',
+    // Add origin header for CORS when available
+    ...(typeof window !== 'undefined' && window.location.origin && {
+      'Origin': window.location.origin
+    })
   }
   
   if (token) {

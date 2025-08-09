@@ -81,7 +81,11 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        // Use environment-aware origin
+        ...(process.env.NEXT_PUBLIC_SITE_URL && {
+          'Origin': process.env.NEXT_PUBLIC_SITE_URL
+        })
       },
       // Add timeout to prevent hanging
       signal: AbortSignal.timeout(10000)
