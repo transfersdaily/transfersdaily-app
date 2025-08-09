@@ -81,7 +81,13 @@ export const API_CONFIG = {
 
 // Helper function to get the correct API URL
 export function getApiUrl(endpoint: string): string {
-  if (API_CONFIG.isDevelopment && endpoint.startsWith('/admin')) {
+  // Always use local proxy for admin endpoints to handle CORS and auth properly
+  if (endpoint.startsWith('/admin')) {
+    return `${API_CONFIG.localApiUrl}${endpoint}`;
+  }
+  
+  // For non-admin endpoints, use development logic
+  if (API_CONFIG.isDevelopment) {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
   }
   return `${API_CONFIG.baseUrl}${endpoint}`;
