@@ -65,15 +65,19 @@ interface ArticlePageProps {
 
 // Server-side function to fetch article data with fallback
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
+  console.log(`🚀 [getArticleBySlug] Starting fetch for slug: ${slug}, locale: ${locale}`);
+  
   try {
-    console.log(`🔍 Fetching article: ${slug} for locale: ${locale}`);
+    console.log(`🔍 [getArticleBySlug] Fetching article: ${slug} for locale: ${locale}`);
+    console.log(`🔍 [getArticleBySlug] API_CONFIG.baseUrl: ${API_CONFIG.baseUrl}`);
     
     // Try direct API call first
     if (API_CONFIG.baseUrl && API_CONFIG.baseUrl !== '') {
       try {
         const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}`;
-        console.log(`📡 API URL: ${apiUrl}`);
+        console.log(`📡 [getArticleBySlug] API URL: ${apiUrl}`);
         
+        console.log(`📡 [getArticleBySlug] Making fetch request...`);
         const response = await fetch(apiUrl, {
           method: 'GET',
           headers: {
@@ -84,6 +88,8 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
           // Add timeout to prevent hanging
           signal: AbortSignal.timeout(10000)
         });
+        
+        console.log(`📊 [getArticleBySlug] Fetch completed with status: ${response.status}`);
         
         console.log(`📊 API Response Status: ${response.status} ${response.statusText}`);
         
@@ -156,11 +162,20 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
 
 // Server-side function to get related articles
 async function getRelatedArticles(limit: number = 4, locale: string = 'en'): Promise<Transfer[]> {
+  console.log(`🔄 [getRelatedArticles] Starting fetch with limit: ${limit}, locale: ${locale}`);
+  
   try {
+    console.log(`📡 [getRelatedArticles] Calling transfersApi.getLatest...`);
     const articles = await transfersApi.getLatest(limit, 0, locale)
+    console.log(`✅ [getRelatedArticles] Successfully fetched ${articles.length} articles`);
     return articles
   } catch (error) {
-    console.error('Error fetching related articles:', error)
+    console.error('❌ [getRelatedArticles] Error fetching related articles:', error)
+    console.error('❌ [getRelatedArticles] Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : 'No stack trace'
+    });
     return []
   }
 }
@@ -331,52 +346,89 @@ export async function generateStaticParams() {
 
 // Server-side rendered article page
 export default async function ArticlePage({ params, searchParams }: ArticlePageProps) {
+  console.log(`🚀 [ArticlePage] Starting page render`);
+  
   const { locale, slug } = await params
+  console.log(`🚀 [ArticlePage] Params - locale: ${locale}, slug: ${slug}`);
+  
   const searchParamsResolved = await searchParams
   const isPreview = searchParamsResolved.preview === 'true'
+  console.log(`🚀 [ArticlePage] Preview mode: ${isPreview}`);
   
   // Validate locale
   if (!locales.includes(locale)) {
+    console.error(`❌ [ArticlePage] Invalid locale: ${locale}`);
     notFound()
   }
   
+  console.log(`📚 [ArticlePage] Loading dictionary for locale: ${locale}`);
   // Get translations server-side
   const dict = await getDictionary(locale)
+  console.log(`✅ [ArticlePage] Dictionary loaded successfully`);
   
   let article: Article | null = null;
   let relatedArticles: Transfer[] = [];
   
   try {
+    console.log(`🔄 [ArticlePage] Starting data fetching...`);
+    
     // Get article and related data server-side
     const [articleResult, relatedArticlesResult] = await Promise.allSettled([
       getArticleBySlug(slug, locale),
       getRelatedArticles(4, locale)
     ]);
     
+    console.log(`📊 [ArticlePage] Promise.allSettled completed`);
+    console.log(`📊 [ArticlePage] Article result status: ${articleResult.status}`);
+    console.log(`📊 [ArticlePage] Related articles result status: ${relatedArticlesResult.status}`);
+    
     // Handle article result
     if (articleResult.status === 'fulfilled') {
       article = articleResult.value;
+      console.log(`✅ [ArticlePage] Article fetched successfully: ${article?.title || 'null'}`);
     } else {
-      console.error('❌ Failed to fetch article:', articleResult.reason);
+      console.error('❌ [ArticlePage] Failed to fetch article:', articleResult.reason);
+      console.error('❌ [ArticlePage] Article error details:', {
+        name: articleResult.reason instanceof Error ? articleResult.reason.name : 'Unknown',
+        message: articleResult.reason instanceof Error ? articleResult.reason.message : String(articleResult.reason)
+      });
     }
     
     // Handle related articles result
     if (relatedArticlesResult.status === 'fulfilled') {
       relatedArticles = relatedArticlesResult.value;
+      console.log(`✅ [ArticlePage] Related articles fetched: ${relatedArticles.length} articles`);
     } else {
-      console.error('❌ Failed to fetch related articles:', relatedArticlesResult.reason);
+      console.error('❌ [ArticlePage] Failed to fetch related articles:', relatedArticlesResult.reason);
+      console.error('❌ [ArticlePage] Related articles error details:', {
+        name: relatedArticlesResult.reason instanceof Error ? relatedArticlesResult.reason.name : 'Unknown',
+        message: relatedArticlesResult.reason instanceof Error ? relatedArticlesResult.reason.message : String(relatedArticlesResult.reason)
+      });
       // Continue with empty array for related articles
     }
     
   } catch (error) {
-    console.error('❌ Error in ArticlePage data fetching:', error);
+    console.error('❌ [ArticlePage] Error in data fetching:', error);
+    console.error('❌ [ArticlePage] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
   }
+  
+  console.log(`🔍 [ArticlePage] Checking if article exists: ${!!article}`);
   
   // If article not found, show 404
   if (!article) {
-    console.error(`❌ Article not found for slug: ${slug}`);
+    console.error(`❌ [ArticlePage] Article not found for slug: ${slug}`);
     notFound()
   }
+  
+  console.log(`🎨 [ArticlePage] Starting render with article: ${article.title}`);
+  console.log(`🎨 [ArticlePage] Article data summary:`, {
+    id: article.id,
+    title: article.title,
+    hasContent: !!article.content,
+    hasImageUrl: !!article.image_url,
+    league: article.league,
+    publishedAt: article.published_at
+  });
   
   // Generate structured data for the article
   const articleStructuredData = {
@@ -449,13 +501,16 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     return `${diffInDays} ${getTranslation(dict, 'common.daysAgo', 'days ago')}`
   }
 
-  return (
-    <main className="min-h-screen bg-background">
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(articleStructuredData)
+  console.log(`🎨 [ArticlePage] About to render JSX...`);
+  
+  try {
+    return (
+      <main className="min-h-screen bg-background">
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(articleStructuredData)
         }}
       />
       <script
@@ -657,4 +712,23 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
       </div>
     </main>
   )
+  } catch (renderError) {
+    console.error('❌ [ArticlePage] Error during JSX rendering:', renderError);
+    console.error('❌ [ArticlePage] Render error details:', {
+      name: renderError instanceof Error ? renderError.name : 'Unknown',
+      message: renderError instanceof Error ? renderError.message : String(renderError),
+      stack: renderError instanceof Error ? renderError.stack : 'No stack trace'
+    });
+    
+    // Return a simple error page instead of crashing
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">Article Loading Error</h1>
+          <p className="text-muted-foreground">There was an error loading this article.</p>
+          <p className="text-sm text-muted-foreground mt-2">Slug: {slug}</p>
+        </div>
+      </main>
+    );
+  }
 }
