@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { TransferCard } from '@/components/TransferCard';
-import { TransferGridWithAds } from '@/components/TransferGridWithAds';
+import { TransferGrid } from '@/components/TransferGrid';
 import { Sidebar } from '@/components/Sidebar';
 import { TransferGridSkeleton } from '@/components/TransferCardSkeleton';
 import { SidebarSkeleton } from '@/components/SidebarSkeleton';
@@ -455,11 +455,11 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGridWithAds
+                <TransferGrid
                   transfers={initialData.latestTransfers}
                   locale={locale}
                   dict={dict}
-                  adPosition="in-latest"
+                  limit={6}
                 />
               </Suspense>
             </section>
@@ -524,11 +524,11 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGridWithAds
+                <TransferGrid
                   transfers={initialData.trendingTransfers}
                   locale={locale}
                   dict={dict}
-                  adPosition="in-trending"
+                  limit={6}
                 />
               </Suspense>
             </section>

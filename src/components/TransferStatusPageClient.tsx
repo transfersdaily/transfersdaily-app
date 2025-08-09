@@ -8,7 +8,7 @@ import {
   Pagination
 } from "@/components/ui/pagination"
 import { TransferCard } from "@/components/TransferCard"
-import { TransferGridWithAds } from "@/components/TransferGridWithAds"
+import { TransferGrid } from "@/components/TransferGrid"
 import { Sidebar } from "@/components/Sidebar"
 import { TransferGridSkeleton } from "@/components/TransferCardSkeleton"
 import { SidebarSkeleton } from "@/components/SidebarSkeleton"
@@ -213,11 +213,10 @@ export function TransferStatusPageClient({
               <TransferGridSkeleton count={15} />
             ) : transfers.length > 0 ? (
               <>
-                <TransferGridWithAds
+                <TransferGrid
                   transfers={transfers}
                   locale={locale}
                   dict={dict}
-                  adPosition="in-latest"
                 />
                 
                 {/* Ad: Leaderboard mid-content */}

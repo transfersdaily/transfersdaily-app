@@ -1,73 +1,49 @@
-import { TransferCard } from "./TransferCard"
-import { Button } from "@/components/ui/button"
-import { Search } from "lucide-react"
-
-interface Transfer {
-  id: number
-  title: string
-  excerpt: string
-  primaryBadge: string // league or club name
-  timeAgo: string
-}
+import { TransferCard } from '@/components/TransferCard';
+import { type Locale, type Dictionary } from '@/lib/i18n';
+import { type Transfer } from '@/lib/api';
+import { formatTimeAgo } from '@/lib/date-utils';
+import { createTranslator } from '@/lib/dictionary-server';
 
 interface TransferGridProps {
-  transfers: Transfer[]
-  accentColor?: string
-  gradientFrom?: string
-  gradientTo?: string
-  onClearFilters?: () => void
-  emptyStateTitle?: string
-  emptyStateDescription?: string
+  transfers: Transfer[];
+  locale: Locale;
+  dict: Dictionary;
+  limit?: number; // Optional limit, if not provided shows all transfers
 }
 
-export function TransferGrid({
-  transfers,
-  accentColor = "primary",
-  gradientFrom,
-  gradientTo,
-  onClearFilters,
-  emptyStateTitle = "No transfers found",
-  emptyStateDescription = "Try adjusting your search terms or filters"
+export function TransferGrid({ 
+  transfers, 
+  locale, 
+  dict, 
+  limit
 }: TransferGridProps) {
-  if (transfers.length === 0) {
+  const t = createTranslator(dict);
+  
+  if (!transfers || transfers.length === 0) {
     return (
-      <section className="py-12">
-        <div className="container mx-auto px-4">
-          <div className="text-center py-12">
-            <Search className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-xl font-semibold mb-2">{emptyStateTitle}</h3>
-            <p className="text-muted-foreground mb-6">
-              {emptyStateDescription}
-            </p>
-            {onClearFilters && (
-              <Button variant="outline" onClick={onClearFilters}>
-                Clear all filters
-              </Button>
-            )}
-          </div>
-        </div>
-      </section>
-    )
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No transfers available</p>
+      </div>
+    );
   }
 
+  // Apply limit if provided, otherwise show all
+  const displayTransfers = limit ? transfers.slice(0, limit) : transfers;
+
   return (
-    <section className="py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {transfers.map((transfer) => (
-            <TransferCard
-              key={transfer.id}
-              title={transfer.title}
-              excerpt={transfer.excerpt}
-              primaryBadge={transfer.primaryBadge}
-              timeAgo={transfer.timeAgo}
-              accentColor={accentColor}
-              gradientFrom={gradientFrom}
-              gradientTo={gradientTo}
-            />
-          ))}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {displayTransfers.map((transfer) => (
+        <div key={transfer.id} className="col-span-1">
+          <TransferCard
+            title={transfer.title}
+            excerpt={transfer.excerpt}
+            primaryBadge={transfer.league}
+            timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+            href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
+            imageUrl={transfer.imageUrl}
+          />
         </div>
-      </div>
-    </section>
-  )
+      ))}
+    </div>
+  );
 }

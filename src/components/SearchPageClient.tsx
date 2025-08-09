@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, TrendingUp, History } from "lucide-react"
 import { searchApi, transfersApi, type Transfer } from "@/lib/api"
 import { TransferCard } from "@/components/TransferCard"
-import { TransferGridWithAds } from "@/components/TransferGridWithAds"
+import { TransferGrid } from "@/components/TransferGrid"
 import { Sidebar } from "@/components/Sidebar"
 import { addRecentSearch } from "@/components/TrendingTopics"
 import { type Locale } from "@/lib/i18n"
@@ -313,11 +313,10 @@ export function SearchPageClient({
                   </div>
                   
                   
-                  <TransferGridWithAds
+                  <TransferGrid
                     transfers={searchResults}
                     locale={locale}
                     dict={dict}
-                    adPosition="in-search-results"
                   />
                 </>
               ) : (

@@ -63,62 +63,80 @@ interface ArticlePageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-// Server-side function to fetch article data directly from API
+// Server-side function to fetch article data with fallback
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
   try {
     console.log(`🔍 Fetching article: ${slug} for locale: ${locale}`);
     
-    // Check if API_CONFIG.baseUrl is available
-    if (!API_CONFIG.baseUrl || API_CONFIG.baseUrl === '') {
-      console.error('❌ NEXT_PUBLIC_API_URL environment variable is not configured');
-      throw new Error('API configuration missing');
+    // Try direct API call first
+    if (API_CONFIG.baseUrl && API_CONFIG.baseUrl !== '') {
+      try {
+        const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}`;
+        console.log(`📡 API URL: ${apiUrl}`);
+        
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+            // No Origin header for server-side requests - this prevents CORS issues
+          },
+          // Add timeout to prevent hanging
+          signal: AbortSignal.timeout(10000)
+        });
+        
+        console.log(`📊 API Response Status: ${response.status} ${response.statusText}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log(`✅ API Response received:`, { 
+            success: data.success, 
+            hasArticle: !!data.data?.article,
+            articleTitle: data.data?.article?.title 
+          });
+          
+          if (data.success && data.data?.article) {
+            return data.data.article;
+          }
+        }
+      } catch (directApiError) {
+        console.error('❌ Direct API call failed:', directApiError);
+      }
     }
     
-    const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}`;
-    console.log(`📡 API URL: ${apiUrl}`);
+    // Fallback to local API route
+    console.log('🔄 Trying local API route fallback...');
+    const localApiUrl = `/api/article/${slug}`;
+    console.log(`📡 Local API URL: ${localApiUrl}`);
     
-    const response = await fetch(apiUrl, {
+    const localResponse = await fetch(localApiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        // Use environment-aware origin
-        ...(process.env.NEXT_PUBLIC_SITE_URL && {
-          'Origin': process.env.NEXT_PUBLIC_SITE_URL
-        })
+        'Accept': 'application/json'
       },
-      // Add timeout to prevent hanging
       signal: AbortSignal.timeout(10000)
     });
     
-    console.log(`📊 API Response Status: ${response.status} ${response.statusText}`);
+    console.log(`📊 Local API Response Status: ${localResponse.status} ${localResponse.statusText}`);
     
-    if (!response.ok) {
-      console.error(`❌ Article API error: ${response.status} ${response.statusText} for slug: ${slug}`);
-      
-      // Try to get error details
-      try {
-        const errorText = await response.text();
-        console.error(`❌ Error details: ${errorText}`);
-      } catch (e) {
-        console.error('❌ Could not read error response');
-      }
-      
+    if (!localResponse.ok) {
+      console.error(`❌ Local API error: ${localResponse.status} ${localResponse.statusText} for slug: ${slug}`);
       return null;
     }
     
-    const data = await response.json();
-    console.log(`✅ API Response received:`, { 
-      success: data.success, 
-      hasArticle: !!data.data?.article,
-      articleTitle: data.data?.article?.title 
+    const localData = await localResponse.json();
+    console.log(`✅ Local API Response received:`, { 
+      success: localData.success, 
+      hasArticle: !!localData.data?.article,
+      articleTitle: localData.data?.article?.title 
     });
     
-    if (data.success && data.data?.article) {
-      return data.data.article;
+    if (localData.success && localData.data?.article) {
+      return localData.data.article;
     }
     
-    console.error(`❌ Invalid API response structure:`, data);
+    console.error(`❌ Invalid API response structure:`, localData);
     return null;
     
   } catch (error) {
