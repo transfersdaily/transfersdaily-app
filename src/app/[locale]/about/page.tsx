@@ -4,8 +4,6 @@ import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-// Ad components
-import { LeaderboardAd, RectangleAd } from '@/components/ads';
 
 interface AboutPageProps {
   params: Promise<{ locale: Locale }>
@@ -79,9 +77,6 @@ export default async function AboutPage({ params }: AboutPageProps) {
   return (
     <main className="min-h-screen bg-background">
       <div className="container mx-auto">
-        {/* Ad: Leaderboard at top */}
-        <LeaderboardAd position="top" />
-        
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           <div className="lg:col-span-7">
             {/* Hero Section */}
@@ -146,11 +141,6 @@ export default async function AboutPage({ params }: AboutPageProps) {
                 </div>
               </div>
             </section>
-
-            {/* Ad: Rectangle before mission */}
-            <div className="py-8">
-              <RectangleAd position="after-content" />
-            </div>
 
             {/* Mission Section */}
             <section className="py-16">

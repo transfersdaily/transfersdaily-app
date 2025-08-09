@@ -709,30 +709,4 @@ function generateSlug(title: string): string {
     .trim();
 }
 
-function TransferGrid({ transfers, locale, dict }: any) {
-  const t = createTranslator(dict);
 
-  if (!transfers || transfers.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">{t('common.noLatestTransfers')}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {transfers.map((transfer: any) => (
-        <TransferCard
-          key={transfer.id}
-          title={transfer.title}
-          excerpt={transfer.excerpt}
-          primaryBadge={transfer.league}
-          timeAgo={formatTimeAgo(transfer.publishedAt, t)}
-          href={`/${locale}/article/${transfer.slug}`}
-          imageUrl={transfer.imageUrl}
-        />
-      ))}
-    </div>
-  );
-}
