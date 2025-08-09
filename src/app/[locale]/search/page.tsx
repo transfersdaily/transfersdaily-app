@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { type Locale, getDictionary, locales } from '@/lib/i18n'
 import { createTranslator } from '@/lib/dictionary-server'
 import { SearchPageClient } from '@/components/SearchPageClient'
-// Ad components
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 

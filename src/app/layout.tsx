@@ -2,6 +2,7 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/lib/auth'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import PlausibleProvider from 'next-plausible'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -84,7 +85,9 @@ export default function RootLayout({
             storageKey="transfers-daily-theme"
           >
             <AuthProvider>
-              {children}
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
             </AuthProvider>
           </ThemeProvider>
         </PlausibleProvider>

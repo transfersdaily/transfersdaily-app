@@ -19,7 +19,7 @@ import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { ArticleClientComponents } from './ArticleClientComponents'
 import { typography } from "@/lib/typography"
 import { API_CONFIG } from '@/lib/config';
-import { getBestDate, formatDisplayDate, getValidDateForMeta } from '@/lib/date-utils'
+import { getBestDate, formatDisplayDate, getValidDateForMeta, formatTimeAgo } from '@/lib/date-utils'
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -489,18 +489,6 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     ]
   }
 
-  // Helper function to format time ago
-  const formatTimeAgo = (dateString: string): string => {
-    const date = new Date(dateString)
-    const now = new Date()
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
-    
-    if (diffInHours < 1) return getTranslation(dict, 'common.justNow', 'Just now')
-    if (diffInHours < 24) return `${diffInHours} ${getTranslation(dict, 'common.hoursAgo', 'hours ago')}`
-    const diffInDays = Math.floor(diffInHours / 24)
-    return `${diffInDays} ${getTranslation(dict, 'common.daysAgo', 'days ago')}`
-  }
-
   console.log(`🎨 [ArticlePage] About to render JSX...`);
   
   try {
@@ -698,7 +686,7 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
                       title={transfer.title}
                       excerpt={transfer.excerpt}
                       primaryBadge={transfer.league}
-                      timeAgo={formatTimeAgo(transfer.publishedAt)}
+                      timeAgo={formatTimeAgo(transfer.publishedAt, (key: string) => getTranslation(dict, key))}
                       href={`/${locale}/article/${transfer.slug || transfer.id}`}
                       imageUrl={transfer.imageUrl}
                       imageAlt={`${transfer.title} - ${transfer.league}`}
