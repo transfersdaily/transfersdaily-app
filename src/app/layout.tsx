@@ -8,6 +8,7 @@ import PlausibleProvider from 'next-plausible'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://transfersdaily.com'),
   title: 'Transfers Daily',
   description: 'Latest football transfer news and updates',
   // Search engine verification

@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { AdSenseAd } from './AdSenseAd';
-import { AD_SLOTS } from '@/lib/ads';
 import { MOBILE_AD_STRATEGY } from '@/lib/mobile-ads';
 
 // Top floating ad (always visible) - DISABLED for auto ads
@@ -80,12 +78,12 @@ export function MobileAutoAds() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Only enable auto ads on mobile when configured
-  if (!isMobile || !MOBILE_AD_STRATEGY.USE_AUTO_ADS_ON_MOBILE) {
-    return null;
-  }
-
   useEffect(() => {
+    // Only enable auto ads on mobile when configured
+    if (!isMobile || !MOBILE_AD_STRATEGY.USE_AUTO_ADS_ON_MOBILE) {
+      return;
+    }
+
     // Enable Google Auto Ads for mobile
     if (typeof window !== 'undefined' && window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
       try {
@@ -100,7 +98,12 @@ export function MobileAutoAds() {
         console.error('❌ Error enabling Google Auto Ads:', error);
       }
     }
-  }, []);
+  }, [isMobile]);
+
+  // Only render on mobile when configured
+  if (!isMobile || !MOBILE_AD_STRATEGY.USE_AUTO_ADS_ON_MOBILE) {
+    return null;
+  }
 
   return (
     <>

@@ -183,7 +183,7 @@ export function RichTextEditor({
                 title="Insert Image"
                 className="h-8 w-8 p-0"
               >
-                <Image className="h-4 w-4" />
+                <Image className="h-4 w-4" aria-label="Insert image" />
               </Button>
               <Button
                 type="button"
