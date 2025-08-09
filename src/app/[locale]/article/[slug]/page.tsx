@@ -60,7 +60,7 @@ interface Article {
 
 interface ArticlePageProps {
   params: Promise<{ locale: Locale; slug: string }>
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }> // Make optional
 }
 
 // Server-side function to fetch article data with fallback
@@ -182,12 +182,13 @@ async function getRelatedArticles(limit: number = 4, locale: string = 'en'): Pro
 
 // Generate comprehensive metadata for article pages
 export async function generateMetadata({ 
-  params,
-  searchParams 
-}: ArticlePageProps): Promise<Metadata> {
+  params
+}: { 
+  params: Promise<{ locale: Locale; slug: string }>
+}): Promise<Metadata> {
   const { locale, slug } = await params
-  const searchParamsResolved = await searchParams
-  const isPreview = searchParamsResolved.preview === 'true'
+  // Temporarily disable preview mode
+  const isPreview = false
   
   try {
     // Fetch article data for metadata
@@ -345,14 +346,14 @@ export async function generateStaticParams() {
 }
 
 // Server-side rendered article page
-export default async function ArticlePage({ params, searchParams }: ArticlePageProps) {
+export default async function ArticlePage({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
   console.log(`🚀 [ArticlePage] Starting page render`);
   
   const { locale, slug } = await params
   console.log(`🚀 [ArticlePage] Params - locale: ${locale}, slug: ${slug}`);
   
-  const searchParamsResolved = await searchParams
-  const isPreview = searchParamsResolved.preview === 'true'
+  // Temporarily disable preview mode to isolate the issue
+  const isPreview = false;
   console.log(`🚀 [ArticlePage] Preview mode: ${isPreview}`);
   
   // Validate locale
