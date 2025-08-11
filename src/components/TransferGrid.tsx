@@ -31,6 +31,7 @@ export function TransferGrid({
   const displayTransfers = limit ? transfers.slice(0, limit) : transfers;
 
   return (
+    // Improved mobile spacing: 16px gap on mobile, 24px on desktop
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {displayTransfers.map((transfer) => (
         <div key={transfer.id} className="col-span-1">

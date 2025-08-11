@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Clock } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { typography, mobile } from '@/lib/typography';
 
 interface TransferCardProps {
   title: string;
@@ -54,26 +53,28 @@ export function TransferCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
-      {/* Content section with flex-grow to fill remaining space */}
-      <CardContent className={`${mobile.cardPadding} flex-grow flex flex-col justify-between`}>
-        <div className="space-y-2 md:space-y-3 flex-grow">
-          {/* Header with badge and time */}
-          <div className="flex items-center justify-between">
-            <span className={`${typography.badge} px-2 py-0.5 h-5 rounded bg-muted text-muted-foreground border border-border flex-shrink-0 text-xs`}>
+      {/* Content section with improved mobile spacing */}
+      <CardContent className="p-4 md:p-5 flex-grow flex flex-col justify-between">
+        <div className="space-y-3 md:space-y-4 flex-grow">
+          {/* Header with badge and time - better mobile layout */}
+          <div className="flex items-center justify-between gap-2">
+            <span className="px-2.5 py-1 text-xs font-medium rounded-md bg-muted text-muted-foreground border border-border flex-shrink-0">
               {primaryBadge}
             </span>
-            <div className={`flex items-center ${mobile.cardContent.meta} text-xs text-muted-foreground`}>
+            <div className="flex items-center text-xs text-muted-foreground flex-shrink-0">
               <Clock className="w-3 h-3 mr-1" />
               {timeAgo}
             </div>
           </div>
 
-          {/* Title and excerpt with consistent spacing */}
-          <div className="flex-grow">
-            <h3 className={`${mobile.cardContent.title} line-clamp-2 mb-1 md:mb-2 text-foreground group-hover:text-primary transition-colors font-semibold leading-tight`}>
+          {/* Title and excerpt with better mobile typography */}
+          <div className="flex-grow space-y-2">
+            {/* Improved mobile title size - 16px on mobile, 18px on desktop */}
+            <h3 className="text-base md:text-lg font-semibold line-clamp-2 text-foreground group-hover:text-primary transition-colors leading-tight">
               {title}
             </h3>
-            <p className={`${mobile.cardContent.description} line-clamp-3 text-sm text-muted-foreground leading-relaxed`}>
+            {/* Better mobile excerpt size - 14px on mobile, 15px on desktop */}
+            <p className="text-sm md:text-base line-clamp-3 text-muted-foreground leading-relaxed">
               {excerpt}
             </p>
           </div>

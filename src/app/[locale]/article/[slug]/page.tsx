@@ -539,7 +539,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
                   {article.league || 'Transfer News'}
                 </Badge>
                 
-                <h1 className="text-4xl sm:text-5xl font-bold mb-8 text-foreground leading-tight tracking-tight">
+                {/* Mobile-optimized article title: 24px on mobile, 32px on tablet, 40px on desktop */}
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 md:mb-8 text-foreground leading-tight tracking-tight">
                   {article.title}
                 </h1>
 

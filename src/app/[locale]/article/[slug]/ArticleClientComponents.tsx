@@ -1,9 +1,7 @@
 "use client"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { 
-  Bookmark, 
   Twitter, 
   Facebook, 
   Link as LinkIcon
@@ -53,8 +51,6 @@ interface ArticleClientComponentsProps {
 }
 
 export function ArticleClientComponents({ article, locale, dict }: ArticleClientComponentsProps) {
-  const [isBookmarked, setIsBookmarked] = useState(false)
-
   const handleShare = (platform: string) => {
     const url = window.location.href
     const title = article?.title || ''
@@ -74,44 +70,51 @@ export function ArticleClientComponents({ article, locale, dict }: ArticleClient
   }
 
   return (
-    <div className="flex items-center gap-3 mb-8">
-      <span className="text-sm font-medium text-muted-foreground">{getTranslation(dict, 'common.share', 'Share')}:</span>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleShare('twitter')}
-        className="gap-2"
-      >
-        <Twitter className="h-4 w-4" />
-        {getTranslation(dict, 'article.twitter', 'Twitter')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleShare('facebook')}
-        className="gap-2"
-      >
-        <Facebook className="h-4 w-4" />
-        {getTranslation(dict, 'article.facebook', 'Facebook')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleShare('copy')}
-        className="gap-2"
-      >
-        <LinkIcon className="h-4 w-4" />
-        {getTranslation(dict, 'common.copyLink', 'Copy Link')}
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsBookmarked(!isBookmarked)}
-        className="gap-2"
-      >
-        <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-        {isBookmarked ? getTranslation(dict, 'common.saved', 'Saved') : getTranslation(dict, 'common.save', 'Save')}
-      </Button>
+    <div className="mb-6 md:mb-8">
+      {/* Mobile-first responsive layout */}
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+        <span className="text-sm font-medium text-muted-foreground">
+          {getTranslation(dict, 'common.share', 'Share')}:
+        </span>
+        
+        {/* Mobile: 2x2 grid, Desktop: horizontal row */}
+        <div className="grid grid-cols-2 sm:flex gap-2 sm:gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleShare('twitter')}
+            className="gap-2 min-h-[44px] justify-center"
+          >
+            <Twitter className="h-4 w-4" />
+            <span className="hidden sm:inline">{getTranslation(dict, 'article.twitter', 'Twitter')}</span>
+            <span className="sm:hidden">Twitter</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleShare('facebook')}
+            className="gap-2 min-h-[44px] justify-center"
+          >
+            <Facebook className="h-4 w-4" />
+            <span className="hidden sm:inline">{getTranslation(dict, 'article.facebook', 'Facebook')}</span>
+            <span className="sm:hidden">Facebook</span>
+          </Button>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleShare('copy')}
+            className="gap-2 min-h-[44px] justify-center col-span-2 sm:col-span-1"
+          >
+            <LinkIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">{getTranslation(dict, 'common.copyLink', 'Copy Link')}</span>
+            <span className="sm:hidden">Copy Link</span>
+          </Button>
+          
+          {/* Save button removed as requested - users cannot login */}
+        </div>
+      </div>
     </div>
   )
 }
