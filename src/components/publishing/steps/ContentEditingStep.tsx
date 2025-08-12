@@ -18,7 +18,8 @@ import {
   Eye,
   Upload,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 import { API_CONFIG, getApiUrl } from '@/lib/config';
 import { getAuthHeaders } from '@/lib/api';
@@ -198,17 +199,25 @@ export default function ContentEditingStep({
     setHasUnsavedChanges(true);
   };
 
-  const generateTranslation = async (targetLanguage: string) => {
+  const generateAllTranslations = async () => {
     if (!article || !article.translations.en?.title || !article.translations.en?.content) {
       setError('English version must be complete before generating translations');
       return;
     }
 
-    setTranslationLoading(prev => ({ ...prev, [targetLanguage]: true }));
-    setError(null);
+    const targetLanguages = ['es', 'fr', 'de', 'it'];
+    
+    // Set loading state for all languages
+    setTranslationLoading(prev => {
+      const newState = { ...prev };
+      targetLanguages.forEach(lang => {
+        newState[lang] = true;
+      });
+      return newState;
+    });
 
     try {
-      console.log(`🌍 Generating ${targetLanguage} translation...`);
+      console.log('🌍 Generating all translations...');
       
       const authHeaders = await getAuthHeaders();
       const response = await fetch(getApiUrl('/admin/translate-article'), {
@@ -220,40 +229,53 @@ export default function ContentEditingStep({
         body: JSON.stringify({
           articleTitle: article.translations.en.title,
           articleContent: article.translations.en.content,
-          targetLanguage: targetLanguage
+          targetLanguages: targetLanguages
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to generate ${targetLanguage} translation`);
+        throw new Error(errorData.error || 'Failed to generate translations');
       }
 
       const result = await response.json();
       
-      if (result.success && result.translation) {
-        // Update the article with the new translation
-        setArticle(prev => ({
-          ...prev!,
-          translations: {
-            ...prev!.translations,
-            [targetLanguage]: {
-              title: result.translation.title,
-              content: result.translation.content
-            }
-          }
-        }));
+      if (result.success && result.translations) {
+        // Update the article with all new translations
+        setArticle(prev => {
+          const updatedTranslations = { ...prev!.translations };
+          
+          // Update each language translation
+          Object.keys(result.translations).forEach(lang => {
+            updatedTranslations[lang] = {
+              title: result.translations[lang].title,
+              content: result.translations[lang].content
+            };
+          });
+
+          return {
+            ...prev!,
+            translations: updatedTranslations
+          };
+        });
         
         setHasUnsavedChanges(true);
-        console.log(`✅ ${targetLanguage} translation generated successfully`);
+        console.log('✅ All translations generated successfully');
       } else {
         throw new Error(result.error || 'Translation generation failed');
       }
     } catch (error) {
-      console.error(`❌ Translation generation failed:`, error);
-      setError(`Failed to generate ${targetLanguage} translation: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('❌ Translation generation failed:', error);
+      setError(error instanceof Error ? error.message : 'Translation generation failed');
     } finally {
-      setTranslationLoading(prev => ({ ...prev, [targetLanguage]: false }));
+      // Clear loading state for all languages
+      setTranslationLoading(prev => {
+        const newState = { ...prev };
+        targetLanguages.forEach(lang => {
+          newState[lang] = false;
+        });
+        return newState;
+      });
     }
   };
 
@@ -464,6 +486,28 @@ export default function ContentEditingStep({
     <div className="flex gap-8">
       {/* Main Content Area */}
       <div className="flex-1 space-y-6">
+        {/* Generate All Translations Button */}
+        <div className="flex justify-center">
+          <Button
+            onClick={generateAllTranslations}
+            disabled={Object.values(translationLoading).some(loading => loading) || !article?.translations.en?.title || !article?.translations.en?.content}
+            className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 text-lg font-semibold"
+            size="lg"
+          >
+            {Object.values(translationLoading).some(loading => loading) ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                Generating All Translations...
+              </>
+            ) : (
+              <>
+                <Globe className="h-5 w-5" />
+                Generate All Translations
+              </>
+            )}
+          </Button>
+        </div>
+
         {/* Language Tabs */}
         <Tabs value={activeLanguage} onValueChange={setActiveLanguage}>
           <TabsList className="grid w-full grid-cols-5">
@@ -500,29 +544,8 @@ export default function ContentEditingStep({
 
               {/* Content */}
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
+                <CardHeader>
                   <CardTitle>Content ({lang.name})</CardTitle>
-                  {lang.code !== 'en' && (
-                    <Button
-                      onClick={() => generateTranslation(lang.code)}
-                      disabled={translationLoading[lang.code] || !article?.translations.en?.title || !article?.translations.en?.content}
-                      variant="outline"
-                      size="sm"
-                      className="flex items-center gap-2"
-                    >
-                      {translationLoading[lang.code] ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Globe className="h-4 w-4" />
-                          Generate Translation
-                        </>
-                      )}
-                    </Button>
-                  )}
                 </CardHeader>
                 <CardContent>
                   {lang.code !== 'en' && (!article?.translations.en?.title || !article?.translations.en?.content) && (
