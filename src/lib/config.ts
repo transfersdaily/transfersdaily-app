@@ -60,6 +60,7 @@ export const API_CONFIG = {
       recentArticles: '/admin/articles/recent',
       deleteArticle: '/admin/articles',
       updateStatus: '/admin/articles',
+      translateArticle: '/admin/translate-article',
       media: {
         upload: '/admin/media/upload'
       },
@@ -82,6 +83,12 @@ export const API_CONFIG = {
 // Helper function to get the correct API URL
 export function getApiUrl(endpoint: string): string {
   // Always use local proxy for admin endpoints to handle CORS and auth properly
+  // Special case: translate-article should go directly to AWS API Gateway
+  if (endpoint === '/admin/translate-article') {
+    return `${API_CONFIG.baseUrl}${endpoint}`;
+  }
+  
+  // Always use local proxy for other admin endpoints
   if (endpoint.startsWith('/admin')) {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
   }
