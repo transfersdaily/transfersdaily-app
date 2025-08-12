@@ -211,7 +211,7 @@ export default function ContentEditingStep({
       console.log(`🌍 Generating ${targetLanguage} translation...`);
       
       const authHeaders = await getAuthHeaders();
-      const response = await fetch(getApiUrl('/api/admin/translate-article'), {
+      const response = await fetch(getApiUrl('/admin/translate-article'), {
         method: 'POST',
         headers: {
           ...authHeaders,
