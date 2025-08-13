@@ -75,7 +75,7 @@ export const API_CONFIG = {
       deleteArticle: '/admin/articles',
       updateStatus: '/admin/articles',
       translateArticle: '/admin/translate-article',
-      startTranslation: '/admin/start-translation',
+      startTranslation: '/start-translation',
       translationStatus: '/admin/translation-status',
       media: {
         upload: '/admin/media/upload',

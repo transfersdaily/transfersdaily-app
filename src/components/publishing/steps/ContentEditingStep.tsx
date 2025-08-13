@@ -379,47 +379,6 @@ export default function ContentEditingStep({
     }
   };
 
-  // Test function for the test-translate endpoint
-  const [testResult, setTestResult] = useState<string>('');
-  const [isTestingTranslate, setIsTestingTranslate] = useState(false);
-
-  const testTranslateEndpoint = async () => {
-    setIsTestingTranslate(true);
-    setTestResult('');
-    
-    try {
-      console.log('🧪 Testing translate endpoint...');
-      
-      const response = await fetch('/api/admin/test-translate', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem(Object.keys(localStorage).find(k => k.includes('idToken')) || '')}`
-        },
-        body: JSON.stringify({
-          test: 'data',
-          articleId: articleId,
-          timestamp: new Date().toISOString()
-        })
-      });
-
-      const data = await response.json();
-      console.log('🧪 Test response:', data);
-      
-      if (data.success) {
-        setTestResult(`✅ SUCCESS: ${data.message} (${data.timestamp})`);
-      } else {
-        setTestResult(`❌ FAILED: ${data.error}`);
-      }
-      
-    } catch (error) {
-      console.error('❌ Test failed:', error);
-      setTestResult(`❌ ERROR: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsTestingTranslate(false);
-    }
-  };
-
   // Listen for translation completion and update the article
   useEffect(() => {
     if (translationStatus?.isComplete && translationStatus.translations) {
@@ -644,33 +603,6 @@ export default function ContentEditingStep({
     <div className="flex gap-8">
       {/* Main Content Area */}
       <div className="flex-1 space-y-6">
-        {/* Test Translate Button */}
-        <div className="flex flex-col items-center gap-2">
-          <Button
-            onClick={testTranslateEndpoint}
-            disabled={isTestingTranslate}
-            className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white px-4 py-2 text-sm font-semibold"
-            size="sm"
-          >
-            {isTestingTranslate ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Testing...
-              </>
-            ) : (
-              <>
-                <Globe className="h-4 w-4" />
-                Test Translate Endpoint
-              </>
-            )}
-          </Button>
-          {testResult && (
-            <div className="text-xs p-2 bg-gray-100 rounded border max-w-md text-center">
-              {testResult}
-            </div>
-          )}
-        </div>
-
         {/* Generate All Translations Button */}
         <div className="flex justify-center">
           <Button
