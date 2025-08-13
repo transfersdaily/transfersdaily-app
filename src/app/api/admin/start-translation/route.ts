@@ -7,10 +7,13 @@ export async function POST(request: NextRequest) {
     
     // Parse request body
     const body = await request.json();
+    console.log('📥 Frontend received body:', JSON.stringify(body, null, 2));
+    
     const { articleId, articleTitle, articleContent, targetLanguages } = body;
 
     // Validate input
     if (!articleId || !articleTitle || !articleContent) {
+      console.error('❌ Missing required fields:', { articleId: !!articleId, articleTitle: !!articleTitle, articleContent: !!articleContent });
       return NextResponse.json(
         { success: false, error: 'Missing required fields: articleId, articleTitle, or articleContent' },
         { 
@@ -27,6 +30,7 @@ export async function POST(request: NextRequest) {
     // Ensure articleId is a number
     const numericArticleId = parseInt(articleId);
     if (isNaN(numericArticleId)) {
+      console.error('❌ Invalid articleId:', articleId);
       return NextResponse.json(
         { success: false, error: 'articleId must be a valid number' },
         { 
@@ -43,6 +47,7 @@ export async function POST(request: NextRequest) {
     // Get authorization header from the request
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
+      console.error('❌ Missing authorization header');
       return NextResponse.json(
         { success: false, error: 'Missing authorization header' },
         { 
@@ -58,6 +63,26 @@ export async function POST(request: NextRequest) {
 
     console.log('📡 Forwarding to backend start-translation endpoint...');
 
+    // Prepare payload for backend
+    const backendPayload = {
+      articleId: numericArticleId,
+      articleTitle,
+      articleContent,
+      targetLanguages: targetLanguages || ['es', 'fr', 'de', 'it']
+    };
+
+    console.log('📤 Sending to backend:', {
+      url: `${API_CONFIG.backendUrl}/admin/start-translation`,
+      payload: {
+        ...backendPayload,
+        articleContent: `${articleContent.substring(0, 100)}...` // Truncate for logging
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': authHeader ? 'Bearer [REDACTED]' : 'None',
+      }
+    });
+
     // Forward to backend API (Step Function integration)
     const backendUrl = `${API_CONFIG.backendUrl}/admin/start-translation`;
     const response = await fetch(backendUrl, {
@@ -66,18 +91,21 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Authorization': authHeader,
       },
-      body: JSON.stringify({
-        articleId: numericArticleId,
-        articleTitle,
-        articleContent,
-        targetLanguages: targetLanguages || ['es', 'fr', 'de', 'it']
-      }),
+      body: JSON.stringify(backendPayload),
     });
 
+    console.log('📨 Backend response status:', response.status);
+    console.log('📨 Backend response headers:', Object.fromEntries(response.headers.entries()));
+
     const data = await response.json();
+    console.log('📨 Backend response data:', JSON.stringify(data, null, 2));
 
     if (!response.ok) {
-      console.error('❌ Backend start-translation failed:', data);
+      console.error('❌ Backend start-translation failed:', {
+        status: response.status,
+        statusText: response.statusText,
+        data
+      });
       return NextResponse.json(
         { success: false, error: data.error || 'Failed to start translation' },
         { 
