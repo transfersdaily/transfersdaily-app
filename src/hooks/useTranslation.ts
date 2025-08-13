@@ -63,8 +63,15 @@ export const useTranslation = () => {
 
   const checkTranslationStatus = useCallback(async (articleId: string): Promise<TranslationProgress | null> => {
     try {
+      console.log(`📊 Checking translation status for article ID: ${articleId}`);
+      
       const authHeaders = await getAuthHeaders();
-      const response = await fetch(getApiUrl(`/admin/translation-status/${articleId}`), {
+      console.log('🔐 Auth headers for status check:', authHeaders);
+      
+      const apiUrl = getApiUrl(`/admin/translation-status/${articleId}`);
+      console.log('🌐 Status check API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -72,11 +79,25 @@ export const useTranslation = () => {
         }
       });
 
+      console.log('📥 Status check response status:', response.status);
+      console.log('📥 Status check response headers:', [...response.headers.entries()]);
+      
+      const responseText = await response.text();
+      console.log('📥 Raw status check response:', responseText);
+
       if (!response.ok) {
+        console.error('❌ Status check error:', response.status, response.statusText);
         throw new Error(`Failed to check status: ${response.status}`);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('📥 Parsed status check response:', JSON.stringify(data, null, 2));
+      } catch (e) {
+        console.error('❌ Failed to parse status response as JSON:', e);
+        throw new Error(`Invalid JSON response: ${responseText}`);
+      }
       
       if (!data.success) {
         throw new Error(data.error || 'Failed to get translation status');
@@ -127,29 +148,53 @@ export const useTranslation = () => {
 
       console.log(`🚀 Starting translation for article ${numericArticleId}...`);
       
+      const requestPayload = {
+        articleId: numericArticleId,
+        articleTitle: articleData.title,
+        articleContent: articleData.content,
+        targetLanguages
+      };
+      
+      console.log('📤 Request payload being sent to API Gateway:', JSON.stringify(requestPayload, null, 2));
+      
       const authHeaders = await getAuthHeaders();
-      const response = await fetch(getApiUrl('/admin/start-translation'), {
+      console.log('🔐 Auth headers:', authHeaders);
+      
+      const apiUrl = getApiUrl('/admin/start-translation');
+      console.log('🌐 API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...authHeaders
         },
-        body: JSON.stringify({
-          articleId: numericArticleId,
-          articleTitle: articleData.title,
-          articleContent: articleData.content,
-          targetLanguages
-        })
+        body: JSON.stringify(requestPayload)
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      console.log('📥 API Gateway response status:', response.status);
+      console.log('📥 API Gateway response headers:', [...response.headers.entries()]);
+      
+      const responseText = await response.text();
+      console.log('📥 Raw API Gateway response:', responseText);
+      
+      let result;
+      try {
+        result = JSON.parse(responseText);
+        console.log('📥 Parsed API Gateway response:', JSON.stringify(result, null, 2));
+      } catch (e) {
+        console.error('❌ Failed to parse response as JSON:', e);
+        throw new Error(`Invalid JSON response: ${responseText}`);
       }
-
-      const result = await response.json();
+      
+      if (!response.ok) {
+        console.error('❌ API Gateway error response:', response.status, response.statusText);
+        console.error('❌ Error response body:', responseText);
+        throw new Error(result?.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
       
       if (!result.success) {
+        console.error('❌ API Gateway returned success=false:', result);
         throw new Error(result.error || 'Failed to start translation');
       }
 
@@ -164,7 +209,7 @@ export const useTranslation = () => {
           pollCount++;
           console.log(`📊 Polling attempt ${pollCount} for article ${numericArticleId}...`);
 
-          const status = await checkTranslationStatus(articleId);
+          const status = await checkTranslationStatus(numericArticleId.toString());
           
           if (status) {
             setTranslationStatus(status);
