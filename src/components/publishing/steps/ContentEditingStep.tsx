@@ -205,65 +205,86 @@ export default function ContentEditingStep({
       return;
     }
 
-    const targetLanguages = ['es', 'fr', 'de', 'it'];
+    // Generate 2 languages at a time to stay within timeout limits
+    const allLanguages = ['es', 'fr', 'de', 'it'];
+    const batches = [
+      ['es', 'fr'], // Spanish and French first
+      ['de', 'it']  // German and Italian second
+    ];
     
     // Set loading state for all languages
     setTranslationLoading(prev => {
       const newState = { ...prev };
-      targetLanguages.forEach(lang => {
+      allLanguages.forEach(lang => {
         newState[lang] = true;
       });
       return newState;
     });
 
     try {
-      console.log('🌍 Generating all translations...');
+      console.log('🌍 Starting batch translation generation...');
       
-      const authHeaders = await getAuthHeaders();
-      const response = await fetch(getApiUrl('/admin/translate-article'), {
-        method: 'POST',
-        headers: {
-          ...authHeaders,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          articleTitle: article.translations.en.title,
-          articleContent: article.translations.en.content,
-          targetLanguages: targetLanguages
-        }),
-      });
+      for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        console.log(`🔄 Processing batch ${i + 1}/2: ${batch.join(', ')}`);
+        
+        const authHeaders = await getAuthHeaders();
+        const response = await fetch(getApiUrl('/admin/translate-article'), {
+          method: 'POST',
+          headers: {
+            ...authHeaders,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            articleTitle: article.translations.en.title,
+            articleContent: article.translations.en.content,
+            targetLanguages: batch
+          }),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to generate translations');
-      }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Batch ${i + 1} failed: ${errorData.error || 'Failed to generate translations'}`);
+        }
 
-      const result = await response.json();
-      
-      if (result.success && result.translations) {
-        // Update the article with all new translations
-        setArticle(prev => {
-          const updatedTranslations = { ...prev!.translations };
-          
-          // Update each language translation
-          Object.keys(result.translations).forEach(lang => {
-            updatedTranslations[lang] = {
-              title: result.translations[lang].title,
-              content: result.translations[lang].content
+        const result = await response.json();
+        
+        if (result.success && result.translations) {
+          // Update the article with new translations from this batch
+          setArticle(prev => {
+            const updatedTranslations = { ...prev!.translations };
+            
+            // Update each language translation from this batch
+            Object.keys(result.translations).forEach(lang => {
+              updatedTranslations[lang] = {
+                title: result.translations[lang].title,
+                content: result.translations[lang].content
+              };
+            });
+
+            return {
+              ...prev!,
+              translations: updatedTranslations
             };
           });
-
-          return {
-            ...prev!,
-            translations: updatedTranslations
-          };
-        });
+          
+          console.log(`✅ Batch ${i + 1} completed: ${batch.join(', ')}`);
+        } else {
+          throw new Error(`Batch ${i + 1} failed: ${result.error || 'Translation generation failed'}`);
+        }
         
-        setHasUnsavedChanges(true);
-        console.log('✅ All translations generated successfully');
-      } else {
-        throw new Error(result.error || 'Translation generation failed');
+        // Small delay between batches
+        if (i < batches.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
       }
+      
+      setHasUnsavedChanges(true);
+      console.log('✅ All translations generated successfully');
+      
+      // Show success message
+      alert('🎉 All translations generated successfully! Check each language tab.');
+      
     } catch (error) {
       console.error('❌ Translation generation failed:', error);
       setError(error instanceof Error ? error.message : 'Translation generation failed');
@@ -271,7 +292,7 @@ export default function ContentEditingStep({
       // Clear loading state for all languages
       setTranslationLoading(prev => {
         const newState = { ...prev };
-        targetLanguages.forEach(lang => {
+        allLanguages.forEach(lang => {
           newState[lang] = false;
         });
         return newState;
