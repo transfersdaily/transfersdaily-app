@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_CONFIG } from '@/lib/config';
 
+const API_BASE_URL = API_CONFIG.baseUrl;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -43,7 +45,7 @@ export async function GET(
     }
 
     // Forward to backend API
-    const backendUrl = `${API_CONFIG.baseUrl}/admin/translation-status/${numericArticleId}`;
+    const backendUrl = `${API_BASE_URL}/admin/translation-status/${numericArticleId}`;
     const response = await fetch(backendUrl, {
       method: 'GET',
       headers: {
