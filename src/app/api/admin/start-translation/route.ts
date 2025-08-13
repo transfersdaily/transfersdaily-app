@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { API_CONFIG } from '@/lib/config';
 
+const API_BASE_URL = API_CONFIG.baseUrl;
+
 export async function POST(request: NextRequest) {
   try {
     console.log('🚀 Frontend API: Starting translation workflow...');
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Forward to backend API (Step Function integration)
-    const backendUrl = `${API_CONFIG.baseUrl}/admin/start-translation`;
+    const backendUrl = `${API_BASE_URL}/admin/start-translation`;
     const response = await fetch(backendUrl, {
       method: 'POST',
       headers: {
