@@ -199,6 +199,66 @@ export default function ContentEditingStep({
     setHasUnsavedChanges(true);
   };
 
+  const generateSingleTranslation = async (targetLanguage: string) => {
+    if (!article || !article.translations.en?.title || !article.translations.en?.content) {
+      setError('English version must be complete before generating translations');
+      return;
+    }
+
+    setTranslationLoading(prev => ({ ...prev, [targetLanguage]: true }));
+    setError(null);
+
+    try {
+      console.log(`🌍 Generating ${targetLanguage} translation...`);
+      
+      const authHeaders = await getAuthHeaders();
+      const response = await fetch(getApiUrl('/admin/translate-article'), {
+        method: 'POST',
+        headers: {
+          ...authHeaders,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          articleTitle: article.translations.en.title,
+          articleContent: article.translations.en.content,
+          targetLanguages: [targetLanguage] // Single language array
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Failed to generate ${targetLanguage} translation`);
+      }
+
+      const result = await response.json();
+      
+      if (result.success && result.translations && result.translations[targetLanguage]) {
+        // Update the article with the new translation
+        setArticle(prev => ({
+          ...prev!,
+          translations: {
+            ...prev!.translations,
+            [targetLanguage]: {
+              title: result.translations[targetLanguage].title,
+              content: result.translations[targetLanguage].content
+            }
+          }
+        }));
+        
+        setHasUnsavedChanges(true);
+        console.log(`✅ ${targetLanguage} translation generated successfully`);
+        console.log(`⏱️ Processing time: ${result.processingTime}ms`);
+      } else {
+        throw new Error(result.error || 'Translation generation failed');
+      }
+    } catch (error) {
+      console.error(`❌ ${targetLanguage} translation failed:`, error);
+      setError(`Failed to generate ${targetLanguage} translation: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setTranslationLoading(prev => ({ ...prev, [targetLanguage]: false }));
+    }
+  };
+
   const generateAllTranslations = async () => {
     if (!article || !article.translations.en?.title || !article.translations.en?.content) {
       setError('English version must be complete before generating translations');
@@ -565,8 +625,29 @@ export default function ContentEditingStep({
 
               {/* Content */}
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle>Content ({lang.name})</CardTitle>
+                  {lang.code !== 'en' && (
+                    <Button
+                      onClick={() => generateSingleTranslation(lang.code)}
+                      disabled={translationLoading[lang.code] || !article?.translations.en?.title || !article?.translations.en?.content}
+                      variant="outline"
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      {translationLoading[lang.code] ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Globe className="h-4 w-4" />
+                          Generate {lang.name}
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent>
                   {lang.code !== 'en' && (!article?.translations.en?.title || !article?.translations.en?.content) && (
