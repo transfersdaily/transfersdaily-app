@@ -97,8 +97,16 @@ export async function POST(request: NextRequest) {
     console.log('📨 Backend response status:', response.status);
     console.log('📨 Backend response headers:', Object.fromEntries(response.headers.entries()));
 
-    const data = await response.json();
-    console.log('📨 Backend response data:', JSON.stringify(data, null, 2));
+    let data;
+    try {
+      data = await response.json();
+      console.log('📨 Backend response data:', JSON.stringify(data, null, 2));
+    } catch (parseError) {
+      console.error('❌ Failed to parse backend response as JSON:', parseError);
+      const textResponse = await response.text();
+      console.error('❌ Raw backend response:', textResponse);
+      data = { success: false, error: 'Invalid response format', rawResponse: textResponse };
+    }
 
     if (!response.ok) {
       console.error('❌ Backend start-translation failed:', {

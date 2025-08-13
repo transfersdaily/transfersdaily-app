@@ -43,7 +43,7 @@ export async function GET(
     }
 
     // Forward to backend API
-    const backendUrl = `${API_CONFIG.backendUrl}/admin/translation-status/${numericArticleId}`;
+    const backendUrl = `${API_CONFIG.baseUrl}/admin/translation-status/${numericArticleId}`;
     const response = await fetch(backendUrl, {
       method: 'GET',
       headers: {
