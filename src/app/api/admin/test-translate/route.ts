@@ -12,8 +12,11 @@ export async function POST(request: NextRequest) {
     console.log('📥 Received body:', JSON.stringify(body, null, 2));
     
     // Get authorization header
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get('Authorization');
+    console.log('🔐 Authorization header present:', !!authHeader);
+    
     if (!authHeader) {
+      console.error('❌ No Authorization header found in request');
       return NextResponse.json(
         { success: false, error: 'Authorization header required' },
         { 

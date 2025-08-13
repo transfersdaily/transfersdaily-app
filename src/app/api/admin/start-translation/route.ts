@@ -47,7 +47,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get authorization header from the request
-    const authHeader = request.headers.get('authorization');
+    const authHeader = request.headers.get('Authorization');
+    console.log('🔐 Authorization header present:', !!authHeader);
+    
     if (!authHeader) {
       console.error('❌ Missing authorization header');
       return NextResponse.json(
