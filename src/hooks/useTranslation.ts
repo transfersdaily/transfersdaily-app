@@ -160,7 +160,7 @@ export const useTranslation = () => {
       const authHeaders = await getAuthHeaders();
       console.log('🔐 Auth headers:', authHeaders);
       
-      const apiUrl = getApiUrl('/admin/start-translation');
+      const apiUrl = getApiUrl(API_CONFIG.endpoints.admin.startTranslation);
       console.log('🌐 API URL:', apiUrl);
       
       const response = await fetch(apiUrl, {
