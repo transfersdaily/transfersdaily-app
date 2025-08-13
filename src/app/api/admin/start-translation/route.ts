@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Forward to backend API (Step Function integration)
-    const backendUrl = `${API_CONFIG.backendUrl}/admin/start-translation`;
+    const backendUrl = `${API_CONFIG.baseUrl}/admin/start-translation`;
     const response = await fetch(backendUrl, {
       method: 'POST',
       headers: {
