@@ -10,8 +10,6 @@ export const API_CONFIG = {
       ? '' // Will cause runtime error if actually used
       : 'http://localhost:3000/api'; // Development fallback
   })(),
-  // Backend API URL for server-side requests
-  backendUrl: process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "https://api.transfersdaily.com",
   // Fallback URL (only if provided in environment)
   fallbackUrl: process.env.NEXT_PUBLIC_API_URL_FALLBACK || null,
   // Use local API routes for client-side requests during development

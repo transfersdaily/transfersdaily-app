@@ -19,11 +19,14 @@ import {
   Upload,
   CheckCircle,
   AlertCircle,
-  Loader2
+  Loader2,
+  X
 } from 'lucide-react';
 import { API_CONFIG, getApiUrl } from '@/lib/config';
 import { getAuthHeaders } from '@/lib/api';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { TranslationProgress } from '@/components/ui/translation-progress';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ArticleData {
   title: string;
@@ -60,6 +63,9 @@ export default function ContentEditingStep({
   const [isSaving, setIsSaving] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [translationLoading, setTranslationLoading] = useState<Record<string, boolean>>({});
+  
+  // Use the new translation hook
+  const { translationStatus, isTranslating, error: translationError, startTranslation, stopTranslation } = useTranslation();
 
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -209,52 +215,134 @@ export default function ContentEditingStep({
     setError(null);
 
     try {
-      console.log(`🌍 Generating ${targetLanguage} translation...`);
+      console.log(`🌍 Starting ${targetLanguage} translation workflow...`);
       
       const authHeaders = await getAuthHeaders();
-      const response = await fetch(getApiUrl('/admin/translate-article'), {
+      const response = await fetch(getApiUrl('/admin/start-translation'), {
         method: 'POST',
         headers: {
           ...authHeaders,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          articleTitle: article.translations.en.title,
-          articleContent: article.translations.en.content,
+          articleId: parseInt(articleId),
           targetLanguages: [targetLanguage] // Single language array
         }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || `Failed to generate ${targetLanguage} translation`);
+        throw new Error(errorData.error || `Failed to start ${targetLanguage} translation`);
       }
 
       const result = await response.json();
       
-      if (result.success && result.translations && result.translations[targetLanguage]) {
-        // Update the article with the new translation
-        setArticle(prev => ({
-          ...prev!,
-          translations: {
-            ...prev!.translations,
-            [targetLanguage]: {
-              title: result.translations[targetLanguage].title,
-              content: result.translations[targetLanguage].content
-            }
-          }
-        }));
-        
-        setHasUnsavedChanges(true);
-        console.log(`✅ ${targetLanguage} translation generated successfully`);
-        console.log(`⏱️ Processing time: ${result.processingTime}ms`);
-      } else {
-        throw new Error(result.error || 'Translation generation failed');
+      if (!result.success) {
+        throw new Error(result.error || 'Translation workflow failed to start');
       }
+
+      console.log(`✅ ${targetLanguage} translation workflow started:`, result);
+
+      // Start polling for this specific translation
+      const pollForTranslation = async () => {
+        const maxAttempts = 30; // 5 minutes with 10-second intervals
+        let attempts = 0;
+
+        const poll = async () => {
+          try {
+            attempts++;
+            console.log(`📊 Polling ${targetLanguage} translation (${attempts}/${maxAttempts})...`);
+
+            const statusResponse = await fetch(getApiUrl(`/admin/translation-status/${articleId}`), {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                ...authHeaders
+              }
+            });
+
+            if (!statusResponse.ok) {
+              throw new Error('Failed to check translation status');
+            }
+
+            const statusData = await statusResponse.json();
+            
+            if (statusData.success && statusData.data) {
+              const { translationStatus, availableLanguages, translations } = statusData.data;
+
+              // Check if our target language is now available
+              if (availableLanguages && availableLanguages.includes(targetLanguage)) {
+                console.log(`✅ ${targetLanguage} translation completed!`);
+                
+                // Find the translation data for this language
+                const translationData = translations?.find((t: any) => t.language_code === targetLanguage);
+                
+                if (translationData) {
+                  // Fetch the actual translation content
+                  const articleResponse = await fetch(getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`), {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      ...authHeaders
+                    }
+                  });
+
+                  if (articleResponse.ok) {
+                    const articleData = await articleResponse.json();
+                    if (articleData.success && articleData.data?.article?.translations?.[targetLanguage]) {
+                      const translation = articleData.data.article.translations[targetLanguage];
+                      
+                      // Update the article with the new translation
+                      setArticle(prev => ({
+                        ...prev!,
+                        translations: {
+                          ...prev!.translations,
+                          [targetLanguage]: {
+                            title: translation.title,
+                            content: translation.content
+                          }
+                        }
+                      }));
+                      
+                      setHasUnsavedChanges(true);
+                      console.log(`✅ ${targetLanguage} translation loaded into UI`);
+                    }
+                  }
+                }
+                
+                setTranslationLoading(prev => ({ ...prev, [targetLanguage]: false }));
+                return; // Stop polling
+              }
+
+              // Check if translation failed
+              if (translationStatus === 'failed') {
+                throw new Error(`Translation failed with status: ${translationStatus}`);
+              }
+
+              // Continue polling if still in progress
+              if (attempts < maxAttempts && ['translating', 'saving'].includes(translationStatus)) {
+                setTimeout(poll, 10000); // Poll every 10 seconds
+              } else if (attempts >= maxAttempts) {
+                throw new Error('Translation timeout - please check back later');
+              }
+            }
+          } catch (pollError) {
+            console.error(`❌ ${targetLanguage} translation polling error:`, pollError);
+            setError(`${targetLanguage} translation failed: ${pollError instanceof Error ? pollError.message : 'Unknown error'}`);
+            setTranslationLoading(prev => ({ ...prev, [targetLanguage]: false }));
+          }
+        };
+
+        // Start polling
+        poll();
+      };
+
+      // Start the polling process
+      pollForTranslation();
+
     } catch (error) {
       console.error(`❌ ${targetLanguage} translation failed:`, error);
-      setError(`Failed to generate ${targetLanguage} translation: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
+      setError(`Failed to start ${targetLanguage} translation: ${error instanceof Error ? error.message : 'Unknown error'}`);
       setTranslationLoading(prev => ({ ...prev, [targetLanguage]: false }));
     }
   };
@@ -265,100 +353,48 @@ export default function ContentEditingStep({
       return;
     }
 
-    // Generate 2 languages at a time to stay within timeout limits
     const allLanguages = ['es', 'fr', 'de', 'it'];
-    const batches = [
-      ['es', 'fr'], // Spanish and French first
-      ['de', 'it']  // German and Italian second
-    ];
     
-    // Set loading state for all languages
-    setTranslationLoading(prev => {
-      const newState = { ...prev };
-      allLanguages.forEach(lang => {
-        newState[lang] = true;
-      });
-      return newState;
-    });
-
     try {
-      console.log('🌍 Starting batch translation generation...');
+      console.log('🌍 Starting translation workflow for all languages...');
       
-      for (let i = 0; i < batches.length; i++) {
-        const batch = batches[i];
-        console.log(`🔄 Processing batch ${i + 1}/2: ${batch.join(', ')}`);
+      // Start the translation workflow with title and content from frontend
+      const result = await startTranslation(articleId, allLanguages, {
+        title: article.translations.en.title,
+        content: article.translations.en.content
+      });
+      
+      if (result.success) {
+        console.log('✅ Translation workflow started successfully');
         
-        const authHeaders = await getAuthHeaders();
-        const response = await fetch(getApiUrl('/admin/translate-article'), {
-          method: 'POST',
-          headers: {
-            ...authHeaders,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            articleTitle: article.translations.en.title,
-            articleContent: article.translations.en.content,
-            targetLanguages: batch
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(`Batch ${i + 1} failed: ${errorData.error || 'Failed to generate translations'}`);
-        }
-
-        const result = await response.json();
-        
-        if (result.success && result.translations) {
-          // Update the article with new translations from this batch
-          setArticle(prev => {
-            const updatedTranslations = { ...prev!.translations };
-            
-            // Update each language translation from this batch
-            Object.keys(result.translations).forEach(lang => {
-              updatedTranslations[lang] = {
-                title: result.translations[lang].title,
-                content: result.translations[lang].content
-              };
-            });
-
-            return {
-              ...prev!,
-              translations: updatedTranslations
-            };
-          });
-          
-          console.log(`✅ Batch ${i + 1} completed: ${batch.join(', ')}`);
-        } else {
-          throw new Error(`Batch ${i + 1} failed: ${result.error || 'Translation generation failed'}`);
-        }
-        
-        // Small delay between batches
-        if (i < batches.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
-        }
+        // The hook will handle polling and status updates
+        // We'll listen for completion via the translationStatus
+      } else {
+        throw new Error(result.error || 'Failed to start translation workflow');
       }
-      
-      setHasUnsavedChanges(true);
-      console.log('✅ All translations generated successfully');
-      
-      // Show success message
-      alert('🎉 All translations generated successfully! Check each language tab.');
       
     } catch (error) {
       console.error('❌ Translation generation failed:', error);
       setError(error instanceof Error ? error.message : 'Translation generation failed');
-    } finally {
-      // Clear loading state for all languages
-      setTranslationLoading(prev => {
-        const newState = { ...prev };
-        allLanguages.forEach(lang => {
-          newState[lang] = false;
-        });
-        return newState;
-      });
     }
   };
+
+  // Listen for translation completion and update the article
+  useEffect(() => {
+    if (translationStatus?.isComplete && translationStatus.translations) {
+      console.log('🎉 Translations completed, updating article...');
+      
+      // Reload the article to get the latest translations
+      loadArticle();
+    }
+  }, [translationStatus?.isComplete]);
+
+  // Update error state from translation hook
+  useEffect(() => {
+    if (translationError) {
+      setError(translationError);
+    }
+  }, [translationError]);
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -571,14 +607,14 @@ export default function ContentEditingStep({
         <div className="flex justify-center">
           <Button
             onClick={generateAllTranslations}
-            disabled={Object.values(translationLoading).some(loading => loading) || !article?.translations.en?.title || !article?.translations.en?.content}
+            disabled={isTranslating || !article?.translations.en?.title || !article?.translations.en?.content}
             className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 text-lg font-semibold"
             size="lg"
           >
-            {Object.values(translationLoading).some(loading => loading) ? (
+            {isTranslating ? (
               <>
                 <Loader2 className="h-5 w-5 animate-spin" />
-                Generating All Translations...
+                Generating Translations...
               </>
             ) : (
               <>
@@ -587,7 +623,28 @@ export default function ContentEditingStep({
               </>
             )}
           </Button>
+          
+          {isTranslating && (
+            <Button
+              onClick={stopTranslation}
+              variant="outline"
+              className="ml-3 flex items-center gap-2"
+            >
+              <X className="h-4 w-4" />
+              Stop
+            </Button>
+          )}
         </div>
+
+        {/* Translation Progress */}
+        {translationStatus && (
+          <div className="mb-6">
+            <TranslationProgress 
+              status={translationStatus} 
+              targetLanguages={['es', 'fr', 'de', 'it']} 
+            />
+          </div>
+        )}
 
         {/* Language Tabs */}
         <Tabs value={activeLanguage} onValueChange={setActiveLanguage}>
