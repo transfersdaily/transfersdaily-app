@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { getApiUrl } from '@/lib/config';
+import { getApiUrl, API_CONFIG } from '@/lib/config';
 import { getAuthHeaders } from '@/lib/api';
 
 export interface TranslationProgress {
