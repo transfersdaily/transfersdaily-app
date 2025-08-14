@@ -353,10 +353,25 @@ export default function ContentEditingStep({
       return;
     }
 
+    // Validate articleId
+    if (!articleId || articleId.trim() === '') {
+      setError('Article ID is missing or invalid');
+      return;
+    }
+
+    const numericArticleId = parseInt(articleId);
+    if (isNaN(numericArticleId)) {
+      setError(`Article ID must be a valid number. Received: "${articleId}"`);
+      return;
+    }
+
     const allLanguages = ['es', 'fr', 'de', 'it'];
     
     try {
       console.log('🌍 Starting translation workflow for all languages...');
+      console.log('📝 Article ID:', articleId, '(numeric:', numericArticleId, ')');
+      console.log('📝 Article title:', article.translations.en.title);
+      console.log('📝 Article content length:', article.translations.en.content.length);
       
       // Start the translation workflow with title and content from frontend
       const result = await startTranslation(articleId, allLanguages, {

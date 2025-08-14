@@ -74,6 +74,10 @@ export default function PublishingWizardPage({
   const router = useRouter();
   const { articleId, step } = use(params);
   
+  // Debug logging for articleId
+  console.log('🔍 Publishing wizard params:', { articleId, step });
+  console.log('🔍 ArticleId type:', typeof articleId, 'value:', articleId);
+  
   const [wizardState, setWizardState] = useState<WizardState>({
     currentStep: step,
     completedSteps: new Set([]), // No mock data
