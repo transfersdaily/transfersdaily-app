@@ -157,17 +157,13 @@ export const useTranslation = () => {
       
       console.log('📤 Request payload being sent to API Gateway:', JSON.stringify(requestPayload, null, 2));
       
-      const authHeaders = await getAuthHeaders();
-      console.log('🔐 Auth headers:', authHeaders);
-      
       const apiUrl = getApiUrl(API_CONFIG.endpoints.admin.startTranslation);
       console.log('🌐 API URL:', apiUrl);
       
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          ...authHeaders
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(requestPayload)
       });

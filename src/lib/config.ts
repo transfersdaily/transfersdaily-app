@@ -98,6 +98,7 @@ export const API_CONFIG = {
 
 // Helper function to get the correct API URL
 export function getApiUrl(endpoint: string): string {
+
   // Always use local proxy for other admin endpoints
   if (endpoint.startsWith('/admin')) {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
