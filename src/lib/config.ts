@@ -104,6 +104,11 @@ export function getApiUrl(endpoint: string): string {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
   }
 
+
+  // Always use local proxy for start-translation (consistency with admin endpoints)
+  if (endpoint === '/start-translation') {
+    return `${API_CONFIG.localApiUrl}${endpoint}`;
+  }
   // For non-admin endpoints, use development logic
   if (API_CONFIG.isDevelopment) {
     return `${API_CONFIG.localApiUrl}${endpoint}`;

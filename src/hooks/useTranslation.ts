@@ -146,11 +146,18 @@ export const useTranslation = () => {
         throw new Error('Article title and content must be provided');
       }
 
+      // Sanitize title - replace various dash characters with regular hyphen
+      const sanitizedTitle = articleData.title
+        .replace(/[–—−]/g, '-') // Replace en dash, em dash, minus sign with regular hyphen
+        .replace(/[""]/g, '"') // Replace smart quotes with regular quotes
+        .replace(/['']/g, "'") // Replace smart apostrophes with regular apostrophes
+        .trim();
+
       console.log(`🚀 Starting translation for article ${numericArticleId}...`);
       
       const requestPayload = {
         articleId: numericArticleId,
-        articleTitle: articleData.title,
+        articleTitle: sanitizedTitle,
         articleContent: articleData.content,
         targetLanguages
       };
