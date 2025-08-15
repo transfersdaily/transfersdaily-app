@@ -29,12 +29,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Ensure articleId is a number
-    const numericArticleId = parseInt(articleId);
-    if (isNaN(numericArticleId)) {
-      console.error('❌ Invalid articleId:', articleId);
+    // Validate articleId (can be numeric or UUID)
+    if (!articleId || articleId.toString().trim() === '') {
+      console.error('❌ Missing or empty articleId:', articleId);
       return NextResponse.json(
-        { success: false, error: 'articleId must be a valid number' },
+        { success: false, error: 'articleId is required' },
+        { 
+          status: 400,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          }
+        }
+      );
+    }
+
+    // Check if articleId is UUID or numeric
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(articleId);
+    const isNumeric = /^\d+$/.test(articleId.toString());
+    
+    if (!isUUID && !isNumeric) {
+      console.error('❌ Invalid articleId format:', articleId);
+      return NextResponse.json(
+        { success: false, error: 'articleId must be a valid number or UUID' },
         { 
           status: 400,
           headers: {
@@ -50,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     // Prepare payload for backend
     const backendPayload = {
-      articleId: numericArticleId,
+      articleId: articleId, // Keep as original (UUID or numeric string)
       articleTitle,
       articleContent,
       targetLanguages: targetLanguages || ['es', 'fr', 'de', 'it']
