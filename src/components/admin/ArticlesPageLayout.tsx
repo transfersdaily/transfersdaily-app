@@ -17,6 +17,8 @@ interface ArticlesPageLayoutProps extends UseArticlesParams {
   bulkActions?: React.ReactNode
   selectedArticles?: string[]
   onSelectArticles?: (articles: string[]) => void
+  onBulkTranslate?: (articleIds: string[]) => void
+  onBulkPublish?: (articleIds: string[]) => void
 }
 
 export function ArticlesPageLayout({ 
@@ -29,7 +31,9 @@ export function ArticlesPageLayout({
   onAddClick,
   bulkActions,
   selectedArticles: externalSelectedArticles,
-  onSelectArticles: externalOnSelectArticles
+  onSelectArticles: externalOnSelectArticles,
+  onBulkTranslate,
+  onBulkPublish
 }: ArticlesPageLayoutProps) {
   const isMobile = useIsMobile()
   
@@ -196,6 +200,8 @@ export function ArticlesPageLayout({
           itemsPerPage={itemsPerPage}
           onItemsPerPageChange={handleItemsPerPageChange}
           onResetFilters={handleResetFilters}
+          onBulkTranslate={onBulkTranslate}
+          onBulkPublish={onBulkPublish}
         />
       </div>
     </AdminPageLayout>

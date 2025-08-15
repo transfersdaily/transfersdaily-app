@@ -391,22 +391,25 @@ export default async function HomePage({
                               priority
                             />
                           )}
-                          {/* Overlay gradient */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10" />
+                          {/* Overlay gradient - Enhanced for better text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
+                          
+                          {/* Additional bottom shadow for extra text protection */}
+                          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
 
                           {/* Content overlay */}
                           <div className="absolute bottom-0 left-0 right-0 p-8 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-                            <Badge className="mb-4 bg-primary/10 text-primary border-none">
+                            <Badge className="mb-4 bg-primary/20 text-primary border-none backdrop-blur-sm">
                               {initialData.featuredTransfer.league?.toUpperCase()}
                             </Badge>
-                            <h3 className="text-sm md:text-base lg:text-xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-lg">
+                            <h3 className="text-sm md:text-base lg:text-xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-2xl [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
                               {initialData.featuredTransfer.title}
                             </h3>
-                            <p className="text-white text-sm md:text-base leading-relaxed line-clamp-2 mb-4 md:mb-6 drop-shadow-md">
+                            <p className="text-white text-sm md:text-base leading-relaxed line-clamp-2 mb-4 md:mb-6 drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
                               {initialData.featuredTransfer.excerpt}
                             </p>
-                            <div className="flex items-center gap-2 text-sm text-white drop-shadow-md">
-                              <Clock className="h-4 w-4" />
+                            <div className="flex items-center gap-2 text-sm text-white drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
+                              <Clock className="h-4 w-4 drop-shadow-lg" />
                               <time
                                 dateTime={
                                   initialData.featuredTransfer.publishedAt

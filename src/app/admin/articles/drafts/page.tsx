@@ -3,22 +3,15 @@
 import { useState } from "react"
 import { ArticlesPageLayout } from "@/components/admin/ArticlesPageLayout"
 import { BulkTranslationDialog } from "@/components/admin/BulkTranslationDialog"
-import { Button } from "@/components/ui/button"
-import { Languages } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function DraftArticlesPage() {
-  const [showBulkTranslation, setShowBulkTranslation] = useState(false)
   const [selectedArticles, setSelectedArticles] = useState<string[]>([])
+  const [showBulkTranslation, setShowBulkTranslation] = useState(false)
   const { toast } = useToast()
 
-  const handleAddClick = () => {
-    // TODO: Navigate to add article page
-    console.log('Add article clicked')
-  }
-
-  const handleBulkTranslation = () => {
-    if (selectedArticles.length === 0) {
+  const handleBulkTranslation = (articleIds: string[]) => {
+    if (articleIds.length === 0) {
       toast({
         title: "No articles selected",
         description: "Please select at least one article to translate.",
@@ -27,6 +20,15 @@ export default function DraftArticlesPage() {
       return
     }
     setShowBulkTranslation(true)
+  }
+
+  const handleBulkPublish = (articleIds: string[]) => {
+    // TODO: Implement bulk publish functionality
+    console.log('Bulk publish:', articleIds)
+    toast({
+      title: "Bulk publish",
+      description: `Publishing ${articleIds.length} articles...`,
+    })
   }
 
   const handleBulkTranslationSuccess = (summary: any) => {
@@ -54,22 +56,11 @@ export default function DraftArticlesPage() {
         status="draft"
         initialSortBy="created_at"
         initialSortOrder="asc"
-        showAddButton={true}
-        onAddClick={handleAddClick}
+        showAddButton={false}
         selectedArticles={selectedArticles}
         onSelectArticles={setSelectedArticles}
-        bulkActions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleBulkTranslation}
-            disabled={selectedArticles.length === 0}
-            className="min-h-[44px]"
-          >
-            <Languages className="mr-2 h-4 w-4" />
-            Generate Translations ({selectedArticles.length})
-          </Button>
-        }
+        onBulkTranslate={handleBulkTranslation}
+        onBulkPublish={handleBulkPublish}
       />
 
       <BulkTranslationDialog

@@ -39,6 +39,7 @@ import {
   Upload,
   ArrowUpDown,
   Archive,
+  Languages,
 } from "lucide-react"
 
 interface Article {
@@ -77,6 +78,8 @@ interface ArticlesTableProps {
   pageType: "draft" | "published" | "scheduled"
   onDeleteArticle?: (id: string) => void
   onPublishArticle?: (id: string) => void
+  onBulkTranslate?: (articleIds: string[]) => void
+  onBulkPublish?: (articleIds: string[]) => void
   sortBy?: string
   sortOrder?: string
   onSort?: (column: string) => void
@@ -106,6 +109,8 @@ export function ArticlesTable({
   pageType,
   onDeleteArticle,
   onPublishArticle,
+  onBulkTranslate,
+  onBulkPublish,
   sortBy = 'created_at',
   sortOrder = 'asc',
   onSort,
@@ -205,10 +210,24 @@ export function ArticlesTable({
           </CardDescription>
           <div className="flex items-center space-x-2">
             {selectedArticles.length > 0 && (
-              <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete ({selectedArticles.length})
-              </Button>
+              <>
+                {pageType === "draft" && (
+                  <>
+                    <Button size="sm" variant="outline" onClick={() => onBulkTranslate?.(selectedArticles)}>
+                      <Languages className="mr-2 h-4 w-4" />
+                      Translate ({selectedArticles.length})
+                    </Button>
+                    <Button size="sm" variant="default" onClick={() => onBulkPublish?.(selectedArticles)}>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Publish ({selectedArticles.length})
+                    </Button>
+                  </>
+                )}
+                <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete ({selectedArticles.length})
+                </Button>
+              </>
             )}
           </div>
         </div>

@@ -39,6 +39,7 @@ import {
   ArrowUpDown,
   Archive,
   Edit,
+  Languages,
 } from "lucide-react"
 import { MobileDataCard } from "@/components/admin/MobileDataCard"
 import { useIsMobile, adminMobileClasses, formatForMobile } from "@/lib/mobile-utils"
@@ -79,6 +80,8 @@ interface ArticlesTableMobileProps {
   pageType: "draft" | "published" | "scheduled"
   onDeleteArticle?: (id: string) => void
   onPublishArticle?: (id: string) => void
+  onBulkTranslate?: (articleIds: string[]) => void
+  onBulkPublish?: (articleIds: string[]) => void
   sortBy?: string
   sortOrder?: string
   onSort?: (column: string) => void
@@ -108,6 +111,8 @@ export function ArticlesTableMobile({
   pageType,
   onDeleteArticle,
   onPublishArticle,
+  onBulkTranslate,
+  onBulkPublish,
   sortBy = 'created_at',
   sortOrder = 'asc',
   onSort,
@@ -125,6 +130,10 @@ export function ArticlesTableMobile({
     } else {
       onSelectArticles(selectedArticles.filter(id => id !== articleId))
     }
+  }
+
+  const handleBulkTranslate = () => {
+    onBulkTranslate?.(selectedArticles)
   }
 
   const formatTransferFee = (fee: number | null) => {
@@ -148,7 +157,7 @@ export function ArticlesTableMobile({
   }
 
   const handleBulkPublish = () => {
-    selectedArticles.forEach(id => onPublishArticle?.(id))
+    onBulkPublish?.(selectedArticles)
     onSelectArticles([])
   }
 
@@ -413,10 +422,16 @@ export function ArticlesTableMobile({
             {selectedArticles.length > 0 && (
               <>
                 {pageType === "draft" && (
-                  <Button size="sm" variant="default" onClick={handleBulkPublish}>
-                    <Upload className="mr-2 h-4 w-4" />
-                    Publish ({selectedArticles.length})
-                  </Button>
+                  <>
+                    <Button size="sm" variant="outline" onClick={handleBulkTranslate}>
+                      <Languages className="mr-2 h-4 w-4" />
+                      Translate ({selectedArticles.length})
+                    </Button>
+                    <Button size="sm" variant="default" onClick={handleBulkPublish}>
+                      <Upload className="mr-2 h-4 w-4" />
+                      Publish ({selectedArticles.length})
+                    </Button>
+                  </>
                 )}
                 <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
                   <Trash2 className="mr-2 h-4 w-4" />

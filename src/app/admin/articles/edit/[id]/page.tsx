@@ -72,6 +72,12 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState("")
 
+  // Dropdown data states
+  const [clubs, setClubs] = useState<Array<{id: string, name: string, league_id?: string}>>([])
+  const [leagues, setLeagues] = useState<Array<{id: string, name: string, country?: string}>>([])
+  const [countries, setCountries] = useState<Array<string>>([])
+  const [isLoadingDropdowns, setIsLoadingDropdowns] = useState(true)
+
   // Form state
   const [formData, setFormData] = useState({
     title: "",
@@ -79,9 +85,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     category: "",
     subcategory: "",
     player_name: "",
+    player_country: "", // New field
     current_club: "",
+    current_club_id: "", // New field for club ID
     destination_club: "",
+    destination_club_id: "", // New field for club ID
     league: "",
+    league_id: "", // New field for league ID
     transfer_fee: "",
     transfer_type: "",
     transfer_status: "",
@@ -93,7 +103,52 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     console.log('🚀 Edit page useEffect triggered');
     console.log('Article ID:', articleId);
     fetchArticle()
+    fetchDropdownData()
   }, [articleId])
+
+  const fetchDropdownData = async () => {
+    try {
+      setIsLoadingDropdowns(true)
+      
+      // Fetch clubs, leagues, and countries in parallel
+      const [clubsResponse, leaguesResponse] = await Promise.all([
+        fetch(getApiUrl('/admin/clubs'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json'
+          }
+        }),
+        fetch(getApiUrl('/admin/leagues'), {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Content-Type': 'application/json'
+          }
+        })
+      ])
+
+      if (clubsResponse.ok) {
+        const clubsData = await clubsResponse.json()
+        if (clubsData.success && clubsData.data) {
+          setClubs(clubsData.data)
+        }
+      }
+
+      if (leaguesResponse.ok) {
+        const leaguesData = await leaguesResponse.json()
+        if (leaguesData.success && leaguesData.data) {
+          setLeagues(leaguesData.data)
+          // Extract unique countries from leagues
+          const uniqueCountries = [...new Set(leaguesData.data.map((league: any) => league.country).filter(Boolean))] as string[]
+          setCountries(uniqueCountries.sort())
+        }
+      }
+
+    } catch (error) {
+      console.error('Error fetching dropdown data:', error)
+    } finally {
+      setIsLoadingDropdowns(false)
+    }
+  }
 
   const fetchArticle = async () => {
     try {
@@ -160,9 +215,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         category: fetchedArticle.category || "Transfer",
         subcategory: fetchedArticle.subcategory || "rumour",
         player_name: fetchedArticle.player_name || "",
+        player_country: fetchedArticle.player_country || "",
         current_club: fetchedArticle.from_club || "",
+        current_club_id: fetchedArticle.from_club_id?.toString() || "",
         destination_club: fetchedArticle.to_club || "",
+        destination_club_id: fetchedArticle.to_club_id?.toString() || "",
         league: fetchedArticle.league || "",
+        league_id: fetchedArticle.league_id?.toString() || "",
         transfer_fee: fetchedArticle.transfer_fee?.toString().replace(/[^0-9]/g, '') || "",
         transfer_type: fetchedArticle.transfer_type || "permanent",
         transfer_status: fetchedArticle.transfer_status || "rumour",
@@ -268,7 +327,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     )
   }
 
-  if (isLoading) {
+  if (isLoading || isLoadingDropdowns) {
     return (
       <div className="flex flex-col">
         <AdminPageHeader title="Edit Article" />
@@ -441,17 +500,48 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                     />
                   </div>
                   <div>
-                    <Label htmlFor="league">League</Label>
-                    <Select value={formData.league} onValueChange={(value) => setFormData({ ...formData, league: value })}>
+                    <Label htmlFor="player_country">Player Country</Label>
+                    <Select 
+                      value={formData.player_country} 
+                      onValueChange={(value) => setFormData({ ...formData, player_country: value })}
+                    >
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Select country" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Premier League">Premier League</SelectItem>
-                        <SelectItem value="La Liga">La Liga</SelectItem>
-                        <SelectItem value="Serie A">Serie A</SelectItem>
-                        <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                        <SelectItem value="Ligue 1">Ligue 1</SelectItem>
+                        {countries.map((country) => (
+                          <SelectItem key={country} value={country}>
+                            {country}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label htmlFor="league">League</Label>
+                    <Select 
+                      value={formData.league_id} 
+                      onValueChange={(value) => {
+                        const selectedLeague = leagues.find(l => l.id === value)
+                        setFormData({ 
+                          ...formData, 
+                          league_id: value,
+                          league: selectedLeague?.name || ''
+                        })
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select league" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {leagues.map((league) => (
+                          <SelectItem key={league.id} value={league.id}>
+                            {league.name} {league.country && `(${league.country})`}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
@@ -460,18 +550,66 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="current_club">Current Club</Label>
+                    <Select 
+                      value={formData.current_club_id} 
+                      onValueChange={(value) => {
+                        const selectedClub = clubs.find(c => c.id === value)
+                        setFormData({ 
+                          ...formData, 
+                          current_club_id: value,
+                          current_club: selectedClub?.name || ''
+                        })
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select current club" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clubs.map((club) => (
+                          <SelectItem key={club.id} value={club.id}>
+                            {club.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {/* Manual input fallback */}
                     <Input
-                      id="current_club"
+                      className="mt-2"
+                      placeholder="Or type club name manually"
                       value={formData.current_club}
-                      onChange={(e) => setFormData({ ...formData, current_club: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, current_club: e.target.value, current_club_id: '' })}
                     />
                   </div>
                   <div>
                     <Label htmlFor="destination_club">Destination Club</Label>
+                    <Select 
+                      value={formData.destination_club_id} 
+                      onValueChange={(value) => {
+                        const selectedClub = clubs.find(c => c.id === value)
+                        setFormData({ 
+                          ...formData, 
+                          destination_club_id: value,
+                          destination_club: selectedClub?.name || ''
+                        })
+                      }}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select destination club" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {clubs.map((club) => (
+                          <SelectItem key={club.id} value={club.id}>
+                            {club.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {/* Manual input fallback */}
                     <Input
-                      id="destination_club"
+                      className="mt-2"
+                      placeholder="Or type club name manually"
                       value={formData.destination_club}
-                      onChange={(e) => setFormData({ ...formData, destination_club: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, destination_club: e.target.value, destination_club_id: '' })}
                     />
                   </div>
                 </div>
