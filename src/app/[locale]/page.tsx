@@ -725,7 +725,7 @@ async function getInitialData(language = 'en') {
         page: '1',
         status: 'published',
         language: language,
-        category: 'completed',
+        transfer_status: 'completed', // Filter by transfer_status instead of category
         sortBy: 'published_at',
         sortOrder: 'desc'
       });

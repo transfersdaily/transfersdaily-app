@@ -44,7 +44,15 @@ export async function generateMetadata({ params, searchParams }: {
 async function getCompletedTransfersData(language = 'en', page = 1, league = 'all') {
   try {
     const apiUrl = `${API_CONFIG.baseUrl}/public/articles`
-    const params = new URLSearchParams({ limit: '15', page: page.toString(), status: 'published', language: language, sortBy: 'published_at', sortOrder: 'desc', category: 'completed' })
+    const params = new URLSearchParams({ 
+      limit: '15', 
+      page: page.toString(), 
+      status: 'published', 
+      language: language, 
+      sortBy: 'published_at', 
+      sortOrder: 'desc', 
+      transfer_status: 'completed' // Filter by transfer_status instead of category
+    })
     if (league !== 'all') {
       const leagueNames: Record<string, string> = { 'premier-league': 'Premier League', 'la-liga': 'La Liga', 'serie-a': 'Serie A', 'bundesliga': 'Bundesliga', 'ligue-1': 'Ligue 1' }
       params.append('league', leagueNames[league] || league)
