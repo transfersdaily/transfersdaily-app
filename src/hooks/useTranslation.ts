@@ -135,10 +135,17 @@ export const useTranslation = () => {
         isFailed: false
       });
 
-      // Validate articleId is a number
-      const numericArticleId = parseInt(articleId);
-      if (isNaN(numericArticleId)) {
-        throw new Error('Article ID must be a valid number');
+      // Validate articleId (can be numeric or UUID)
+      if (!articleId || articleId.trim() === '') {
+        throw new Error('Article ID is required');
+      }
+      
+      // Check if it's a valid UUID or numeric ID
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(articleId);
+      const isNumeric = /^\d+$/.test(articleId);
+      
+      if (!isUUID && !isNumeric) {
+        throw new Error('Article ID must be a valid number or UUID');
       }
 
       // Validate article data is provided
@@ -153,10 +160,10 @@ export const useTranslation = () => {
         .replace(/['']/g, "'") // Replace smart apostrophes with regular apostrophes
         .trim();
 
-      console.log(`🚀 Starting translation for article ${numericArticleId}...`);
+      console.log(`🚀 Starting translation for article ${articleId}...`);
       
       const requestPayload = {
-        articleId: numericArticleId,
+        articleId: articleId, // Keep as string to support both numeric and UUID
         articleTitle: sanitizedTitle,
         articleContent: articleData.content,
         targetLanguages
@@ -210,9 +217,9 @@ export const useTranslation = () => {
       const poll = async () => {
         try {
           pollCount++;
-          console.log(`📊 Polling attempt ${pollCount} for article ${numericArticleId}...`);
+          console.log(`📊 Polling attempt ${pollCount} for article ${articleId}...`);
 
-          const status = await checkTranslationStatus(numericArticleId.toString());
+          const status = await checkTranslationStatus(articleId.toString());
           
           if (status) {
             setTranslationStatus(status);

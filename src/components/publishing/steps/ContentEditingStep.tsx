@@ -225,7 +225,7 @@ export default function ContentEditingStep({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          articleId: parseInt(articleId),
+          articleId: articleId, // Keep as string to support UUID
           targetLanguages: [targetLanguage] // Single language array
         }),
       });
@@ -353,15 +353,18 @@ export default function ContentEditingStep({
       return;
     }
 
-    // Validate articleId
+    // Validate articleId (can be numeric or UUID)
     if (!articleId || articleId.trim() === '') {
       setError('Article ID is missing or invalid');
       return;
     }
 
-    const numericArticleId = parseInt(articleId);
-    if (isNaN(numericArticleId)) {
-      setError(`Article ID must be a valid number. Received: "${articleId}"`);
+    // Check if it's a valid UUID or numeric ID
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(articleId);
+    const isNumeric = /^\d+$/.test(articleId);
+    
+    if (!isUUID && !isNumeric) {
+      setError(`Article ID must be a valid number or UUID. Received: "${articleId}"`);
       return;
     }
 
@@ -369,7 +372,7 @@ export default function ContentEditingStep({
     
     try {
       console.log('🌍 Starting translation workflow for all languages...');
-      console.log('📝 Article ID:', articleId, '(numeric:', numericArticleId, ')');
+      console.log('📝 Article ID:', articleId, '(type:', isUUID ? 'UUID' : 'numeric', ')');
       console.log('📝 Article title:', article.translations.en.title);
       console.log('📝 Article content length:', article.translations.en.content.length);
       
