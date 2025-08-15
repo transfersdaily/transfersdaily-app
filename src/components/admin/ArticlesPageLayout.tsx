@@ -67,6 +67,20 @@ export function ArticlesPageLayout({
   const selectedArticles = externalSelectedArticles ?? internalSelectedArticles
   const setSelectedArticles = externalOnSelectArticles ?? setInternalSelectedArticles
 
+  // Debug logging
+  console.log('🔍 ArticlesPageLayout - selectedArticles:', selectedArticles)
+  console.log('🔍 ArticlesPageLayout - bulkActions:', bulkActions)
+  console.log('🔍 ArticlesPageLayout - selectedArticles.length > 0:', selectedArticles.length > 0)
+
+  // Create a handleSelectAll that works with external or internal state
+  const handleSelectAllArticles = (checked: boolean) => {
+    if (checked) {
+      setSelectedArticles(articles.map(article => article.id))
+    } else {
+      setSelectedArticles([])
+    }
+  }
+
   if (isLoading) {
     return (
       <AdminPageLayout title={title}>
@@ -167,7 +181,7 @@ export function ArticlesPageLayout({
           onPageChange={setCurrentPage}
           selectedArticles={selectedArticles}
           onSelectArticles={setSelectedArticles}
-          onSelectAll={handleSelectAll}
+          onSelectAll={handleSelectAllArticles}
           searchTerm={searchInput}
           onSearchChange={setSearchInput}
           onSearch={handleSearch}
