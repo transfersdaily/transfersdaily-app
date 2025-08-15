@@ -651,19 +651,26 @@ async function getInitialData(language = 'en') {
           // Set latest transfers (next 6 articles)
           latestTransfers = transformedArticles.slice(1, 7);
 
-          // Set trending transfers with better logic
+          // Set trending transfers with better logic (avoid duplicates)
           if (transformedArticles.length >= 13) {
             // If we have enough articles, use articles 7-12
             trendingTransfers = transformedArticles.slice(7, 13);
           } else if (transformedArticles.length >= 7) {
-            // If we have 7-12 articles, use the remaining ones and fill with earlier ones
+            // If we have 7-12 articles, use the remaining ones and fill with earlier ones (avoiding duplicates)
             const remaining = transformedArticles.slice(7);
             const needed = 6 - remaining.length;
-            const filler = transformedArticles.slice(1, 1 + needed);
+            
+            // Get filler articles from the beginning, but avoid the featured article (index 0)
+            // and avoid articles already used in remaining
+            const usedIds = new Set(remaining.map(article => article.id));
+            const availableForFiller = transformedArticles.slice(1, 7).filter(article => !usedIds.has(article.id));
+            const filler = availableForFiller.slice(0, needed);
+            
             trendingTransfers = [...remaining, ...filler];
           } else {
-            // If we have fewer than 7 articles, duplicate some of the latest
-            trendingTransfers = transformedArticles.slice(1).concat(transformedArticles.slice(1)).slice(0, 6);
+            // If we have fewer than 7 articles, use what we have without duplicating
+            // Skip the featured article (index 0) and use up to 6 articles
+            trendingTransfers = transformedArticles.slice(1, Math.min(7, transformedArticles.length));
           }
         }
       } else {

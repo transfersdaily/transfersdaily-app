@@ -14,6 +14,9 @@ interface ArticlesPageLayoutProps extends UseArticlesParams {
   pageType: "draft" | "published" | "scheduled"
   showAddButton?: boolean
   onAddClick?: () => void
+  bulkActions?: React.ReactNode
+  selectedArticles?: string[]
+  onSelectArticles?: (articles: string[]) => void
 }
 
 export function ArticlesPageLayout({ 
@@ -23,13 +26,16 @@ export function ArticlesPageLayout({
   initialSortBy,
   initialSortOrder,
   showAddButton = true,
-  onAddClick 
+  onAddClick,
+  bulkActions,
+  selectedArticles: externalSelectedArticles,
+  onSelectArticles: externalOnSelectArticles
 }: ArticlesPageLayoutProps) {
   const isMobile = useIsMobile()
   
   const {
     articles,
-    selectedArticles,
+    selectedArticles: internalSelectedArticles,
     currentPage,
     totalArticles,
     searchInput,
@@ -41,7 +47,7 @@ export function ArticlesPageLayout({
     itemsPerPage,
     isLoading,
     statsData,
-    setSelectedArticles,
+    setSelectedArticles: setInternalSelectedArticles,
     setCurrentPage,
     setSearchInput,
     setCategoryFilter,
@@ -56,6 +62,10 @@ export function ArticlesPageLayout({
     handleItemsPerPageChange,
     handleResetFilters
   } = useArticles({ status, initialSortBy, initialSortOrder })
+
+  // Use external selected articles if provided, otherwise use internal
+  const selectedArticles = externalSelectedArticles ?? internalSelectedArticles
+  const setSelectedArticles = externalOnSelectArticles ?? setInternalSelectedArticles
 
   if (isLoading) {
     return (
@@ -130,12 +140,19 @@ export function ArticlesPageLayout({
     <AdminPageLayout 
       title={title}
       actions={
-        showAddButton ? (
-          <Button size="sm" onClick={onAddClick} className="min-h-[44px]">
-            <Plus className="mr-2 h-4 w-4" />
-            {isMobile ? "Add" : "Add Article"}
-          </Button>
-        ) : undefined
+        <div className="flex items-center gap-2">
+          {bulkActions && selectedArticles.length > 0 && (
+            <div className="flex items-center gap-2">
+              {bulkActions}
+            </div>
+          )}
+          {showAddButton && (
+            <Button size="sm" onClick={onAddClick} className="min-h-[44px]">
+              <Plus className="mr-2 h-4 w-4" />
+              {isMobile ? "Add" : "Add Article"}
+            </Button>
+          )}
+        </div>
       }
     >
       <div className="space-y-6">
