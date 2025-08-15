@@ -326,7 +326,7 @@ export function ArticlesTableMobile({
               </TableCell>
               <TableCell className="font-medium">
                 <Link 
-                  href={`/admin/articles/edit/${article.id}`}
+                  href={pageType === "draft" ? `/admin/articles/publish/${article.id}/edit` : `/admin/articles/edit/${article.id}`}
                   className="max-w-[300px] truncate block text-blue-600 hover:text-blue-800 hover:underline"
                 >
                   {article.title}
@@ -373,9 +373,9 @@ export function ArticlesTableMobile({
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                      <Link href={`/admin/articles/edit/${article.id}`}>
+                      <Link href={pageType === "draft" ? `/admin/articles/publish/${article.id}/edit` : `/admin/articles/edit/${article.id}`}>
                         <Eye className="mr-2 h-4 w-4" />
-                        Edit
+                        {pageType === "draft" ? "Publish" : "Edit"}
                       </Link>
                     </DropdownMenuItem>
                     {pageType === "draft" && (

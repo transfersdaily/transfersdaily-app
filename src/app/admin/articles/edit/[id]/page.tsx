@@ -38,7 +38,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { API_CONFIG } from "@/lib/config"
+import { API_CONFIG, getApiUrl } from "@/lib/config"
 import { useIsMobile } from "@/lib/mobile-utils"
 
 interface Article {
@@ -98,12 +98,10 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   const fetchArticle = async () => {
     try {
       setIsLoading(true)
-      console.log('🔍 Starting fetchArticle...');
+      console.log('🚀 Edit page useEffect triggered');
       console.log('Article ID:', articleId);
-      console.log('API Base URL:', API_CONFIG.baseUrl);
-      console.log('Admin Articles Endpoint:', API_CONFIG.endpoints.admin.articles);
       
-      const fullUrl = `${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`;
+      const fullUrl = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       console.log('🌐 Full URL:', fullUrl);
       
       console.log('📡 Making fetch request...');
@@ -113,7 +111,8 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
       });
       
@@ -187,10 +186,11 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       setIsSaving(true)
       console.log('Saving article with data:', formData)
       
-      const response = await fetch(`${API_CONFIG.baseUrl}${API_CONFIG.endpoints.admin.articles}/${articleId}`, {
+      const response = await fetch(getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         },
         body: JSON.stringify(formData),
       })

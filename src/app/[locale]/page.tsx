@@ -504,6 +504,35 @@ export default async function HomePage({
               </div>
             </section>
 
+            {/* Completed Transfers Section */}
+            <section className="py-4 md:py-8" aria-labelledby="completed-transfers">
+              <div className="flex justify-between items-start mb-3 md:mb-6">
+                <div>
+                  <h2
+                    id="completed-transfers"
+                    className="text-base md:text-lg lg:text-xl font-bold mb-3 text-foreground"
+                  >
+                    {t('homepage.completedTransfers')}
+                  </h2>
+                  <div className="w-24 h-1 bg-primary rounded-full"></div>
+                </div>
+                <ViewAllButton
+                  href={`/${locale}/transfers/completed`}
+                >
+                  {t('common.viewAll')}
+                </ViewAllButton>
+              </div>
+
+              <Suspense fallback={<TransferGridSkeleton count={6} />}>
+                <TransferGrid
+                  transfers={initialData.completedTransfers}
+                  locale={locale}
+                  dict={dict}
+                  limit={6}
+                />
+              </Suspense>
+            </section>
+
             {/* Trending Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
               <div className="flex justify-between items-start mb-3 md:mb-6">
@@ -595,6 +624,7 @@ async function getInitialData(language = 'en') {
     let featuredTransfer = null;
     let latestTransfers = [];
     let trendingTransfers = [];
+    let completedTransfers = [];
 
     try {
       // Direct API call to backend with proper error handling
@@ -687,10 +717,68 @@ async function getInitialData(language = 'en') {
       );
     }
 
+    // Fetch completed transfers separately
+    try {
+      const completedApiUrl = `${API_CONFIG.baseUrl}/public/articles`;
+      const completedParams = new URLSearchParams({
+        limit: '6',
+        page: '1',
+        status: 'published',
+        language: language,
+        category: 'completed',
+        sortBy: 'published_at',
+        sortOrder: 'desc'
+      });
+
+      const completedResponse = await fetch(`${completedApiUrl}?${completedParams}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(10000), // 10 second timeout
+      });
+
+      if (completedResponse.ok) {
+        const completedData = await completedResponse.json();
+        if (completedData.success && completedData.data?.articles?.length > 0) {
+          const completedArticles = completedData.data.articles;
+
+          // Transform completed articles to the expected format
+          completedTransfers = completedArticles.map((article: any) => {
+            const bestDate = getBestDate(article.published_at, article.updated_at, article.created_at, true);
+
+            return {
+              id: article.id,
+              title: article.title,
+              excerpt: article.content
+                ? article.content.substring(0, 200) + '...'
+                : article.meta_description || '',
+              content: article.content,
+              league: article.league || 'Unknown',
+              transferValue: article.transfer_fee,
+              playerName: article.player_name,
+              fromClub: article.from_club,
+              toClub: article.to_club,
+              status: 'completed',
+              publishedAt: bestDate,
+              imageUrl: article.image_url,
+              slug: article.slug || generateSlug(article.title || ''),
+            };
+          });
+        }
+      } else {
+        console.error('❌ Completed transfers API request failed:', completedResponse.status, completedResponse.statusText);
+      }
+    } catch (completedApiError: any) {
+      console.error('❌ Error fetching completed transfers from API:', completedApiError.message);
+    }
+
     const finalData = {
       featuredTransfer,
       latestTransfers,
       trendingTransfers,
+      completedTransfers,
       leagues: staticLeagues,
     };
 
@@ -701,6 +789,7 @@ async function getInitialData(language = 'en') {
       featuredTransfer: null,
       latestTransfers: [],
       trendingTransfers: [],
+      completedTransfers: [],
       leagues: staticLeagues,
     };
   }

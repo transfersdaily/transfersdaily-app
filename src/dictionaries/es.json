@@ -67,12 +67,7 @@
     "featuredArticle": "Artículo Destacado",
     "latestTransfers": "Últimos Fichajes",
     "browseByLeague": "Navegar por Liga",
-    "trendingArticles": "Artículos Tendencia"
-  },
-  "homepage": {
-    "featuredArticle": "Artículo Destacado",
-    "latestTransfers": "Últimos Fichajes",
-    "browseByLeague": "Navegar por Liga", 
+    "completedTransfers": "Fichajes Completados",
     "trendingArticles": "Artículos Tendencia"
   },
   "search": {
