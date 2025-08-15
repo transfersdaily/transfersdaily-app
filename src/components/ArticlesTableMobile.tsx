@@ -373,9 +373,9 @@ export function ArticlesTableMobile({
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuItem asChild>
-                      <Link href={pageType === "draft" ? `/admin/articles/publish/${article.id}/edit` : `/admin/articles/edit/${article.id}`}>
+                      <Link href={`/admin/articles/edit/${article.id}`}>
                         <Eye className="mr-2 h-4 w-4" />
-                        {pageType === "draft" ? "Publish" : "Edit"}
+                        Edit
                       </Link>
                     </DropdownMenuItem>
                     {pageType === "draft" && (
