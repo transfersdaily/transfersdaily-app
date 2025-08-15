@@ -12,10 +12,6 @@ export default function DraftArticlesPage() {
   const [selectedArticles, setSelectedArticles] = useState<string[]>([])
   const { toast } = useToast()
 
-  // Debug logging
-  console.log('🔍 Draft page - selectedArticles:', selectedArticles)
-  console.log('🔍 Draft page - selectedArticles.length:', selectedArticles.length)
-
   const handleAddClick = () => {
     // TODO: Navigate to add article page
     console.log('Add article clicked')

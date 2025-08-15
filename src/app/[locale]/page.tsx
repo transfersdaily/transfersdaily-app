@@ -662,8 +662,8 @@ async function getInitialData(language = 'en') {
             
             // Get filler articles from the beginning, but avoid the featured article (index 0)
             // and avoid articles already used in remaining
-            const usedIds = new Set(remaining.map(article => article.id));
-            const availableForFiller = transformedArticles.slice(1, 7).filter(article => !usedIds.has(article.id));
+            const usedIds = new Set(remaining.map((article: any) => article.id));
+            const availableForFiller = transformedArticles.slice(1, 7).filter((article: any) => !usedIds.has(article.id));
             const filler = availableForFiller.slice(0, needed);
             
             trendingTransfers = [...remaining, ...filler];
