@@ -60,27 +60,50 @@ export function RichTextEditor({
   };
 
   const execCommand = (command: string, value?: string) => {
-    document.execCommand(command, false, value);
-    editorRef.current?.focus();
-    handleInput();
+    try {
+      document.execCommand(command, false, value);
+      editorRef.current?.focus();
+      handleInput();
+    } catch (error) {
+      console.warn('execCommand failed:', command, error);
+    }
   };
 
   const insertLink = () => {
-    const url = prompt('Enter URL:');
-    if (url) {
-      execCommand('createLink', url);
+    const selection = window.getSelection();
+    const selectedText = selection?.toString() || '';
+    const url = prompt('Enter URL:', 'https://');
+    if (url && url !== 'https://') {
+      if (selectedText) {
+        const linkHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer">${selectedText}</a>`;
+        document.execCommand('insertHTML', false, linkHtml);
+      } else {
+        const linkHtml = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+        document.execCommand('insertHTML', false, linkHtml);
+      }
+      handleInput();
     }
   };
 
   const insertImage = () => {
-    const url = prompt('Enter image URL:');
-    if (url) {
-      execCommand('insertImage', url);
+    const url = prompt('Enter image URL:', 'https://');
+    if (url && url !== 'https://') {
+      const imgHtml = `<img src="${url}" alt="Image" style="max-width: 100%; height: auto; margin: 1em 0;" />`;
+      document.execCommand('insertHTML', false, imgHtml);
+      handleInput();
     }
   };
 
   const formatBlock = (tag: string) => {
-    execCommand('formatBlock', tag);
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      try {
+        document.execCommand('formatBlock', false, tag);
+        handleInput();
+      } catch (error) {
+        console.warn('formatBlock failed:', tag, error);
+      }
+    }
   };
 
   const toolbarButtons = [
@@ -277,7 +300,13 @@ export function RichTextEditor({
             ref={editorRef}
             contentEditable
             onInput={handleInput}
-            className="prose max-w-none p-4 focus:outline-none"
+            onPaste={(e) => {
+              e.preventDefault();
+              const text = e.clipboardData?.getData('text/plain') || '';
+              document.execCommand('insertText', false, text);
+              handleInput();
+            }}
+            className="prose max-w-none p-4 focus:outline-none min-h-[300px] border-0"
             style={{ minHeight }}
             data-placeholder={placeholder}
             suppressContentEditableWarning={true}

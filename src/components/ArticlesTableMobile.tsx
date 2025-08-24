@@ -585,7 +585,15 @@ export function ArticlesTableMobile({
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">
               Page {currentPage} of {totalPages}
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange(1)}
+                disabled={currentPage === 1}
+              >
+                First
+              </Button>
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
@@ -594,6 +602,19 @@ export function ArticlesTableMobile({
               >
                 <ChevronDown className="h-4 w-4 rotate-90" />
               </Button>
+              <Input
+                type="number"
+                min={1}
+                max={totalPages}
+                value={currentPage}
+                onChange={(e) => {
+                  const page = parseInt(e.target.value)
+                  if (page >= 1 && page <= totalPages) {
+                    onPageChange(page)
+                  }
+                }}
+                className="h-8 w-16 text-center"
+              />
               <Button
                 variant="outline"
                 className="h-8 w-8 p-0"
@@ -601,6 +622,14 @@ export function ArticlesTableMobile({
                 disabled={currentPage === totalPages}
               >
                 <ChevronDown className="h-4 w-4 -rotate-90" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => onPageChange(totalPages)}
+                disabled={currentPage === totalPages}
+              >
+                Last
               </Button>
             </div>
           </div>

@@ -149,17 +149,33 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
 
       if (clubsResponse.ok) {
         const clubsData = await clubsResponse.json()
-        if (clubsData.success && clubsData.data) {
-          setClubs(clubsData.data)
+        if (clubsData.success && clubsData.clubs) {
+          // Deduplicate clubs by name (case-insensitive)
+          const uniqueClubs = clubsData.clubs.reduce((acc, club) => {
+            const existing = acc.find(c => c.name.toLowerCase() === club.name.toLowerCase())
+            if (!existing) {
+              acc.push(club)
+            }
+            return acc
+          }, [])
+          setClubs(uniqueClubs)
         }
       }
 
       if (leaguesResponse.ok) {
         const leaguesData = await leaguesResponse.json()
-        if (leaguesData.success && leaguesData.data) {
-          setLeagues(leaguesData.data)
+        if (leaguesData.success && leaguesData.leagues) {
+          // Deduplicate leagues by name (case-insensitive)
+          const uniqueLeagues = leaguesData.leagues.reduce((acc, league) => {
+            const existing = acc.find(l => l.name.toLowerCase() === league.name.toLowerCase())
+            if (!existing) {
+              acc.push(league)
+            }
+            return acc
+          }, [])
+          setLeagues(uniqueLeagues)
           // Extract unique countries from leagues
-          const uniqueCountries = [...new Set(leaguesData.data.map((league: any) => league.country).filter(Boolean))] as string[]
+          const uniqueCountries = [...new Set(uniqueLeagues.map((league: any) => league.country).filter(Boolean))] as string[]
           setCountries(uniqueCountries.sort())
         }
       }
@@ -260,7 +276,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         destination_club_id: fetchedArticle.to_club_id?.toString() || "",
         league: fetchedArticle.league || "",
         league_id: fetchedArticle.league_id?.toString() || "",
-        transfer_fee: fetchedArticle.transfer_fee?.toString().replace(/[^0-9]/g, '') || "",
+        transfer_fee: fetchedArticle.transfer_fee?.toString() || "",
         transfer_type: fetchedArticle.transfer_type || "permanent",
         transfer_status: fetchedArticle.transfer_status || "rumour",
         status: fetchedArticle.status || "draft",
@@ -648,13 +664,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                   <div>
                     <Label htmlFor="league">League</Label>
                     <Select 
-                      value={formData.league_id} 
+                      value={formData.league_id || formData.league} 
                       onValueChange={(value) => {
-                        const selectedLeague = leagues.find(l => l.id === value)
+                        const selectedLeague = leagues.find(l => l.id === value || l.name === value)
                         setFormData({ 
                           ...formData, 
-                          league_id: value,
-                          league: selectedLeague?.name || ''
+                          league_id: selectedLeague?.id || '',
+                          league: selectedLeague?.name || value
                         })
                       }}
                     >
@@ -676,13 +692,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                   <div>
                     <Label htmlFor="current_club">Current Club</Label>
                     <Select 
-                      value={formData.current_club_id} 
+                      value={formData.current_club_id || formData.current_club} 
                       onValueChange={(value) => {
-                        const selectedClub = clubs.find(c => c.id === value)
+                        const selectedClub = clubs.find(c => c.id === value || c.name === value)
                         setFormData({ 
                           ...formData, 
-                          current_club_id: value,
-                          current_club: selectedClub?.name || ''
+                          current_club_id: selectedClub?.id || '',
+                          current_club: selectedClub?.name || value
                         })
                       }}
                     >
@@ -708,13 +724,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                   <div>
                     <Label htmlFor="destination_club">Destination Club</Label>
                     <Select 
-                      value={formData.destination_club_id} 
+                      value={formData.destination_club_id || formData.destination_club} 
                       onValueChange={(value) => {
-                        const selectedClub = clubs.find(c => c.id === value)
+                        const selectedClub = clubs.find(c => c.id === value || c.name === value)
                         setFormData({ 
                           ...formData, 
-                          destination_club_id: value,
-                          destination_club: selectedClub?.name || ''
+                          destination_club_id: selectedClub?.id || '',
+                          destination_club: selectedClub?.name || value
                         })
                       }}
                     >
@@ -744,9 +760,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                     <Label htmlFor="transfer_fee">Transfer Fee (€)</Label>
                     <Input
                       id="transfer_fee"
-                      type="number"
+                      type="text"
                       value={formData.transfer_fee}
-                      onChange={(e) => setFormData({ ...formData, transfer_fee: e.target.value })}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^0-9]/g, '')
+                        setFormData({ ...formData, transfer_fee: value })
+                      }}
+                      placeholder="Enter amount in euros"
                     />
                     <p className="text-xs text-muted-foreground mt-1">
                       Display: {formatTransferFee(formData.transfer_fee)}
