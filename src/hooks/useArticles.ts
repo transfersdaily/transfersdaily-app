@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { adminApi } from '@/lib/api'
 
 // Generate real stats from articles data
@@ -113,20 +114,36 @@ export interface UseArticlesParams {
 }
 
 export function useArticles({ status, initialSortBy = 'created_at', initialSortOrder = 'asc' }: UseArticlesParams) {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  
   const [articles, setArticles] = useState<any[]>([])
   const [selectedArticles, setSelectedArticles] = useState<string[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(parseInt(searchParams.get('page') || '1'))
   const [totalArticles, setTotalArticles] = useState(0)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [searchInput, setSearchInput] = useState("")
-  const [categoryFilter, setCategoryFilter] = useState("all")
-  const [leagueFilter, setLeagueFilter] = useState("all")
-  const [statusFilter, setStatusFilter] = useState("all")
-  const [sortBy, setSortBy] = useState(initialSortBy)
-  const [sortOrder, setSortOrder] = useState(initialSortOrder)
-  const [itemsPerPage, setItemsPerPage] = useState(20)
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || "")
+  const [searchInput, setSearchInput] = useState(searchParams.get('search') || "")
+  const [categoryFilter, setCategoryFilter] = useState(searchParams.get('category') || "all")
+  const [leagueFilter, setLeagueFilter] = useState(searchParams.get('league') || "all")
+  const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || "all")
+  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || initialSortBy)
+  const [sortOrder, setSortOrder] = useState(searchParams.get('sortOrder') || initialSortOrder)
+  const [itemsPerPage, setItemsPerPage] = useState(parseInt(searchParams.get('limit') || '20'))
   const [isLoading, setIsLoading] = useState(true)
   const [statsData, setStatsData] = useState<any>(null)
+
+  // Update URL when state changes
+  const updateURL = (params: Record<string, string | number>) => {
+    const newParams = new URLSearchParams(searchParams.toString())
+    Object.entries(params).forEach(([key, value]) => {
+      if (value && value !== 'all' && value !== '') {
+        newParams.set(key, value.toString())
+      } else {
+        newParams.delete(key)
+      }
+    })
+    router.replace(`?${newParams.toString()}`, { scroll: false })
+  }
 
   useEffect(() => {
     loadArticles()
@@ -244,18 +261,17 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
   }
 
   const handleSort = (column: string) => {
-    if (sortBy === column) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortBy(column)
-      setSortOrder('asc')
-    }
+    const newSortOrder = sortBy === column ? (sortOrder === 'asc' ? 'desc' : 'asc') : 'asc'
+    setSortBy(column)
+    setSortOrder(newSortOrder)
     setCurrentPage(1)
+    updateURL({ page: 1, sortBy: column, sortOrder: newSortOrder })
   }
 
   const handleSearch = () => {
     setSearchTerm(searchInput)
     setCurrentPage(1)
+    updateURL({ page: 1, search: searchInput })
   }
 
   const handleSearchKeyPress = (e: React.KeyboardEvent) => {
@@ -267,6 +283,7 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
   const handleItemsPerPageChange = (items: number) => {
     setItemsPerPage(items)
     setCurrentPage(1)
+    updateURL({ page: 1, limit: items })
   }
 
   const handleResetFilters = () => {
@@ -276,6 +293,30 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
     setLeagueFilter("all")
     setStatusFilter("all")
     setCurrentPage(1)
+    router.replace(window.location.pathname, { scroll: false })
+  }
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page)
+    updateURL({ page })
+  }
+
+  const handleCategoryChange = (category: string) => {
+    setCategoryFilter(category)
+    setCurrentPage(1)
+    updateURL({ page: 1, category })
+  }
+
+  const handleLeagueChange = (league: string) => {
+    setLeagueFilter(league)
+    setCurrentPage(1)
+    updateURL({ page: 1, league })
+  }
+
+  const handleStatusChange = (status: string) => {
+    setStatusFilter(status)
+    setCurrentPage(1)
+    updateURL({ page: 1, status })
   }
 
   return {
@@ -296,11 +337,11 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
     
     // Setters
     setSelectedArticles,
-    setCurrentPage,
+    setCurrentPage: handlePageChange,
     setSearchInput,
-    setCategoryFilter,
-    setLeagueFilter,
-    setStatusFilter,
+    setCategoryFilter: handleCategoryChange,
+    setLeagueFilter: handleLeagueChange,
+    setStatusFilter: handleStatusChange,
     
     // Handlers
     handleSelectAll,

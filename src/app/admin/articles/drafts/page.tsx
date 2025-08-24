@@ -47,7 +47,7 @@ export default function DraftArticlesPage() {
         pageType="draft"
         status="draft"
         initialSortBy="created_at"
-        initialSortOrder="asc"
+        initialSortOrder="desc"
         showAddButton={false}
         onBulkTranslate={handleBulkTranslate}
         onBulkPublish={handleBulkPublish}

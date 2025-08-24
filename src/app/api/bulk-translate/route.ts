@@ -92,48 +92,33 @@ export async function POST(request: NextRequest) {
 
     console.log(`📡 Forwarding bulk translation for ${articlesWithContent.length} articles to backend...`);
 
-    // Start translation for each article individually
-    const results = [];
-    for (const article of articlesWithContent) {
-      try {
-        const translationResponse = await fetch(`${API_BASE_URL}/admin/start-translation`, {
-          method: 'POST',
-          headers: {
-            'Authorization': authHeader,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            articleId: article.articleId,
-            articleTitle: article.articleTitle,
-            articleContent: article.articleContent,
-            targetLanguages
-          })
-        });
-        
-        const translationData = await translationResponse.json();
-        results.push({
-          articleId: article.articleId,
-          success: translationResponse.ok,
-          data: translationData
-        });
-      } catch (error) {
-        results.push({
-          articleId: article.articleId,
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        });
-      }
+    // Use the bulk translation endpoint directly
+    const translationResponse = await fetch(`${API_BASE_URL}/bulk-translate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        articleIds: articlesWithContent.map(a => a.articleId),
+        targetLanguages,
+        articlesData: articlesWithContent // Include article content
+      })
+    });
+    
+    const translationData = await translationResponse.json();
+    
+    if (!translationResponse.ok) {
+      throw new Error(translationData.error || 'Failed to start bulk translation');
     }
     
-    const successful = results.filter(r => r.success).length;
-    const failed = results.filter(r => !r.success).length;
+    const results = translationData.results || [];
     
     return NextResponse.json({
       success: true,
-      summary: {
+      summary: translationData.summary || {
         total: articlesWithContent.length,
-        started: successful,
-        failed: failed,
+        started: translationData.summary?.started || 0,
+        failed: translationData.summary?.failed || 0,
         results: results
       }
     }, {
