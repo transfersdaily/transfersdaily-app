@@ -395,7 +395,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       languages.forEach(langCode => {
         if (langCode === 'en') return // Already counted English above
         
-        const translation = article.translations[langCode]
+        const translation = article.translations?.[langCode]
         console.log(`🔍 [getTranslationCount] ${langCode}:`, {
           exists: !!translation,
           hasTitle: translation?.title,
