@@ -63,6 +63,12 @@ interface Article {
   featured: boolean
   created_at: string
   published_at: string
+  translations?: {
+    [key: string]: {
+      title: string
+      content: string
+    }
+  }
 }
 
 export default function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
@@ -78,6 +84,14 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   
   // Translation functionality
   const { translationStatus, isTranslating, error: translationError, startTranslation, stopTranslation } = useTranslation()
+  
+  // Listen for translation completion and reload article
+  useEffect(() => {
+    if (translationStatus?.isComplete) {
+      console.log('🎉 Translations completed, reloading article...')
+      fetchArticle()
+    }
+  }, [translationStatus?.isComplete])
 
   // Dropdown data states
   const [clubs, setClubs] = useState<Array<{id: string, name: string, league_id?: string}>>([])
@@ -354,10 +368,27 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   }
   
   const getTranslationCount = () => {
-    if (translationStatus?.translations) {
-      return Object.keys(translationStatus.translations).length
+    if (!article) return 0
+    
+    let completed = 0
+    const languages = ['en', 'es', 'fr', 'de', 'it']
+    
+    // Check if article has translations field from database
+    if (article.translations && typeof article.translations === 'object') {
+      languages.forEach(langCode => {
+        const translation = article.translations[langCode]
+        if (translation && translation.title && translation.content) {
+          completed++
+        }
+      })
+    } else {
+      // Fallback: count English as 1 if title and content exist
+      if (article.title && article.content) {
+        completed = 1
+      }
     }
-    return 0
+    
+    return completed
   }
 
   // Use mobile editor on mobile devices
@@ -813,7 +844,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                   <span className="text-muted-foreground">Translations:</span>
                   <div className="flex items-center gap-1">
                     <Languages className="h-3 w-3" />
-                    <span>{getTranslationCount()}/4</span>
+                    <span>{getTranslationCount()}/5</span>
                   </div>
                 </div>
                 <Separator />
