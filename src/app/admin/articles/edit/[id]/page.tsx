@@ -245,6 +245,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       const fetchedArticle = data.data.article
       setArticle(fetchedArticle)
       console.log('✅ Article set successfully:', fetchedArticle.title);
+      console.log('🌍 Article translations:', fetchedArticle.translations);
       
       setFormData({
         title: fetchedArticle.title || "",
@@ -373,21 +374,44 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
     let completed = 0
     const languages = ['en', 'es', 'fr', 'de', 'it']
     
+    console.log('🔍 [getTranslationCount] Article data:', {
+      hasTitle: !!article.title,
+      hasContent: !!article.content,
+      hasTranslations: !!article.translations,
+      translationsType: typeof article.translations,
+      translationKeys: article.translations ? Object.keys(article.translations) : []
+    })
+    
+    // Always count English if title and content exist
+    if (article.title && article.content) {
+      completed = 1
+      console.log('✅ [getTranslationCount] English counted: 1')
+    }
+    
     // Check if article has translations field from database
     if (article.translations && typeof article.translations === 'object') {
+      console.log('🌍 [getTranslationCount] Checking translations:', article.translations)
+      
       languages.forEach(langCode => {
+        if (langCode === 'en') return // Already counted English above
+        
         const translation = article.translations[langCode]
+        console.log(`🔍 [getTranslationCount] ${langCode}:`, {
+          exists: !!translation,
+          hasTitle: translation?.title,
+          hasContent: translation?.content
+        })
+        
         if (translation && translation.title && translation.content) {
           completed++
+          console.log(`✅ [getTranslationCount] ${langCode} counted, total now: ${completed}`)
         }
       })
     } else {
-      // Fallback: count English as 1 if title and content exist
-      if (article.title && article.content) {
-        completed = 1
-      }
+      console.log('❌ [getTranslationCount] No translations object found')
     }
     
+    console.log(`🎯 [getTranslationCount] Final count: ${completed}/5`)
     return completed
   }
 

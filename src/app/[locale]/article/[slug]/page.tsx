@@ -71,10 +71,10 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     console.log(`🔍 [getArticleBySlug] Fetching article: ${slug} for locale: ${locale}`);
     console.log(`🔍 [getArticleBySlug] API_CONFIG.baseUrl: ${API_CONFIG.baseUrl}`);
     
-    // Try direct API call first
+    // Try direct API call first with language parameter
     if (API_CONFIG.baseUrl && API_CONFIG.baseUrl !== '') {
       try {
-        const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}`;
+        const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=${locale}`;
         console.log(`📡 [getArticleBySlug] API URL: ${apiUrl}`);
         
         console.log(`📡 [getArticleBySlug] Making fetch request...`);
@@ -95,14 +95,37 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
         
         if (response.ok) {
           const data = await response.json();
-          console.log(`✅ API Response received:`, { 
+          console.log(`✅ API Response received for ${locale}:`, { 
             success: data.success, 
             hasArticle: !!data.data?.article,
-            articleTitle: data.data?.article?.title 
+            articleTitle: data.data?.article?.title,
+            contentLength: data.data?.article?.content?.length || 0
           });
           
           if (data.success && data.data?.article) {
             return data.data.article;
+          }
+        }
+        
+        // If specific language fails, try English as fallback
+        if (locale !== 'en') {
+          console.log('🔄 Trying English fallback...');
+          const fallbackUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=en`;
+          const fallbackResponse = await fetch(fallbackUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            signal: AbortSignal.timeout(10000)
+          });
+          
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            if (fallbackData.success && fallbackData.data?.article) {
+              console.log(`✅ English fallback successful`);
+              return fallbackData.data.article;
+            }
           }
         }
       } catch (directApiError) {
@@ -112,7 +135,7 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     
     // Fallback to local API route
     console.log('🔄 Trying local API route fallback...');
-    const localApiUrl = `/api/article/${slug}`;
+    const localApiUrl = `/api/article/${slug}?language=${locale}`;
     console.log(`📡 Local API URL: ${localApiUrl}`);
     
     const localResponse = await fetch(localApiUrl, {
@@ -127,6 +150,28 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     console.log(`📊 Local API Response Status: ${localResponse.status} ${localResponse.statusText}`);
     
     if (!localResponse.ok) {
+      // Try English fallback for local API too
+      if (locale !== 'en') {
+        console.log('🔄 Trying local API English fallback...');
+        const fallbackLocalUrl = `/api/article/${slug}?language=en`;
+        const fallbackLocalResponse = await fetch(fallbackLocalUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          signal: AbortSignal.timeout(10000)
+        });
+        
+        if (fallbackLocalResponse.ok) {
+          const fallbackLocalData = await fallbackLocalResponse.json();
+          if (fallbackLocalData.success && fallbackLocalData.data?.article) {
+            console.log(`✅ Local API English fallback successful`);
+            return fallbackLocalData.data.article;
+          }
+        }
+      }
+      
       console.error(`❌ Local API error: ${localResponse.status} ${localResponse.statusText} for slug: ${slug}`);
       return null;
     }
@@ -139,6 +184,10 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     });
     
     if (localData.success && localData.data?.article) {
+      console.log(`✅ Local API success for ${locale}:`, {
+        title: localData.data.article.title,
+        contentLength: localData.data.article.content?.length || 0
+      });
       return localData.data.article;
     }
     

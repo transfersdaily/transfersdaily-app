@@ -578,7 +578,16 @@ export default function ContentEditingStep({
     if (!article) return { completed: 0, total: 5 };
     
     let completed = 0;
+    
+    // Always count English if title and content exist
+    if (article.translations?.en?.title && article.translations?.en?.content) {
+      completed = 1;
+    }
+    
+    // Count other languages
     languages.forEach(lang => {
+      if (lang.code === 'en') return; // Already counted above
+      
       const translation = article.translations[lang.code];
       if (translation && translation.title && translation.content) {
         completed++;
