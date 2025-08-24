@@ -114,13 +114,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       const [clubsResponse, leaguesResponse] = await Promise.all([
         fetch(getApiUrl('/admin/clubs'), {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Authorization': `Bearer ${localStorage.getItem('transfersdaily_id_token')}`,
             'Content-Type': 'application/json'
           }
         }),
         fetch(getApiUrl('/admin/leagues'), {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
+            'Authorization': `Bearer ${localStorage.getItem('transfersdaily_id_token')}`,
             'Content-Type': 'application/json'
           }
         })
@@ -156,6 +156,15 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       console.log('🚀 Edit page useEffect triggered');
       console.log('Article ID:', articleId);
       
+      // Check if we have a valid auth token
+      const authToken = localStorage.getItem('transfersdaily_id_token');
+      if (!authToken) {
+        console.error('❌ No auth token found');
+        setError("Authentication required. Please log in again.");
+        router.push('/login');
+        return;
+      }
+      
       const fullUrl = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
       console.log('🌐 Full URL:', fullUrl);
       
@@ -167,7 +176,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          'Authorization': `Bearer ${authToken}`
         }
       });
       
@@ -178,6 +187,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
       
       if (!response.ok) {
         console.error('❌ Response not ok');
+        if (response.status === 401) {
+          console.error('401 - Unauthorized');
+          setError("Session expired. Please log in again.");
+          localStorage.clear();
+          router.push('/login');
+          return;
+        }
         if (response.status === 404) {
           console.error('404 - Article not found');
           setError("Article not found")
@@ -249,7 +265,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          'Authorization': `Bearer ${localStorage.getItem('transfersdaily_id_token')}`
         },
         body: JSON.stringify(formData),
       })
