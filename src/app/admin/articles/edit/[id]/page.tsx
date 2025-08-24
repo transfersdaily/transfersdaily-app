@@ -25,6 +25,8 @@ import {
   Trash2,
   Loader2,
   Eye,
+  Globe,
+  Languages,
 } from "lucide-react"
 import Link from "next/link"
 import {
@@ -40,6 +42,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { API_CONFIG, getApiUrl } from "@/lib/config"
 import { useIsMobile } from "@/lib/mobile-utils"
+import { useTranslation } from "@/hooks/useTranslation"
+import { TranslationProgress } from "@/components/ui/translation-progress"
 
 interface Article {
   uuid: string
@@ -71,6 +75,9 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState("")
+  
+  // Translation functionality
+  const { translationStatus, isTranslating, error: translationError, startTranslation, stopTranslation } = useTranslation()
 
   // Dropdown data states
   const [clubs, setClubs] = useState<Array<{id: string, name: string, league_id?: string}>>([])
@@ -323,6 +330,35 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   const handleBack = () => router.back()
   const handlePreview = () => window.open(`/article/${articleId}?preview=true`, '_blank')
   const handlePublish = () => window.location.href = `/admin/articles/publish/${articleId}/edit`
+  
+  const handleGenerateTranslations = async () => {
+    if (!article?.title || !article?.content) {
+      setError('Article title and content are required for translation')
+      return
+    }
+    
+    try {
+      const result = await startTranslation(articleId, ['es', 'fr', 'de', 'it'], {
+        title: article.title,
+        content: article.content
+      })
+      
+      if (result.success) {
+        setError('')
+      } else {
+        setError(result.error || 'Failed to start translation')
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Translation failed')
+    }
+  }
+  
+  const getTranslationCount = () => {
+    if (translationStatus?.translations) {
+      return Object.keys(translationStatus.translations).length
+    }
+    return 0
+  }
 
   // Use mobile editor on mobile devices
   if (isMobile && !isLoading && article) {
@@ -455,6 +491,14 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                 Preview
               </Link>
             </Button>
+            <Button 
+              onClick={handleGenerateTranslations} 
+              disabled={isTranslating || !article?.title || !article?.content}
+              variant="outline"
+            >
+              {isTranslating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Globe className="mr-2 h-4 w-4" />}
+              Generate Translations
+            </Button>
             <Button onClick={handleSave} disabled={isSaving}>
               {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
               Save
@@ -467,6 +511,16 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         {error && (
           <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md">
             {error}
+          </div>
+        )}
+        
+        {/* Translation Progress */}
+        {translationStatus && (
+          <div className="mb-6">
+            <TranslationProgress 
+              status={translationStatus} 
+              targetLanguages={['es', 'fr', 'de', 'it']} 
+            />
           </div>
         )}
 
@@ -754,6 +808,13 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Transfer Fee:</span>
                   <span>{formatTransferFee(formData.transfer_fee)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Translations:</span>
+                  <div className="flex items-center gap-1">
+                    <Languages className="h-3 w-3" />
+                    <span>{getTranslationCount()}/4</span>
+                  </div>
                 </div>
                 <Separator />
                 <div className="space-y-3">
