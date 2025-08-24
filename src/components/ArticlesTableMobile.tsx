@@ -56,6 +56,12 @@ interface Article {
   created_at: string
   published_at?: string
   tags: string[]
+  translations?: {
+    [key: string]: {
+      title: string
+      content: string
+    }
+  }
 }
 
 interface ArticlesTableMobileProps {
@@ -139,6 +145,30 @@ export function ArticlesTableMobile({
   const formatTransferFee = (fee: number | null) => {
     if (!fee || fee === 0) return "Free"
     return fee.toString()
+  }
+
+  const getTranslationCount = (article: Article) => {
+    if (!article.translations) return 1
+    
+    let completed = 0
+    const languages = ['en', 'es', 'fr', 'de', 'it']
+    
+    // Always count English if title exists
+    if (article.title) {
+      completed = 1
+    }
+    
+    // Count other languages
+    languages.forEach(langCode => {
+      if (langCode === 'en') return
+      
+      const translation = article.translations?.[langCode]
+      if (translation && translation.title && translation.content) {
+        completed++
+      }
+    })
+    
+    return completed
   }
 
   const getStatusBadgeVariant = (status: string) => {
@@ -230,6 +260,7 @@ export function ArticlesTableMobile({
             metadata={[
               { label: "Player", value: article.player_name },
               { label: "Fee", value: formatTransferFee(article.transfer_fee) },
+              { label: "Translations", value: `${getTranslationCount(article)}/5` },
               { label: "Date", value: formatForMobile.formatMobileDate(dateToShow) },
             ]}
             actions={getArticleActions(article)}
@@ -309,6 +340,7 @@ export function ArticlesTableMobile({
               </Button>
             </TableHead>
             <TableHead>Status</TableHead>
+            <TableHead>Translations</TableHead>
             <TableHead>
               <Button 
                 variant="ghost" 
@@ -351,6 +383,12 @@ export function ArticlesTableMobile({
                 <Badge variant={getStatusBadgeVariant(article.transfer_status)}>
                   {article.transfer_status}
                 </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center gap-1">
+                  <Languages className="h-3 w-3" />
+                  <span className="text-sm">{getTranslationCount(article)}</span>
+                </div>
               </TableCell>
               <TableCell>
                 {(() => {
