@@ -3,40 +3,25 @@
 import { useState } from "react"
 import { ArticlesPageLayout } from "@/components/admin/ArticlesPageLayout"
 import { BulkTranslationDialog } from "@/components/admin/BulkTranslationDialog"
-import { Button } from "@/components/ui/button"
-import { Languages } from "lucide-react"
 
 export default function PublishedArticlesPage() {
-  const [selectedArticles, setSelectedArticles] = useState<string[]>([])
   const [showBulkTranslation, setShowBulkTranslation] = useState(false)
+  const [selectedArticleIds, setSelectedArticleIds] = useState<string[]>([])
 
   const handleBulkTranslate = (articleIds: string[]) => {
-    setSelectedArticles(articleIds)
+    setSelectedArticleIds(articleIds)
     setShowBulkTranslation(true)
   }
 
   const handleTranslationSuccess = (summary: any) => {
     console.log('Bulk translation started:', summary)
     setShowBulkTranslation(false)
-    setSelectedArticles([])
-    // Show success message or refresh data
+    setSelectedArticleIds([])
   }
 
   const handleTranslationError = (error: string) => {
     console.error('Bulk translation error:', error)
-    // Show error message
   }
-
-  const bulkActions = selectedArticles.length > 0 ? (
-    <Button
-      onClick={() => handleBulkTranslate(selectedArticles)}
-      variant="outline"
-      size="sm"
-    >
-      <Languages className="mr-2 h-4 w-4" />
-      Translate ({selectedArticles.length})
-    </Button>
-  ) : null
 
   return (
     <>
@@ -47,16 +32,13 @@ export default function PublishedArticlesPage() {
         initialSortBy="published_at"
         initialSortOrder="desc"
         showAddButton={false}
-        bulkActions={bulkActions}
-        selectedArticles={selectedArticles}
-        onSelectArticles={setSelectedArticles}
         onBulkTranslate={handleBulkTranslate}
       />
       
       <BulkTranslationDialog
         open={showBulkTranslation}
         onOpenChange={setShowBulkTranslation}
-        selectedArticleIds={selectedArticles}
+        selectedArticleIds={selectedArticleIds}
         onSuccess={handleTranslationSuccess}
         onError={handleTranslationError}
       />

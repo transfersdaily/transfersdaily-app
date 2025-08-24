@@ -433,6 +433,12 @@ export function ArticlesTableMobile({
                     </Button>
                   </>
                 )}
+                {pageType === "published" && (
+                  <Button size="sm" variant="outline" onClick={handleBulkTranslate}>
+                    <Languages className="mr-2 h-4 w-4" />
+                    Translate ({selectedArticles.length})
+                  </Button>
+                )}
                 <Button size="sm" variant="destructive" onClick={handleBulkDelete}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete ({selectedArticles.length})

@@ -6,24 +6,16 @@ import { BulkTranslationDialog } from "@/components/admin/BulkTranslationDialog"
 import { useToast } from "@/hooks/use-toast"
 
 export default function DraftArticlesPage() {
-  const [selectedArticles, setSelectedArticles] = useState<string[]>([])
   const [showBulkTranslation, setShowBulkTranslation] = useState(false)
+  const [selectedArticleIds, setSelectedArticleIds] = useState<string[]>([])
   const { toast } = useToast()
 
-  const handleBulkTranslation = (articleIds: string[]) => {
-    if (articleIds.length === 0) {
-      toast({
-        title: "No articles selected",
-        description: "Please select at least one article to translate.",
-        variant: "destructive",
-      })
-      return
-    }
+  const handleBulkTranslate = (articleIds: string[]) => {
+    setSelectedArticleIds(articleIds)
     setShowBulkTranslation(true)
   }
 
   const handleBulkPublish = (articleIds: string[]) => {
-    // TODO: Implement bulk publish functionality
     console.log('Bulk publish:', articleIds)
     toast({
       title: "Bulk publish",
@@ -36,7 +28,7 @@ export default function DraftArticlesPage() {
       title: "Bulk translation started",
       description: `Translation started for ${summary.started} out of ${summary.total} articles.`,
     })
-    setSelectedArticles([]) // Clear selection
+    setSelectedArticleIds([])
     setShowBulkTranslation(false)
   }
 
@@ -57,16 +49,14 @@ export default function DraftArticlesPage() {
         initialSortBy="created_at"
         initialSortOrder="asc"
         showAddButton={false}
-        selectedArticles={selectedArticles}
-        onSelectArticles={setSelectedArticles}
-        onBulkTranslate={handleBulkTranslation}
+        onBulkTranslate={handleBulkTranslate}
         onBulkPublish={handleBulkPublish}
       />
 
       <BulkTranslationDialog
         open={showBulkTranslation}
         onOpenChange={setShowBulkTranslation}
-        selectedArticleIds={selectedArticles}
+        selectedArticleIds={selectedArticleIds}
         onSuccess={handleBulkTranslationSuccess}
         onError={handleBulkTranslationError}
       />

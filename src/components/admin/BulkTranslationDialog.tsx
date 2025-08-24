@@ -67,6 +67,7 @@ export function BulkTranslationDialog({
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('transfersdaily_id_token')}`
         },
         body: JSON.stringify({
           articleIds: selectedArticleIds,

@@ -14,9 +14,6 @@ interface ArticlesPageLayoutProps extends UseArticlesParams {
   pageType: "draft" | "published" | "scheduled"
   showAddButton?: boolean
   onAddClick?: () => void
-  bulkActions?: React.ReactNode
-  selectedArticles?: string[]
-  onSelectArticles?: (articles: string[]) => void
   onBulkTranslate?: (articleIds: string[]) => void
   onBulkPublish?: (articleIds: string[]) => void
 }
@@ -29,9 +26,6 @@ export function ArticlesPageLayout({
   initialSortOrder,
   showAddButton = true,
   onAddClick,
-  bulkActions,
-  selectedArticles: externalSelectedArticles,
-  onSelectArticles: externalOnSelectArticles,
   onBulkTranslate,
   onBulkPublish
 }: ArticlesPageLayoutProps) {
@@ -67,18 +61,9 @@ export function ArticlesPageLayout({
     handleResetFilters
   } = useArticles({ status, initialSortBy, initialSortOrder })
 
-  // Use external selected articles if provided, otherwise use internal
-  const selectedArticles = externalSelectedArticles ?? internalSelectedArticles
-  const setSelectedArticles = externalOnSelectArticles ?? setInternalSelectedArticles
-
-  // Create a handleSelectAll that works with external or internal state
-  const handleSelectAllArticles = (checked: boolean) => {
-    if (checked) {
-      setSelectedArticles(articles.map(article => article.id))
-    } else {
-      setSelectedArticles([])
-    }
-  }
+  // Use internal selected articles
+  const selectedArticles = internalSelectedArticles
+  const setSelectedArticles = setInternalSelectedArticles
 
   if (isLoading) {
     return (
@@ -154,11 +139,6 @@ export function ArticlesPageLayout({
       title={title}
       actions={
         <div className="flex items-center gap-2">
-          {bulkActions && selectedArticles.length > 0 && (
-            <div className="flex items-center gap-2">
-              {bulkActions}
-            </div>
-          )}
           {showAddButton && (
             <Button size="sm" onClick={onAddClick} className="min-h-[44px]">
               <Plus className="mr-2 h-4 w-4" />
@@ -180,7 +160,7 @@ export function ArticlesPageLayout({
           onPageChange={setCurrentPage}
           selectedArticles={selectedArticles}
           onSelectArticles={setSelectedArticles}
-          onSelectAll={handleSelectAllArticles}
+          onSelectAll={handleSelectAll}
           searchTerm={searchInput}
           onSearchChange={setSearchInput}
           onSearch={handleSearch}
