@@ -3,20 +3,21 @@
 import { AdSense } from './AdSense';
 import { AdFreeZone } from './AdFreeZone';
 
-interface AdSidebarProps {
+interface AdArticleBottomProps {
   className?: string;
 }
 
-export function AdSidebar({ className = '' }: AdSidebarProps) {
+export function AdArticleBottom({ className = '' }: AdArticleBottomProps) {
   return (
     <AdFreeZone>
-      <div className={`w-full ${className}`} style={{ minWidth: '250px' }}>
+      <div className={`w-full flex justify-center my-8 ${className}`}>
         <AdSense
-          adSlot="6321073481"
+          adSlot="9448394733"
           adFormat="auto"
           style={{
             minHeight: '250px',
-            width: '100%'
+            width: '100%',
+            maxWidth: '100%'
           }}
         />
       </div>

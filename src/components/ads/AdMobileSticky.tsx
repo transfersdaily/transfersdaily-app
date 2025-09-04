@@ -5,11 +5,7 @@ import { X } from 'lucide-react';
 import { AdSense } from './AdSense';
 import { AdFreeZone } from './AdFreeZone';
 
-interface AdMobileStickyProps {
-  slot: string;
-}
-
-export function AdMobileSticky({ slot }: AdMobileStickyProps) {
+export function AdMobileSticky() {
   const [isVisible, setIsVisible] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -37,7 +33,7 @@ export function AdMobileSticky({ slot }: AdMobileStickyProps) {
             <X className="h-3 w-3" />
           </button>
           <AdSense
-            adSlot={slot}
+            adSlot="9228902885"
             adFormat="auto"
             style={{
               minHeight: '50px',

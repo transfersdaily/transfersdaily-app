@@ -4,30 +4,23 @@ import { AdSense } from './AdSense';
 import { AdFreeZone } from './AdFreeZone';
 
 interface AdBannerProps {
-  slot: string;
   className?: string;
-  size?: 'header' | 'section' | 'footer';
 }
 
-export function AdBanner({ slot, className = '', size = 'section' }: AdBannerProps) {
-  const sizeStyles = {
-    header: 'min-h-[50px] md:min-h-[90px]',
-    section: 'min-h-[100px] md:min-h-[90px]', 
-    footer: 'min-h-[50px] md:min-h-[90px]'
-  };
-
+export function AdBanner({ className = '' }: AdBannerProps) {
   return (
     <AdFreeZone>
-      <div className={`w-full flex justify-center my-4 ${sizeStyles[size]} ${className}`}>
-        <AdSense
-          adSlot={slot}
-          adFormat="auto"
-          className="w-full max-w-[728px]"
-          style={{ 
-            minHeight: size === 'section' ? '100px' : '50px',
-            width: '100%'
-          }}
-        />
+      <div className={`w-full flex justify-center my-4 ${className}`} style={{ minWidth: '300px' }}>
+        <div style={{ width: '100%', maxWidth: '728px' }}>
+          <AdSense
+            adSlot="9393673972"
+            adFormat="auto"
+            style={{
+              minHeight: '90px',
+              width: '100%'
+            }}
+          />
+        </div>
       </div>
     </AdFreeZone>
   );

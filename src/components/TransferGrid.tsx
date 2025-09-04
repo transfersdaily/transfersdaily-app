@@ -1,4 +1,5 @@
 import { TransferCard } from '@/components/TransferCard';
+import { AdInFeed } from '@/components/ads';
 import { type Locale, type Dictionary } from '@/lib/i18n';
 import { type Transfer } from '@/lib/api';
 import { formatTimeAgo } from '@/lib/date-utils';
@@ -8,7 +9,7 @@ interface TransferGridProps {
   transfers: Transfer[];
   locale: Locale;
   dict: Dictionary;
-  limit?: number; // Optional limit, if not provided shows all transfers
+  limit?: number;
 }
 
 export function TransferGrid({ 
@@ -27,24 +28,37 @@ export function TransferGrid({
     );
   }
 
-  // Apply limit if provided, otherwise show all
   const displayTransfers = limit ? transfers.slice(0, limit) : transfers;
+  const gridItems = [];
+
+  displayTransfers.forEach((transfer, index) => {
+    // Add transfer card
+    gridItems.push(
+      <div key={transfer.id} className="col-span-1">
+        <TransferCard
+          title={transfer.title}
+          excerpt={transfer.excerpt}
+          primaryBadge={transfer.league}
+          timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+          href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
+          imageUrl={transfer.imageUrl}
+        />
+      </div>
+    );
+
+    // Add in-feed ad every 6 articles
+    if ((index + 1) % 6 === 0 && index < displayTransfers.length - 1) {
+      gridItems.push(
+        <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
+          <AdInFeed />
+        </div>
+      );
+    }
+  });
 
   return (
-    // Improved mobile spacing: 16px gap on mobile, 24px on desktop
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-      {displayTransfers.map((transfer) => (
-        <div key={transfer.id} className="col-span-1">
-          <TransferCard
-            title={transfer.title}
-            excerpt={transfer.excerpt}
-            primaryBadge={transfer.league}
-            timeAgo={formatTimeAgo(transfer.publishedAt, t)}
-            href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
-            imageUrl={transfer.imageUrl}
-          />
-        </div>
-      ))}
+      {gridItems}
     </div>
   );
 }

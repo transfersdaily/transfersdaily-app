@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/lib/auth'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import PlausibleProvider from 'next-plausible'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -62,15 +63,16 @@ export default function RootLayout({
             `,
           }}
         />
-        
-        {/* Google AdSense */}
-        <script 
+      </head>
+      <body className={inter.className}>
+        {/* Google AdSense - Client-side only */}
+        <Script 
           async 
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6269937543968234"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
-      </head>
-      <body className={inter.className}>
+        
         <PlausibleProvider 
           domain="transfersdaily.com"
           trackOutboundLinks={true}
