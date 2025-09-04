@@ -20,6 +20,7 @@ import { ArticleClientComponents } from './ArticleClientComponents'
 import { typography } from "@/lib/typography"
 import { API_CONFIG } from '@/lib/config';
 import { getBestDate, formatDisplayDate, getValidDateForMeta, formatTimeAgo } from '@/lib/date-utils'
+import { AdArticleContent, AdArticleBottom } from "@/components/ads"
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -704,6 +705,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
                 </div>
               )}
 
+            </div>
+
+            {/* Article Bottom Ad */}
+            <div className="px-8 sm:px-10 lg:px-12 pb-8">
+              <AdArticleBottom />
             </div>
           </article>
 
