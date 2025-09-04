@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 interface AdSenseProps {
   adSlot: string;
@@ -28,59 +28,36 @@ export function AdSense({
   fullWidthResponsive = true,
 }: AdSenseProps) {
   const adRef = useRef<HTMLDivElement>(null);
-  const [isClient, setIsClient] = useState(false);
-  const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    try {
+      if (typeof window !== 'undefined') {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch (error) {
+      console.error('AdSense error:', error);
+    }
   }, []);
 
-  useEffect(() => {
-    if (!isClient || !adRef.current) return;
-
-    const checkWidth = () => {
-      const width = adRef.current?.offsetWidth || 0;
-      if (width > 0) {
-        setTimeout(() => {
-          try {
-            if (typeof window !== 'undefined' && window.adsbygoogle) {
-              window.adsbygoogle.push({});
-              
-              // Check if ad actually loaded after 2 seconds
-              setTimeout(() => {
-                const adElement = adRef.current?.querySelector('.adsbygoogle');
-                if (adElement && adElement.getAttribute('data-adsbygoogle-status') === 'done') {
-                  const hasContent = adElement.innerHTML.trim() !== '';
-                  setAdLoaded(hasContent);
-                }
-              }, 2000);
-            }
-          } catch (error) {
-            console.error('AdSense error:', error);
-          }
-        }, 100);
-      }
-    };
-
-    checkWidth();
-    const timer = setTimeout(checkWidth, 500);
-
-    return () => clearTimeout(timer);
-  }, [isClient]);
-
-  if (!isClient) {
-    return null; // No space during SSR
-  }
-
   return (
-    <div 
-      ref={adRef} 
-      className={`adsense-container ${className}`} 
-      style={adLoaded ? { minHeight: '250px', width: '100%', ...style } : { display: 'none' }}
-    >
+    <div ref={adRef} className={`adsense-container ${className}`} style={style}>
+      {/* Temporary placeholder to see if ads are rendering */}
+      <div style={{ 
+        backgroundColor: '#f0f0f0', 
+        border: '2px dashed #ccc', 
+        padding: '20px', 
+        textAlign: 'center', 
+        marginBottom: '10px',
+        minHeight: '100px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <span style={{ color: '#666' }}>AdSense Slot: {adSlot}</span>
+      </div>
       <ins
         className="adsbygoogle"
-        style={{ display: 'block', width: '100%' }}
+        style={{ display: 'block' }}
         data-ad-client="ca-pub-6269937543968234"
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
