@@ -41,20 +41,6 @@ export function AdSense({
 
   return (
     <div ref={adRef} className={`adsense-container ${className}`} style={style}>
-      {/* Temporary placeholder to see if ads are rendering */}
-      <div style={{ 
-        backgroundColor: '#f0f0f0', 
-        border: '2px dashed #ccc', 
-        padding: '20px', 
-        textAlign: 'center', 
-        marginBottom: '10px',
-        minHeight: '100px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <span style={{ color: '#666' }}>AdSense Slot: {adSlot}</span>
-      </div>
       <ins
         className="adsbygoogle"
         style={{ display: 'block' }}

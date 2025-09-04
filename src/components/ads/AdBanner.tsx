@@ -11,14 +11,15 @@ export function AdBanner({ className = '' }: AdBannerProps) {
   return (
     <AdFreeZone>
       <div className={`w-full flex justify-center my-4 ${className}`} style={{ minWidth: '300px' }}>
-        <div style={{ width: '100%', maxWidth: '728px' }}>
+        <div style={{ width: '728px', height: '90px' }}>
           <AdSense
             adSlot="9393673972"
-            adFormat="auto"
+            adFormat="rectangle"
             style={{
-              minHeight: '90px',
-              width: '100%'
+              width: '728px',
+              height: '90px'
             }}
+            fullWidthResponsive={false}
           />
         </div>
       </div>

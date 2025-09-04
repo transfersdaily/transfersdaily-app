@@ -21,7 +21,7 @@ import { Clock } from 'lucide-react';
 // API configuration
 import { API_CONFIG } from '@/lib/config';
 // Ad components - simplified to use only real ad units
-import { AdBanner, AdInContent, AdSidebar, AdMobileSticky } from '@/components/ads';
+import { AdBanner, AdInContent1, AdInContent2, AdInContent3, AdSidebar, AdMobileSticky } from '@/components/ads';
 
 // Force dynamic rendering to ensure fresh data
 export const dynamic = 'force-dynamic';
@@ -440,9 +440,6 @@ export default async function HomePage({
               </Suspense>
             </section>
 
-            {/* Ad: Header Banner */}
-            <AdBanner />
-
             {/* Latest Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="latest-transfers">
               <div className="flex justify-between items-start mb-3 md:mb-6">
@@ -482,7 +479,7 @@ export default async function HomePage({
             </section>
 
             {/* Ad: Content Banner */}
-            <AdInContent />
+            <AdInContent3 />
 
             {/* Browse by League Section */}
             <section className="py-4 md:py-8" aria-labelledby="browse-leagues">
@@ -553,8 +550,8 @@ export default async function HomePage({
                     limit={3}
                   />
                   
-                  {/* Ad: In Content */}
-                  <AdInContent />
+                  {/* Ad: In Content 1 */}
+                  <AdInContent1 />
                   
                   <TransferGrid
                     transfers={initialData.completedTransfers.slice(3, 6)}
@@ -595,8 +592,8 @@ export default async function HomePage({
                     limit={3}
                   />
                   
-                  {/* Ad: In Content */}
-                  <AdInContent />
+                  {/* Ad: In Content 2 */}
+                  <AdInContent2 />
                   
                   <TransferGrid
                     transfers={initialData.trendingTransfers.slice(3, 6)}

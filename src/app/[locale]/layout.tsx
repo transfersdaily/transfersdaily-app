@@ -2,6 +2,7 @@ import { ConditionalLayout } from '@/components/ConditionalLayout'
 import { locales, type Locale, getDictionary } from '@/lib/i18n'
 import { DictionaryProvider } from '@/lib/dictionary-provider'
 import { ServerNavbar } from '@/components/ServerNavbar'
+import { AdBanner } from '@/components/ads'
 import { notFound } from 'next/navigation'
 import '../globals.css'
 
@@ -33,6 +34,9 @@ export default async function LocaleLayout({
     <DictionaryProvider dictionary={dictionary}>
       <ConditionalLayout>
         <ServerNavbar locale={locale} dictionary={dictionary} />
+        
+        {/* Site-wide Header Banner */}
+        <AdBanner />
         
         {children}
       </ConditionalLayout>
