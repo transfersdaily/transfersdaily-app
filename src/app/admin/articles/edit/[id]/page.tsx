@@ -166,7 +166,7 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         const leaguesData = await leaguesResponse.json()
         if (leaguesData.success && leaguesData.leagues) {
           // Deduplicate leagues by name (case-insensitive)
-          const uniqueLeagues = leaguesData.leagues.reduce((acc, league) => {
+          const uniqueLeagues = leaguesData.leagues.reduce((acc: any[], league: any) => {
             const existing = acc.find(l => l.name.toLowerCase() === league.name.toLowerCase())
             if (!existing) {
               acc.push(league)

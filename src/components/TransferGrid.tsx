@@ -29,7 +29,7 @@ export function TransferGrid({
   }
 
   const displayTransfers = limit ? transfers.slice(0, limit) : transfers;
-  const gridItems = [];
+  const gridItems: React.ReactElement[] = [];
 
   displayTransfers.forEach((transfer, index) => {
     // Add transfer card
