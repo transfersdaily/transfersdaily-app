@@ -21,7 +21,7 @@ import { Clock } from 'lucide-react';
 // API configuration
 import { API_CONFIG } from '@/lib/config';
 // Ad components - simplified to use only real ad units
-import { AdBanner, AdInContent1, AdInContent2, AdInContent3, AdSidebar, AdMobileSticky } from '@/components/ads';
+import { AdBanner, AdInContent1, AdInContent2, AdInContent3, AdSidebar, AdSidebar2, AdMobileSticky } from '@/components/ads';
 
 // Force dynamic rendering to ensure fresh data
 export const dynamic = 'force-dynamic';
@@ -619,11 +619,8 @@ export default async function HomePage({
                 <Sidebar locale={locale} dict={dict} />
               </Suspense>
               
-              {/* Ad: Sidebar Middle */}
-              <AdSidebar />
-              
               {/* Ad: Sidebar Bottom */}
-              <AdSidebar />
+              <AdSidebar2 />
             </div>
           </aside>
         </div>

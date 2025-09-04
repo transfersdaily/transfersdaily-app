@@ -1,6 +1,7 @@
 export { AdSense } from './AdSense';
 export { AdBanner } from './AdBanner';
 export { AdSidebar } from './AdSidebar';
+export { AdSidebar2 } from './AdSidebar2';
 export { AdInContent } from './AdInContent';
 export { AdInContent1 } from './AdInContent1';
 export { AdInContent2 } from './AdInContent2';
