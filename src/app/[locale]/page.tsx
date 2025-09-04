@@ -20,6 +20,8 @@ import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
 // API configuration
 import { API_CONFIG } from '@/lib/config';
+// Ad components
+import { AdBanner, AdInContent, AdSidebar, AdMobileSticky, AD_SLOTS } from '@/components/ads';
 
 // Force dynamic rendering to ensure fresh data
 export const dynamic = 'force-dynamic';
@@ -438,8 +440,14 @@ export default async function HomePage({
               </Suspense>
             </section>
 
+            {/* Ad: Post-Hero Banner */}
+            <AdBanner slot={AD_SLOTS.HOMEPAGE.POST_HERO} size="header" />
+
             {/* Latest Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="latest-transfers">
+              {/* Ad: Pre-Latest Banner */}
+              <AdBanner slot={AD_SLOTS.HOMEPAGE.PRE_LATEST} size="section" />
+              
               <div className="flex justify-between items-start mb-3 md:mb-6">
                 <div>
                   <h2
@@ -458,13 +466,28 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGrid
-                  transfers={initialData.latestTransfers}
-                  locale={locale}
-                  dict={dict}
-                  limit={6}
-                />
+                <div className="space-y-4">
+                  <TransferGrid
+                    transfers={initialData.latestTransfers.slice(0, 3)}
+                    locale={locale}
+                    dict={dict}
+                    limit={3}
+                  />
+                  
+                  {/* Ad: In Latest Grid */}
+                  <AdInContent slot={AD_SLOTS.HOMEPAGE.IN_LATEST_GRID} type="grid" />
+                  
+                  <TransferGrid
+                    transfers={initialData.latestTransfers.slice(3, 6)}
+                    locale={locale}
+                    dict={dict}
+                    limit={3}
+                  />
+                </div>
               </Suspense>
+              
+              {/* Ad: Post-Latest Banner */}
+              <AdBanner slot={AD_SLOTS.HOMEPAGE.POST_LATEST} size="section" />
             </section>
 
             {/* Browse by League Section */}
@@ -505,10 +528,16 @@ export default async function HomePage({
                   </Link>
                 ))}
               </div>
+              
+              {/* Ad: Post-League Banner */}
+              <AdBanner slot={AD_SLOTS.HOMEPAGE.POST_LEAGUE} size="section" />
             </section>
 
             {/* Completed Transfers Section */}
             <section className="py-4 md:py-8" aria-labelledby="completed-transfers">
+              {/* Ad: Pre-Completed Banner */}
+              <AdBanner slot={AD_SLOTS.HOMEPAGE.PRE_COMPLETED} size="section" />
+              
               <div className="flex justify-between items-start mb-3 md:mb-6">
                 <div>
                   <h2
@@ -527,17 +556,32 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGrid
-                  transfers={initialData.completedTransfers}
-                  locale={locale}
-                  dict={dict}
-                  limit={6}
-                />
+                <div className="space-y-4">
+                  <TransferGrid
+                    transfers={initialData.completedTransfers.slice(0, 3)}
+                    locale={locale}
+                    dict={dict}
+                    limit={3}
+                  />
+                  
+                  {/* Ad: In Completed Grid */}
+                  <AdInContent slot={AD_SLOTS.HOMEPAGE.IN_COMPLETED_GRID} type="grid" />
+                  
+                  <TransferGrid
+                    transfers={initialData.completedTransfers.slice(3, 6)}
+                    locale={locale}
+                    dict={dict}
+                    limit={3}
+                  />
+                </div>
               </Suspense>
             </section>
 
             {/* Trending Transfer News Section */}
             <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
+              {/* Ad: Pre-Trending Banner */}
+              <AdBanner slot={AD_SLOTS.HOMEPAGE.PRE_TRENDING} size="section" />
+              
               <div className="flex justify-between items-start mb-3 md:mb-6">
                 <div>
                   <h2
@@ -556,14 +600,29 @@ export default async function HomePage({
               </div>
 
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <TransferGrid
-                  transfers={initialData.trendingTransfers}
-                  locale={locale}
-                  dict={dict}
-                  limit={6}
-                />
+                <div className="space-y-4">
+                  <TransferGrid
+                    transfers={initialData.trendingTransfers.slice(0, 3)}
+                    locale={locale}
+                    dict={dict}
+                    limit={3}
+                  />
+                  
+                  {/* Ad: In Trending Grid */}
+                  <AdInContent slot={AD_SLOTS.HOMEPAGE.IN_TRENDING_GRID} type="grid" />
+                  
+                  <TransferGrid
+                    transfers={initialData.trendingTransfers.slice(3, 6)}
+                    locale={locale}
+                    dict={dict}
+                    limit={3}
+                  />
+                </div>
               </Suspense>
             </section>
+
+            {/* Ad: Pre-Newsletter Banner */}
+            <AdBanner slot={AD_SLOTS.HOMEPAGE.PRE_NEWSLETTER} size="footer" />
 
             {/* Newsletter Section */}
             <NewsletterSection locale={locale} dict={dict} />
@@ -571,12 +630,29 @@ export default async function HomePage({
 
           {/* Sidebar - 30% */}
           <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-            <Suspense fallback={<SidebarSkeleton />}>
-              <Sidebar locale={locale} dict={dict} />
-            </Suspense>
+            <div className="space-y-6">
+              {/* Ad: Sidebar Top */}
+              <AdSidebar slot={AD_SLOTS.HOMEPAGE.SIDEBAR_TOP} size="medium" />
+              
+              <Suspense fallback={<SidebarSkeleton />}>
+                <Sidebar locale={locale} dict={dict} />
+              </Suspense>
+              
+              {/* Ad: Sidebar Middle 1 */}
+              <AdSidebar slot={AD_SLOTS.HOMEPAGE.SIDEBAR_MIDDLE_1} size="medium" />
+              
+              {/* Ad: Sidebar Middle 2 (Large) */}
+              <AdSidebar slot={AD_SLOTS.HOMEPAGE.SIDEBAR_MIDDLE_2} size="large" />
+              
+              {/* Ad: Sidebar Bottom */}
+              <AdSidebar slot={AD_SLOTS.HOMEPAGE.SIDEBAR_BOTTOM} size="medium" />
+            </div>
           </aside>
         </div>
       </div>
+      
+      {/* Mobile Sticky Ad */}
+      <AdMobileSticky slot={AD_SLOTS.HOMEPAGE.MOBILE_STICKY} />
     </main>
   );
 }
