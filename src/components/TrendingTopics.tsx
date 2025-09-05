@@ -118,15 +118,16 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (isLoading) {
     return (
-      <div className="p-4">
-        <div className="mb-3 md:mb-4">
-          <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <TrendingUp className="h-5 w-5 text-primary/60" />
+          <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
         </div>
-        <div className="space-y-2">
+        <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center justify-between">
-              <div className="h-4 bg-gray-200 rounded animate-pulse flex-1 mr-2" />
-              <div className="h-3 bg-gray-200 rounded animate-pulse w-12" />
+            <div key={i} className="flex items-center justify-between py-2">
+              <div className="h-4 bg-slate-200 rounded-full animate-pulse flex-1 mr-3" />
+              <div className="h-3 bg-slate-200 rounded-full animate-pulse w-16" />
             </div>
           ))}
         </div>
@@ -136,12 +137,13 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (hasError) {
     return (
-      <div className="p-4">
-        <div className="mb-3 md:mb-4">
-          <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <TrendingUp className="h-5 w-5 text-primary/60" />
+          <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
         </div>
-        <div className="text-center py-4">
-          <p className="text-sm text-gray-500">{t('sidebar.errorLoadingTrends')}</p>
+        <div className="text-center py-8">
+          <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingTrends')}</p>
         </div>
       </div>
     )
@@ -149,39 +151,44 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (topics.length === 0) {
     return (
-      <div className="p-4">
-        <div className="mb-3 md:mb-4">
-          <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <TrendingUp className="h-5 w-5 text-primary/60" />
+          <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
         </div>
-        <div className="text-center py-4">
-          <p className="text-sm text-gray-500">{t('sidebar.noTrendingTopics')}</p>
+        <div className="text-center py-8">
+          <p className="text-sm text-muted-foreground/80">{t('sidebar.noTrendingTopics')}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="p-4">
-      <div className="mb-3 md:mb-4">
-        <h3 className="text-sm md:text-base font-semibold text-foreground">Most Searched</h3>
+    <div className="p-6">
+      <div className="flex items-center gap-3 mb-6">
+        <TrendingUp className="h-5 w-5 text-primary/60" />
+        <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
       </div>
-        <div className="space-y-2">
-          {topics.map((topic, index) => (
-            <Link
-              key={`${topic.query}-${index}`}
-              href={`/${locale}/search?q=${encodeURIComponent(topic.query)}`}
-              onClick={() => handleTopicClick(topic.query)}
-              className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors group"
-            >
-              <span className="text-sm text-gray-700 group-hover:text-blue-600 truncate flex-1 mr-2">
+      <div className="space-y-1">
+        {topics.map((topic, index) => (
+          <Link
+            key={`${topic.query}-${index}`}
+            href={`/${locale}/search?q=${encodeURIComponent(topic.query)}`}
+            onClick={() => handleTopicClick(topic.query)}
+            className="flex items-center justify-between p-3 rounded-xl hover:bg-white/60 transition-all duration-200 group border-0"
+          >
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary/60 to-primary/40 flex-shrink-0"></div>
+              <span className="text-sm font-medium text-slate-700 group-hover:text-primary truncate transition-colors duration-200">
                 {topic.name}
               </span>
-              <span className="text-xs text-gray-500 whitespace-nowrap">
-                {topic.count}
-              </span>
-            </Link>
-          ))}
-        </div>
+            </div>
+            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-full ml-3 flex-shrink-0">
+              {topic.count}
+            </span>
+          </Link>
+        ))}
       </div>
-    )
+    </div>
+  )
   }

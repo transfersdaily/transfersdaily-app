@@ -33,22 +33,37 @@ export function middleware(request: NextRequest) {
 
   // 1. Check for locale in cookie
   const localeCookie = request.cookies.get('locale')?.value
+  console.log('🍪 Locale cookie:', localeCookie)
+  
   if (localeCookie && isValidLocale(localeCookie)) {
     locale = localeCookie
+    console.log('✅ Using locale from cookie:', locale)
   } else {
     // 2. Check Accept-Language header
     const acceptLanguage = request.headers.get('Accept-Language')
+    console.log('🌐 Accept-Language header:', acceptLanguage)
+    
     if (acceptLanguage) {
       const preferredLocale = acceptLanguage
         .split(',')[0]
         .split('-')[0]
         .toLowerCase()
       
+      console.log('🔍 Parsed preferred locale:', preferredLocale)
+      
+      // Only use browser locale if it's supported, otherwise stick with default
       if (isValidLocale(preferredLocale)) {
         locale = preferredLocale
+        console.log('✅ Using locale from Accept-Language:', locale)
+      } else {
+        console.log('❌ Preferred locale not supported, using default:', defaultLocale)
       }
+    } else {
+      console.log('ℹ️ No Accept-Language header, using default:', defaultLocale)
     }
   }
+
+  console.log('🎯 Final locale decision:', locale)
 
   // Redirect to include the locale
   const redirectUrl = new URL(`/${locale}${pathname}`, request.url)
