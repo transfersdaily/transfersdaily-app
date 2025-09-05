@@ -23,7 +23,7 @@ export function SidebarArticleItem({
   const content = (
     <div className="flex gap-4 items-start">
       {/* Article Image - Larger, more prominent */}
-      <div className="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 shadow-sm">
+      <div className="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-sm">
         {article.imageUrl ? (
           <Image
             className="w-full h-full object-cover object-center block group-hover:scale-110 transition-transform duration-300"
@@ -43,7 +43,7 @@ export function SidebarArticleItem({
       {/* Article Content - Better hierarchy and spacing */}
       <div className="flex-1 min-w-0 space-y-3">
         {/* Article title - Better typography */}
-        <h3 className="text-sm font-bold leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200 text-slate-800">
+        <h3 className="text-sm font-bold leading-snug line-clamp-2 group-hover:text-primary transition-colors duration-200 text-foreground">
           {article.title}
         </h3>
         {/* Meta information - Cleaner layout */}
@@ -53,7 +53,7 @@ export function SidebarArticleItem({
               {article.league}
             </span>
           )}
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />
             <span>{formatTimeAgo(article.publishedAt)}</span>
           </div>
@@ -66,7 +66,7 @@ export function SidebarArticleItem({
     return (
       <Link
         href={`/${locale}/article/${article.slug}`}
-        className="block group bg-white/40 backdrop-blur-sm border-0 shadow-sm rounded-xl p-4 hover:shadow-md hover:bg-white/60 transition-all duration-300"
+        className="block group bg-card/40 backdrop-blur-sm border-0 shadow-sm rounded-xl p-4 hover:shadow-md hover:bg-card/60 transition-all duration-300"
       >
         {content}
       </Link>
@@ -76,7 +76,7 @@ export function SidebarArticleItem({
   return (
     <Link
       href={`/${locale}/article/${article.slug}`}
-      className="block group hover:bg-white/60 rounded-xl p-4 -m-4 transition-all duration-200"
+      className="block group hover:bg-muted/60 rounded-xl p-4 -m-4 transition-all duration-200"
     >
       {content}
     </Link>

@@ -126,8 +126,8 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="flex items-center justify-between py-2">
-              <div className="h-4 bg-slate-200 rounded-full animate-pulse flex-1 mr-3" />
-              <div className="h-3 bg-slate-200 rounded-full animate-pulse w-16" />
+              <div className="h-4 bg-muted rounded-full animate-pulse flex-1 mr-3" />
+              <div className="h-3 bg-muted rounded-full animate-pulse w-16" />
             </div>
           ))}
         </div>
@@ -175,15 +175,15 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
             key={`${topic.query}-${index}`}
             href={`/${locale}/search?q=${encodeURIComponent(topic.query)}`}
             onClick={() => handleTopicClick(topic.query)}
-            className="flex items-center justify-between p-3 rounded-xl hover:bg-white/60 transition-all duration-200 group border-0"
+            className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/60 transition-all duration-200 group border-0"
           >
             <div className="flex items-center gap-3 flex-1 min-w-0">
               <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary/60 to-primary/40 flex-shrink-0"></div>
-              <span className="text-sm font-medium text-slate-700 group-hover:text-primary truncate transition-colors duration-200">
+              <span className="text-sm font-medium text-foreground group-hover:text-primary truncate transition-colors duration-200">
                 {topic.name}
               </span>
             </div>
-            <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-full ml-3 flex-shrink-0">
+            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-full ml-3 flex-shrink-0">
               {topic.count}
             </span>
           </Link>
