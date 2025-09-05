@@ -104,26 +104,26 @@ export function RecommendedArticles({
   // Always render the section, even if empty or error
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6">
+      <div className="flex items-center gap-3 mb-4">
         <div className="w-1 h-6 bg-gradient-to-b from-primary to-primary/60 rounded-full"></div>
         <h3 className="text-lg font-bold text-foreground tracking-tight">
           {t('sidebar.recommended', 'Recommended Articles')}
         </h3>
       </div>
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
+        <div className="flex items-center justify-center py-8">
           <Loader2 className="h-6 w-6 animate-spin text-primary/60" />
         </div>
       ) : hasError ? (
-        <div className="text-center py-8">
+        <div className="text-center py-6">
           <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingArticles')}</p>
         </div>
       ) : articles.length === 0 ? (
-        <div className="text-center py-8">
+        <div className="text-center py-6">
           <p className="text-sm text-muted-foreground/80">{t('sidebar.noRecommendedArticles')}</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {articles.map((article) => (
             <SidebarArticleItem
               key={article.id}

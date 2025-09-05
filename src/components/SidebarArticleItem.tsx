@@ -22,19 +22,19 @@ export function SidebarArticleItem({
 }: SidebarArticleItemProps) {
   const content = (
     <div className="flex gap-4 items-start">
-      {/* Article Image - Larger, more prominent */}
-      <div className="flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-sm">
+      {/* Article Image - Larger and more prominent */}
+      <div className="flex-shrink-0 w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-sm">
         {article.imageUrl ? (
           <Image
             className="w-full h-full object-cover object-center block group-hover:scale-110 transition-transform duration-300"
             src={article.imageUrl}
             alt={article.title}
-            width={64}
-            height={64}
+            width={80}
+            height={80}
           />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-            <span className="text-lg text-primary/60 font-bold">
+            <span className="text-xl text-primary/60 font-bold">
               {article.league?.charAt(0) || 'T'}
             </span>
           </div>
@@ -66,7 +66,7 @@ export function SidebarArticleItem({
     return (
       <Link
         href={`/${locale}/article/${article.slug}`}
-        className="block group bg-card/40 backdrop-blur-sm border-0 shadow-sm rounded-xl p-4 hover:shadow-md hover:bg-card/60 transition-all duration-300"
+        className="block group bg-white/50 dark:bg-gray-900/50 backdrop-blur-lg border border-white/20 dark:border-gray-700/30 shadow-md shadow-black/5 dark:shadow-black/20 rounded-2xl p-4 hover:shadow-xl hover:shadow-black/10 dark:hover:shadow-black/30 hover:bg-white/70 dark:hover:bg-gray-900/70 transition-all duration-300 hover:-translate-y-0.5"
       >
         {content}
       </Link>
@@ -76,7 +76,7 @@ export function SidebarArticleItem({
   return (
     <Link
       href={`/${locale}/article/${article.slug}`}
-      className="block group hover:bg-muted/60 rounded-xl p-4 -m-4 transition-all duration-200"
+      className="block group hover:bg-white/60 dark:hover:bg-gray-900/60 backdrop-blur-sm rounded-2xl p-3 -m-3 transition-all duration-300 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
     >
       {content}
     </Link>

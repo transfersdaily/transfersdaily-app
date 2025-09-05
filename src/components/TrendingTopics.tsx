@@ -118,8 +118,8 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-6">
+      <div className="p-5">
+        <div className="flex items-center gap-3 mb-4">
           <TrendingUp className="h-5 w-5 text-primary/60" />
           <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
         </div>
@@ -137,12 +137,12 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (hasError) {
     return (
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-6">
+      <div className="p-5">
+        <div className="flex items-center gap-3 mb-4">
           <TrendingUp className="h-5 w-5 text-primary/60" />
           <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
         </div>
-        <div className="text-center py-8">
+        <div className="text-center py-6">
           <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingTrends')}</p>
         </div>
       </div>
@@ -151,12 +151,12 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   if (topics.length === 0) {
     return (
-      <div className="p-6">
-        <div className="flex items-center gap-3 mb-6">
+      <div className="p-5">
+        <div className="flex items-center gap-3 mb-4">
           <TrendingUp className="h-5 w-5 text-primary/60" />
           <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
         </div>
-        <div className="text-center py-8">
+        <div className="text-center py-6">
           <p className="text-sm text-muted-foreground/80">{t('sidebar.noTrendingTopics')}</p>
         </div>
       </div>
@@ -164,8 +164,8 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
   }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="p-5">
+      <div className="flex items-center gap-3 mb-4">
         <TrendingUp className="h-5 w-5 text-primary/60" />
         <h3 className="text-lg font-bold text-foreground tracking-tight">Most Searched</h3>
       </div>
@@ -175,15 +175,15 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
             key={`${topic.query}-${index}`}
             href={`/${locale}/search?q=${encodeURIComponent(topic.query)}`}
             onClick={() => handleTopicClick(topic.query)}
-            className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/60 transition-all duration-200 group border-0"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-white/60 dark:hover:bg-gray-800/60 backdrop-blur-sm transition-all duration-300 group border-0 hover:shadow-md hover:shadow-black/5 dark:hover:shadow-black/20 hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-2 h-2 rounded-full bg-gradient-to-r from-primary/60 to-primary/40 flex-shrink-0"></div>
-              <span className="text-sm font-medium text-foreground group-hover:text-primary truncate transition-colors duration-200">
+              <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-primary/70 to-primary/50 flex-shrink-0 shadow-sm"></div>
+              <span className="text-sm font-medium text-foreground group-hover:text-primary truncate transition-colors duration-300">
                 {topic.name}
               </span>
             </div>
-            <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded-full ml-3 flex-shrink-0">
+            <span className="text-xs font-semibold text-muted-foreground bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm px-3 py-1.5 rounded-full ml-3 flex-shrink-0 shadow-sm border border-white/20 dark:border-gray-700/30">
               {topic.count}
             </span>
           </Link>
