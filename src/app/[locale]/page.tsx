@@ -367,76 +367,132 @@ export default async function HomePage({
 
               <Suspense
                 fallback={
-                  <Card className="overflow-hidden h-[500px] relative">
-                    <Skeleton className="w-full h-full" />
-                  </Card>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[500px]">
+                    <Card className="overflow-hidden md:col-span-2 relative">
+                      <Skeleton className="w-full h-full" />
+                    </Card>
+                    <div className="hidden md:flex flex-col gap-4">
+                      <Card className="overflow-hidden h-[240px] relative">
+                        <Skeleton className="w-full h-full" />
+                      </Card>
+                      <Card className="overflow-hidden h-[240px] relative">
+                        <Skeleton className="w-full h-full" />
+                      </Card>
+                    </div>
+                  </div>
                 }
               >
-                {initialData.featuredTransfer ? (
-                  <article>
-                    <Link
-                      href={`/${locale}/article/${initialData.featuredTransfer.slug}`}
-                      className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
-                      aria-label={`${t('common.readFullArticle')}: ${
-                        initialData.featuredTransfer.title
-                      }`}
-                    >
-                      <Card className="overflow-hidden h-[500px] relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group bg-card border border-border shadow-md rounded-xl">
-                        <div className="h-full bg-card relative">
-                          {initialData.featuredTransfer.imageUrl && (
-                            <Image
-                              src={initialData.featuredTransfer.imageUrl}
-                              alt={`Featured: ${initialData.featuredTransfer.title} - ${initialData.featuredTransfer.league}`}
-                              width={600}
-                              height={500}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                              priority
-                            />
-                          )}
-                          {/* Overlay gradient - Enhanced for better text readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
-                          
-                          {/* Additional bottom shadow for extra text protection */}
-                          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
-
-                          {/* Content overlay */}
-                          <div className="absolute bottom-0 left-0 right-0 p-8 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-                            <Badge className="mb-4 bg-primary/20 text-primary border-none backdrop-blur-sm">
-                              {initialData.featuredTransfer.league?.toUpperCase()}
-                            </Badge>
-                            <h3 className="text-sm md:text-base lg:text-xl font-bold mb-3 md:mb-4 leading-tight text-white drop-shadow-2xl [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                              {initialData.featuredTransfer.title}
-                            </h3>
-                            <p className="text-white text-sm md:text-base leading-relaxed line-clamp-2 mb-4 md:mb-6 drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
-                              {initialData.featuredTransfer.excerpt}
-                            </p>
-                            <div className="flex items-center gap-2 text-sm text-white drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
-                              <Clock className="h-4 w-4 drop-shadow-lg" />
-                              <time
-                                dateTime={
-                                  initialData.featuredTransfer.publishedAt
-                                }
-                              >
-                                {formatTimeAgo(
-                                  initialData.featuredTransfer.publishedAt,
-                                  t
-                                )}
-                              </time>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[500px]">
+                  {/* Main Featured Article - Large Card */}
+                  {initialData.featuredTransfer ? (
+                    <article className="md:col-span-2">
+                      <Link
+                        href={`/${locale}/article/${initialData.featuredTransfer.slug}`}
+                        className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
+                        aria-label={`${t('common.readFullArticle')}: ${
+                          initialData.featuredTransfer.title
+                        }`}
+                      >
+                        <Card className="overflow-hidden h-full relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group bg-card border border-border shadow-md rounded-xl">
+                          <div className="h-full bg-card relative">
+                            {initialData.featuredTransfer.imageUrl && (
+                              <Image
+                                src={initialData.featuredTransfer.imageUrl}
+                                alt={`Featured: ${initialData.featuredTransfer.title} - ${initialData.featuredTransfer.league}`}
+                                width={600}
+                                height={500}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                priority
+                              />
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
+                              <Badge className="mb-3 bg-primary/20 text-primary border-none backdrop-blur-sm">
+                                {initialData.featuredTransfer.league?.toUpperCase()}
+                              </Badge>
+                              <h3 className="text-lg lg:text-xl font-bold mb-3 leading-tight text-white drop-shadow-2xl [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
+                                {initialData.featuredTransfer.title}
+                              </h3>
+                              <p className="text-white text-sm leading-relaxed line-clamp-2 mb-4 drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
+                                {initialData.featuredTransfer.excerpt}
+                              </p>
+                              <div className="flex items-center gap-2 text-sm text-white drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
+                                <Clock className="h-4 w-4 drop-shadow-lg" />
+                                <time dateTime={initialData.featuredTransfer.publishedAt}>
+                                  {formatTimeAgo(initialData.featuredTransfer.publishedAt, t)}
+                                </time>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Card>
-                    </Link>
-                  </article>
-                ) : (
-                  <Card className="overflow-hidden h-[500px] relative">
-                    <div className="h-full bg-muted flex items-center justify-center">
-                      <p className="text-muted-foreground">
-                        {t('common.noFeaturedTransfer')}
-                      </p>
-                    </div>
-                  </Card>
-                )}
+                        </Card>
+                      </Link>
+                    </article>
+                  ) : (
+                    <Card className="overflow-hidden md:col-span-2 h-full relative">
+                      <div className="h-full bg-muted flex items-center justify-center">
+                        <p className="text-muted-foreground">
+                          {t('common.noFeaturedTransfer')}
+                        </p>
+                      </div>
+                    </Card>
+                  )}
+
+                  {/* Side Articles - Two Small Cards */}
+                  <div className="hidden md:flex flex-col gap-4">
+                    {initialData.latestTransfers?.slice(0, 2).map((transfer: any, index: number) => (
+                      <article key={transfer.id} className="flex-1">
+                        <Link
+                          href={`/${locale}/article/${transfer.slug}`}
+                          className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
+                          aria-label={`${t('common.readFullArticle')}: ${transfer.title}`}
+                        >
+                          <Card className="overflow-hidden h-full relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group bg-card border border-border shadow-md rounded-xl">
+                            <div className="h-full bg-card relative">
+                              {transfer.imageUrl && (
+                                <Image
+                                  src={transfer.imageUrl}
+                                  alt={`${transfer.title} - ${transfer.league}`}
+                                  width={300}
+                                  height={240}
+                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                />
+                              )}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
+                              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <Badge className="mb-2 bg-primary/20 text-primary border-none backdrop-blur-sm text-xs">
+                                  {transfer.league?.toUpperCase()}
+                                </Badge>
+                                <h3 className="text-sm font-bold mb-2 leading-tight text-white drop-shadow-2xl [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] line-clamp-2">
+                                  {transfer.title}
+                                </h3>
+                                <div className="flex items-center gap-2 text-xs text-white drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
+                                  <Clock className="h-3 w-3 drop-shadow-lg" />
+                                  <time dateTime={transfer.publishedAt}>
+                                    {formatTimeAgo(transfer.publishedAt, t)}
+                                  </time>
+                                </div>
+                              </div>
+                            </div>
+                          </Card>
+                        </Link>
+                      </article>
+                    )) || (
+                      <>
+                        <Card className="overflow-hidden flex-1 relative">
+                          <div className="h-full bg-muted flex items-center justify-center">
+                            <p className="text-muted-foreground text-sm">No articles</p>
+                          </div>
+                        </Card>
+                        <Card className="overflow-hidden flex-1 relative">
+                          <div className="h-full bg-muted flex items-center justify-center">
+                            <p className="text-muted-foreground text-sm">No articles</p>
+                          </div>
+                        </Card>
+                      </>
+                    )}
+                  </div>
+                </div>
               </Suspense>
             </section>
 
@@ -462,14 +518,14 @@ export default async function HomePage({
               <Suspense fallback={<TransferGridSkeleton count={6} />}>
                 <div className="space-y-4">
                   <TransferGrid
-                    transfers={initialData.latestTransfers.slice(0, 3)}
+                    transfers={initialData.latestTransfers.slice(2, 5)}
                     locale={locale}
                     dict={dict}
                     limit={3}
                   />
                   
                   <TransferGrid
-                    transfers={initialData.latestTransfers.slice(3, 6)}
+                    transfers={initialData.latestTransfers.slice(5, 8)}
                     locale={locale}
                     dict={dict}
                     limit={3}
@@ -684,7 +740,7 @@ async function getInitialData(language = 'en') {
       // Direct API call to backend with proper error handling
       const apiUrl = `${API_CONFIG.baseUrl}/public/articles`;
       const params = new URLSearchParams({
-        limit: '15',
+        limit: '20',
         page: '1',
         status: 'published',
         language: language,
@@ -732,29 +788,35 @@ async function getInitialData(language = 'en') {
           // Set featured transfer (first article)
           featuredTransfer = transformedArticles[0];
 
-          // Set latest transfers (next 6 articles)
-          latestTransfers = transformedArticles.slice(1, 7);
+          // Set latest transfers (next 8 articles, since we use 2 in featured section)
+          latestTransfers = transformedArticles.slice(1, 9);
 
           // Set trending transfers with better logic (avoid duplicates)
-          if (transformedArticles.length >= 13) {
-            // If we have enough articles, use articles 7-12
-            trendingTransfers = transformedArticles.slice(7, 13);
-          } else if (transformedArticles.length >= 7) {
-            // If we have 7-12 articles, use the remaining ones and fill with earlier ones (avoiding duplicates)
-            const remaining = transformedArticles.slice(7);
+          if (transformedArticles.length >= 15) {
+            // If we have enough articles, use articles 9-14
+            trendingTransfers = transformedArticles.slice(9, 15);
+          } else if (transformedArticles.length >= 9) {
+            // If we have 9-14 articles, use the remaining ones and fill with earlier ones (avoiding duplicates)
+            const remaining = transformedArticles.slice(9);
             const needed = 6 - remaining.length;
             
             // Get filler articles from the beginning, but avoid the featured article (index 0)
-            // and avoid articles already used in remaining
-            const usedIds = new Set(remaining.map((article: any) => article.id));
-            const availableForFiller = transformedArticles.slice(1, 7).filter((article: any) => !usedIds.has(article.id));
+            // and avoid articles already used in remaining and latest transfers
+            const usedIds = new Set([
+              ...remaining.map((article: any) => article.id),
+              ...transformedArticles.slice(1, 9).map((article: any) => article.id)
+            ]);
+            const availableForFiller = transformedArticles.filter((article: any) => 
+              !usedIds.has(article.id) && article.id !== featuredTransfer.id
+            );
             const filler = availableForFiller.slice(0, needed);
             
             trendingTransfers = [...remaining, ...filler];
           } else {
-            // If we have fewer than 7 articles, use what we have without duplicating
-            // Skip the featured article (index 0) and use up to 6 articles
-            trendingTransfers = transformedArticles.slice(1, Math.min(7, transformedArticles.length));
+            // If we have fewer than 9 articles, use what we have without duplicating
+            // Skip the featured article (index 0) and articles used in latest transfers
+            const availableArticles = transformedArticles.slice(9);
+            trendingTransfers = availableArticles.slice(0, 6);
           }
         }
       } else {
