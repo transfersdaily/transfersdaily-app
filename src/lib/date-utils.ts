@@ -25,17 +25,10 @@ export function getBestDate(
   created_at?: string | null,
   isPublishedArticle: boolean = true
 ): string {
-  console.log('🔍 getBestDate called with:', {
-    published_at,
-    updated_at,
-    created_at,
-    isPublishedArticle,
-  });
   
   // For published articles, if published_at is missing but created_at exists, use created_at
   // This handles the case where articles are published but don't have proper published_at dates
   if (isPublishedArticle && !isValidDate(published_at) && created_at) {
-    console.log('🔍 getBestDate: Published article without valid published_at, using created_at:', created_at);
     return created_at;
   }
   
@@ -43,13 +36,11 @@ export function getBestDate(
   
   for (const date of dates) {
     if (isValidDate(date)) {
-      console.log('🔍 getBestDate returning valid date:', date);
       return date!;
     }
   }
   
   // If no valid dates found, use current time as last resort
-  console.log('🔍 getBestDate: No valid dates found, using current time');
   return new Date().toISOString();
 }
 

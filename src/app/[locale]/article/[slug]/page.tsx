@@ -16,11 +16,12 @@ import {
 import Link from "next/link"
 import { transfersApi, type Transfer } from "@/lib/api"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
-import { ArticleClientComponents } from './ArticleClientComponents'
+
 import { typography } from "@/lib/typography"
 import { API_CONFIG } from '@/lib/config';
 import { getBestDate, formatDisplayDate, getValidDateForMeta, formatTimeAgo } from '@/lib/date-utils'
 import { AdArticleContent, AdArticleBottom } from "@/components/ads"
+import { ArticleClientComponents } from "./ArticleClientComponents"
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -66,19 +67,14 @@ interface ArticlePageProps {
 
 // Server-side function to fetch article data with fallback
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
-  console.log(`🚀 [getArticleBySlug] Starting fetch for slug: ${slug}, locale: ${locale}`);
   
   try {
-    console.log(`🔍 [getArticleBySlug] Fetching article: ${slug} for locale: ${locale}`);
-    console.log(`🔍 [getArticleBySlug] API_CONFIG.baseUrl: ${API_CONFIG.baseUrl}`);
     
     // Try direct API call first with language parameter
     if (API_CONFIG.baseUrl && API_CONFIG.baseUrl !== '') {
       try {
         const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=${locale}`;
-        console.log(`📡 [getArticleBySlug] API URL: ${apiUrl}`);
         
-        console.log(`📡 [getArticleBySlug] Making fetch request...`);
         const response = await fetch(apiUrl, {
           method: 'GET',
           headers: {
@@ -90,18 +86,10 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
           signal: AbortSignal.timeout(10000)
         });
         
-        console.log(`📊 [getArticleBySlug] Fetch completed with status: ${response.status}`);
         
-        console.log(`📊 API Response Status: ${response.status} ${response.statusText}`);
         
         if (response.ok) {
           const data = await response.json();
-          console.log(`✅ API Response received for ${locale}:`, { 
-            success: data.success, 
-            hasArticle: !!data.data?.article,
-            articleTitle: data.data?.article?.title,
-            contentLength: data.data?.article?.content?.length || 0
-          });
           
           if (data.success && data.data?.article) {
             return data.data.article;
@@ -110,7 +98,6 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
         
         // If specific language fails, try English as fallback
         if (locale !== 'en') {
-          console.log('🔄 Trying English fallback...');
           const fallbackUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=en`;
           const fallbackResponse = await fetch(fallbackUrl, {
             method: 'GET',
@@ -124,7 +111,6 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
           if (fallbackResponse.ok) {
             const fallbackData = await fallbackResponse.json();
             if (fallbackData.success && fallbackData.data?.article) {
-              console.log(`✅ English fallback successful`);
               return fallbackData.data.article;
             }
           }
@@ -135,9 +121,7 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     }
     
     // Fallback to local API route
-    console.log('🔄 Trying local API route fallback...');
     const localApiUrl = `/api/article/${slug}?language=${locale}`;
-    console.log(`📡 Local API URL: ${localApiUrl}`);
     
     const localResponse = await fetch(localApiUrl, {
       method: 'GET',
@@ -148,12 +132,10 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
       signal: AbortSignal.timeout(10000)
     });
     
-    console.log(`📊 Local API Response Status: ${localResponse.status} ${localResponse.statusText}`);
     
     if (!localResponse.ok) {
       // Try English fallback for local API too
       if (locale !== 'en') {
-        console.log('🔄 Trying local API English fallback...');
         const fallbackLocalUrl = `/api/article/${slug}?language=en`;
         const fallbackLocalResponse = await fetch(fallbackLocalUrl, {
           method: 'GET',
@@ -167,7 +149,6 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
         if (fallbackLocalResponse.ok) {
           const fallbackLocalData = await fallbackLocalResponse.json();
           if (fallbackLocalData.success && fallbackLocalData.data?.article) {
-            console.log(`✅ Local API English fallback successful`);
             return fallbackLocalData.data.article;
           }
         }
@@ -178,17 +159,8 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     }
     
     const localData = await localResponse.json();
-    console.log(`✅ Local API Response received:`, { 
-      success: localData.success, 
-      hasArticle: !!localData.data?.article,
-      articleTitle: localData.data?.article?.title 
-    });
     
     if (localData.success && localData.data?.article) {
-      console.log(`✅ Local API success for ${locale}:`, {
-        title: localData.data.article.title,
-        contentLength: localData.data.article.content?.length || 0
-      });
       return localData.data.article;
     }
     
@@ -212,12 +184,9 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
 
 // Server-side function to get related articles
 async function getRelatedArticles(limit: number = 4, locale: string = 'en'): Promise<Transfer[]> {
-  console.log(`🔄 [getRelatedArticles] Starting fetch with limit: ${limit}, locale: ${locale}`);
   
   try {
-    console.log(`📡 [getRelatedArticles] Calling transfersApi.getLatest...`);
     const articles = await transfersApi.getLatest(limit, 0, locale)
-    console.log(`✅ [getRelatedArticles] Successfully fetched ${articles.length} articles`);
     return articles
   } catch (error) {
     console.error('❌ [getRelatedArticles] Error fetching related articles:', error)
@@ -397,14 +366,11 @@ export async function generateStaticParams() {
 
 // Server-side rendered article page
 export default async function ArticlePage({ params }: { params: Promise<{ locale: Locale; slug: string }> }) {
-  console.log(`🚀 [ArticlePage] Starting page render`);
   
   const { locale, slug } = await params
-  console.log(`🚀 [ArticlePage] Params - locale: ${locale}, slug: ${slug}`);
   
   // Temporarily disable preview mode to isolate the issue
   const isPreview = false;
-  console.log(`🚀 [ArticlePage] Preview mode: ${isPreview}`);
   
   // Validate locale
   if (!locales.includes(locale)) {
@@ -412,16 +378,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     notFound()
   }
   
-  console.log(`📚 [ArticlePage] Loading dictionary for locale: ${locale}`);
   // Get translations server-side
   const dict = await getDictionary(locale)
-  console.log(`✅ [ArticlePage] Dictionary loaded successfully`);
   
   let article: Article | null = null;
   let relatedArticles: Transfer[] = [];
   
   try {
-    console.log(`🔄 [ArticlePage] Starting data fetching...`);
     
     // Get article and related data server-side
     const [articleResult, relatedArticlesResult] = await Promise.allSettled([
@@ -429,14 +392,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
       getRelatedArticles(4, locale)
     ]);
     
-    console.log(`📊 [ArticlePage] Promise.allSettled completed`);
-    console.log(`📊 [ArticlePage] Article result status: ${articleResult.status}`);
-    console.log(`📊 [ArticlePage] Related articles result status: ${relatedArticlesResult.status}`);
     
     // Handle article result
     if (articleResult.status === 'fulfilled') {
       article = articleResult.value;
-      console.log(`✅ [ArticlePage] Article fetched successfully: ${article?.title || 'null'}`);
     } else {
       console.error('❌ [ArticlePage] Failed to fetch article:', articleResult.reason);
       console.error('❌ [ArticlePage] Article error details:', {
@@ -448,7 +407,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     // Handle related articles result
     if (relatedArticlesResult.status === 'fulfilled') {
       relatedArticles = relatedArticlesResult.value;
-      console.log(`✅ [ArticlePage] Related articles fetched: ${relatedArticles.length} articles`);
     } else {
       console.error('❌ [ArticlePage] Failed to fetch related articles:', relatedArticlesResult.reason);
       console.error('❌ [ArticlePage] Related articles error details:', {
@@ -463,23 +421,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     console.error('❌ [ArticlePage] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
   }
   
-  console.log(`🔍 [ArticlePage] Checking if article exists: ${!!article}`);
   
   // If article not found, show 404
   if (!article) {
     console.error(`❌ [ArticlePage] Article not found for slug: ${slug}`);
     notFound()
   }
-  
-  console.log(`🎨 [ArticlePage] Starting render with article: ${article.title}`);
-  console.log(`🎨 [ArticlePage] Article data summary:`, {
-    id: article.id,
-    title: article.title,
-    hasContent: !!article.content,
-    hasImageUrl: !!article.image_url,
-    league: article.league,
-    publishedAt: article.published_at
-  });
   
   // Generate structured data for the article
   const articleStructuredData = {
@@ -540,7 +487,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     ]
   }
 
-  console.log(`🎨 [ArticlePage] About to render JSX...`);
   
   try {
     return (
@@ -561,10 +507,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 md:gap-6 lg:gap-8 min-h-screen">
           {/* Main Article Content - 70% */}
-          <article className="lg:col-span-7 bg-card rounded-lg shadow-sm border border-border">
-            <div className="p-4 md:p-6 lg:p-8">
+          <article className="lg:col-span-7 bg-card rounded-lg shadow-md border border-border/50">
+            <div className="p-6 md:p-8 lg:p-10">
               {/* Back Button */}
               {isPreview ? (
                 <div className="flex items-center justify-between mb-8">
@@ -584,20 +530,16 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               )}
 
               {/* Article Header */}
-              <header className="mb-10">
-                <Badge variant="outline" className={`mb-6 bg-muted text-muted-foreground border-border ${typography.badge}`}>
-                  {article.league || 'Transfer News'}
-                </Badge>
-                
+              <header className="mb-8 md:mb-12 lg:mb-16">
                 {/* Mobile-optimized article title: 24px on mobile, 32px on tablet, 40px on desktop */}
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 md:mb-8 text-foreground leading-tight tracking-tight">
+                <h1 className="text-xl md:text-2xl lg:text-4xl font-bold mb-6 md:mb-8 text-foreground leading-tight max-w-none md:max-w-4xl">
                   {article.title}
                 </h1>
 
                 {/* Article Meta */}
-                <div className="flex flex-wrap items-center gap-8 text-base mb-8 text-muted-foreground">
-                  <div className="flex items-center gap-3">
-                    <Calendar className="h-5 w-5" />
+                <div className="flex items-center gap-6 text-sm text-muted-foreground/70 mb-8 md:mb-10">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
                     <time dateTime={getBestDate(article.published_at, article.updated_at, article.created_at)}>
                       {formatDisplayDate(
                         getBestDate(article.published_at, article.updated_at, article.created_at),
@@ -606,8 +548,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
                       )}
                     </time>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5" />
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4" />
                     <span>5 {getTranslation(dict, 'article.minRead', 'min read')}</span>
                   </div>
                 </div>
@@ -623,8 +565,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               </header>
 
               {/* Featured Image */}
-              <div className="mb-12">
-                <div className="aspect-video bg-muted rounded-xl overflow-hidden border border-border shadow-sm">
+              <div className="mb-6 md:mb-8 lg:mb-12">
+                <div className="aspect-video bg-muted rounded-lg overflow-hidden shadow-sm border border-border/30">
                   {article.image_url ? (
                     <Image
                       src={article.image_url}
@@ -643,47 +585,52 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               </div>
 
               {/* Article Content */}
-              <div className="prose prose-sm md:prose-lg lg:prose-xl max-w-none prose-headings:text-foreground prose-p:text-foreground prose-headings:font-bold prose-h1:text-2xl md:prose-h1:text-3xl lg:prose-h1:text-4xl prose-h1:mb-4 md:prose-h1:mb-6 prose-h1:mt-6 md:prose-h1:mt-8 prose-h2:text-xl md:prose-h2:text-2xl lg:prose-h2:text-3xl prose-h2:mt-8 md:prose-h2:mt-10 prose-h2:mb-4 md:prose-h2:mb-6 prose-h3:text-lg md:prose-h3:text-xl lg:prose-h3:text-2xl prose-h3:mt-6 md:prose-h3:mt-8 prose-h3:mb-3 md:prose-h3:mb-4 prose-h4:text-base md:prose-h4:text-lg lg:prose-h4:text-xl prose-h4:mt-4 md:prose-h4:mt-6 prose-h4:mb-2 md:prose-h4:mb-3 prose-p:text-sm md:prose-p:text-base lg:prose-p:text-lg prose-p:leading-relaxed prose-p:mb-4 md:prose-p:mb-6 prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-foreground prose-blockquote:border-l-border prose-blockquote:border-l-4 prose-blockquote:pl-4 md:prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-sm md:prose-blockquote:text-base lg:prose-blockquote:text-lg prose-code:text-foreground prose-pre:bg-muted prose-pre:text-foreground prose-ul:mb-4 md:prose-ul:mb-6 prose-ol:mb-4 md:prose-ol:mb-6 prose-li:mb-1 md:prose-li:mb-2 prose-li:text-sm md:prose-li:text-base lg:prose-li:text-lg prose-li:leading-relaxed">
+              <div className="prose prose-sm md:prose-base lg:prose-lg max-w-none md:max-w-3xl prose-headings:text-foreground prose-p:text-foreground prose-headings:font-semibold prose-h1:text-lg md:prose-h1:text-xl lg:prose-h1:text-2xl prose-h1:mb-3 prose-h1:mt-6 prose-h2:text-base md:prose-h2:text-lg lg:prose-h2:text-xl prose-h2:mt-6 prose-h2:mb-3 prose-h3:text-sm md:prose-h3:text-base lg:prose-h3:text-lg prose-h3:mt-4 prose-h3:mb-2 prose-p:text-sm md:prose-p:text-base lg:prose-p:text-lg prose-p:leading-relaxed prose-p:mb-4 prose-strong:text-foreground prose-em:text-foreground prose-blockquote:text-foreground prose-blockquote:border-l-border prose-blockquote:border-l-4 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-sm md:prose-blockquote:text-base lg:prose-blockquote:text-lg">
                 {article.content?.split('\n').map((paragraph, index) => {
                   const trimmedParagraph = paragraph.trim();
                   if (!trimmedParagraph) return null;
                   
+                  const elements = [];
+                  
                   // Check if it's a heading (starts with #)
                   if (trimmedParagraph.startsWith('# ')) {
-                    return (
+                    elements.push(
                       <h1 key={index} className="text-4xl font-bold text-foreground mt-8 mb-6 first:mt-0">
                         {trimmedParagraph.substring(2)}
                       </h1>
                     );
-                  }
-                  if (trimmedParagraph.startsWith('## ')) {
-                    return (
+                  } else if (trimmedParagraph.startsWith('## ')) {
+                    elements.push(
                       <h2 key={index} className="text-3xl font-bold text-foreground mt-10 mb-6 first:mt-0">
                         {trimmedParagraph.substring(3)}
                       </h2>
                     );
-                  }
-                  if (trimmedParagraph.startsWith('### ')) {
-                    return (
+                  } else if (trimmedParagraph.startsWith('### ')) {
+                    elements.push(
                       <h3 key={index} className="text-lg md:text-xl lg:text-2xl font-bold text-foreground mt-6 md:mt-8 mb-3 md:mb-4 first:mt-0">
                         {trimmedParagraph.substring(4)}
                       </h3>
                     );
+                  } else {
+                    // Regular paragraph with enhanced readability
+                    elements.push(
+                      <p 
+                        key={index} 
+                        className="text-sm md:text-base lg:text-lg leading-relaxed text-foreground mb-4"
+                      >
+                        {trimmedParagraph}
+                      </p>
+                    );
                   }
                   
-                  // Regular paragraph with enhanced readability
-                  return (
-                    <p 
-                      key={index} 
-                      className="text-lg leading-relaxed text-foreground mb-6 max-w-none tracking-wide"
-                      style={{ 
-                        lineHeight: '1.8',
-                        letterSpacing: '0.01em'
-                      }}
-                    >
-                      {trimmedParagraph}
-                    </p>
-                  );
+                  // Add in-content ads after specific paragraphs
+                  if (index === 2) {
+                    elements.push(<AdArticleContent key={`ad-${index}`} />);
+                  } else if (index === 5) {
+                    elements.push(<AdArticleContent key={`ad-${index}`} />);
+                  }
+                  
+                  return elements;
                 }) || (
                   <p className="text-lg text-muted-foreground leading-relaxed">
                     Content not available.
@@ -723,7 +670,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
 
         
         {/* Related Articles - Outside the main card, full width with background color */}
-        <section className="mt-12 lg:col-span-7 lg:max-w-none">
+        <section className="mt-12 md:mt-16 lg:col-span-7 lg:max-w-none">
           <Card className="bg-background border-none shadow-none">
             <CardContent className="p-6 sm:p-8 lg:p-10">
               <h2 className="text-base md:text-lg lg:text-xl font-bold mb-4 md:mb-6 text-foreground">{getTranslation(dict, 'article.relatedArticles', 'Related Articles')}</h2>
