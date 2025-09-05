@@ -564,7 +564,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
           {/* Main Article Content - 70% */}
           <article className="lg:col-span-7 bg-card rounded-lg shadow-sm border border-border">
-            <div className="p-8 sm:p-10 lg:p-12 max-w-4xl mx-auto">
+            <div className="p-4 md:p-6 lg:p-8">
               {/* Back Button */}
               {isPreview ? (
                 <div className="flex items-center justify-between mb-8">
