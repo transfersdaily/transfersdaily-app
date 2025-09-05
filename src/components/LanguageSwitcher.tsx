@@ -56,16 +56,20 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
         setCurrentLanguage(localeFromPath)
       } else {
         setCurrentLanguage('en')
+        // Clear any existing locale cookie if we're defaulting to English
+        if (typeof window !== 'undefined') {
+          document.cookie = 'locale=en; path=/; max-age=' + (60 * 60 * 24 * 365) + '; SameSite=Lax'
+        }
       }
     }
   }, [currentLocale, pathname, mounted])
 
   const handleLanguageChange = (languageCode: Locale) => {
-    setCurrentLanguage(languageCode)
-    
-    // Save to localStorage (only if available)
+    // Save to localStorage and cookie
     if (typeof window !== 'undefined') {
       localStorage.setItem('transfersdaily_language', languageCode)
+      // Set cookie for middleware
+      document.cookie = `locale=${languageCode}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
     }
     
     // Navigate to the new locale
@@ -89,8 +93,8 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
       newPath = languageCode === 'en' ? pathname : `/${languageCode}${pathname}`
     }
     
-    // Navigate to new path
-    router.push(newPath)
+    // Force a full page reload to ensure proper locale switching
+    window.location.href = newPath
   }
 
   // Don't render until mounted to prevent hydration mismatch
