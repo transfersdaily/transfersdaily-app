@@ -117,19 +117,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Link
-            href={getLocalizedPath('/about')}
-            className={`${typography.nav.primary} text-foreground hover:text-primary px-3 py-2 transition-colors`}
-          >
-            {t('navigation.about', 'About')}
-          </Link>
 
-          <Link
-            href={getLocalizedPath('/contact')}
-            className={`${typography.nav.primary} text-foreground hover:text-primary px-3 py-2 transition-colors`}
-          >
-            {t('navigation.contact', 'Contact')}
-          </Link>
         </nav>
 
         {/* Right side - Actions */}
@@ -264,25 +252,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-border">
-                  <div className="bg-muted rounded-lg p-2 space-y-2">
-                    <Link
-                      href={getLocalizedPath('/about')}
-                      className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {t('navigation.about', 'About')}
-                    </Link>
 
-                    <Link
-                      href={getLocalizedPath('/contact')}
-                      className="block text-sm py-2 px-2 rounded hover:bg-background hover:text-rose-500 transition-colors"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {t('navigation.contact', 'Contact')}
-                    </Link>
-                  </div>
-                </div>
               </div>
             </SheetContent>
           </Sheet>

@@ -18,6 +18,7 @@ import { type Locale, getDictionary, locales } from '@/lib/i18n';
 import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { Clock } from 'lucide-react';
+import { type Transfer } from '@/lib/api';
 // API configuration
 import { API_CONFIG } from '@/lib/config';
 // Ad components - simplified to use only real ad units
@@ -382,7 +383,7 @@ export default async function HomePage({
                   </div>
                 }
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[500px]">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 h-[500px]">
                   {/* Main Featured Article - Large Card */}
                   {initialData.featuredTransfer ? (
                     <article className="md:col-span-2">
@@ -731,10 +732,10 @@ async function getInitialData(language = 'en') {
 
   try {
     // Fetch real articles from the backend API
-    let featuredTransfer = null;
-    let latestTransfers = [];
-    let trendingTransfers = [];
-    let completedTransfers = [];
+    let featuredTransfer: Transfer | null = null;
+    let latestTransfers: Transfer[] = [];
+    let trendingTransfers: Transfer[] = [];
+    let completedTransfers: Transfer[] = [];
 
     try {
       // Direct API call to backend with proper error handling
@@ -807,7 +808,7 @@ async function getInitialData(language = 'en') {
               ...transformedArticles.slice(1, 9).map((article: any) => article.id)
             ]);
             const availableForFiller = transformedArticles.filter((article: any) => 
-              !usedIds.has(article.id) && article.id !== featuredTransfer.id
+              !usedIds.has(article.id) && article.id !== featuredTransfer?.id
             );
             const filler = availableForFiller.slice(0, needed);
             
