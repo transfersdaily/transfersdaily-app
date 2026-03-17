@@ -17,6 +17,7 @@ import { useParams, usePathname } from 'next/navigation';
 import { type Locale } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { CommandSearch } from '@/components/CommandSearch';
 import { typography } from '@/lib/typography';
 import { cn, zIndex, motion } from '@/lib/theme';
 
@@ -48,6 +49,7 @@ interface NavbarProps {
 
 export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { user, signOut } = useAuth();
   const params = useParams();
   const locale = propLocale || (params?.locale as Locale) || 'en';
@@ -73,6 +75,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   };
 
   return (
+    <>
     <header className="sticky top-0 z-20 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
@@ -161,18 +164,21 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <LanguageSwitcher variant="compact" currentLocale={locale} />
           </div>
 
-          {/* Search Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
-            asChild
-          >
-            <Link href={getLocalizedPath('/search')}>
+          {/* Search Button + Cmd+K hint */}
+          <div className="hidden sm:flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary motion-safe:transition-colors duration-fast"
+              onClick={() => setSearchOpen(true)}
+            >
               <Search className="h-4 w-4" />
-              <span className="sr-only">Search</span>
-            </Link>
-          </Button>
+              <span className="sr-only">{t('common.search', 'Search')}</span>
+            </Button>
+            <kbd className="hidden lg:inline-flex items-center gap-1 px-1.5 py-0.5 text-xs text-muted-foreground bg-muted rounded border border-border font-mono">
+              <span className="text-xs">⌘</span>K
+            </kbd>
+          </div>
 
           {/* Theme Toggle */}
           <ThemeToggle className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary" />
@@ -232,6 +238,17 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
               </div>
 
               <div className="flex flex-col space-y-6 mt-6">
+                {/* Mobile Search Trigger */}
+                <div className="bg-muted rounded-lg p-4">
+                  <button
+                    onClick={() => { setIsOpen(false); setSearchOpen(true); }}
+                    className={cn(typography.nav.primary, 'w-full text-left px-2 py-2 rounded min-h-[44px] flex items-center gap-2 cursor-pointer hover:bg-background hover:text-primary motion-safe:transition-colors duration-fast')}
+                  >
+                    <Search className="h-4 w-4" />
+                    {t('common.search', 'Search')}
+                  </button>
+                </div>
+
                 {/* Language Switcher - Mobile */}
                 <div className="bg-muted rounded-lg p-4">
                   <h3 className={cn(typography.body.small, 'font-semibold text-primary uppercase tracking-wider mb-3')}>
@@ -306,5 +323,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
         </div>
       </div>
     </header>
+    <CommandSearch locale={locale} open={searchOpen} onOpenChange={setSearchOpen} />
+    </>
   );
 }
