@@ -33,8 +33,10 @@ Establish unified typography scale, branded color palette, consistent dark/light
 - **Style: "Editorial Grid / Magazine"** — asymmetric grid, pull quotes, drop caps, large imagery, print-inspired typography
 - Bold editorial headlines: 28-36px mobile, 48-64px desktop using `clamp(3rem, 10vw, 12rem)` for hero text
 - `font-weight: 900`, `letter-spacing: -0.05em` for dramatic impact (from Exaggerated Minimalism style)
-- User chose system fonts (Inter/system-ui) — fast loading, no custom web fonts
-- UI/UX Pro Max alternative if user reconsiders: **Newsreader** (heading) + **Roboto** (body) — "designed for long-form reading"
+- **Newsreader** (serif) for headings + **Roboto** (sans-serif) for body — UI/UX Pro Max "News Editorial" pairing
+- Google Fonts import: `Newsreader:wght@400;500;600;700` + `Roboto:wght@300;400;500;700`
+- Tailwind config: `fontFamily: { serif: ['Newsreader', 'serif'], sans: ['Roboto', 'sans-serif'] }`
+- Use `font-display: swap` to avoid invisible text during load
 - Body text: 16-18px with line-height 1.5-1.75 (UI/UX Pro Max §6: `line-height` rule)
 - Line length: limit to 65-75 characters per line (UI/UX Pro Max §6: `line-length` rule)
 - Minimum 16px body on mobile to avoid iOS auto-zoom (UI/UX Pro Max §5: `readable-font-size`)
