@@ -1193,6 +1193,25 @@ export const adminApi = {
     }
   },
 
+  // Analytics - GA4 Data API
+  async getAnalyticsOverview(days: number = 30) {
+    const response = await apiRequest<{
+      success: boolean
+      data: { pageViews: number; sessions: number; totalUsers: number; avgSessionDuration: number }
+      dateRange: string
+    }>(`/admin/analytics/overview?days=${days}`)
+    return response
+  },
+
+  async getArticleMetrics(days: number = 30) {
+    const response = await apiRequest<{
+      success: boolean
+      data: Record<string, { pageViews: number; avgDuration: number }>
+      dateRange: string
+    }>(`/admin/analytics/articles?days=${days}`)
+    return response
+  },
+
   // Image Mappings API functions
   async getImageMappings(params?: { search?: string; league?: string }): Promise<{ mappings: ClubImageMapping[]; total: number }> {
     try {
