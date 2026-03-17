@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-17T14:51:12.761Z"
-last_activity: 2026-03-17 -- Completed 01-01 design tokens and font setup
+stopped_at: Completed 01-02-PLAN.md
+last_updated: "2026-03-17T14:57:00Z"
+last_activity: 2026-03-17 -- Completed 01-02 typography and spacing tokens
 progress:
   total_phases: 9
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 1
-  percent: 50
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 
 ## Current Position
 
-Phase: 1 of 9 (Design Tokens & Theming)
-Plan: 1 of 2 in current phase
-Status: Executing
-Last activity: 2026-03-17 -- Completed 01-01 design tokens and font setup
+Phase: 1 of 9 (Design Tokens & Theming) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase Complete
+Last activity: 2026-03-17 -- Completed 01-02 typography and spacing tokens
 
-Progress: [#####.....] 50%
+Progress: [##########] 100%
 
 ## Performance Metrics
 
@@ -51,6 +51,7 @@ Progress: [#####.....] 50%
 
 *Updated after each plan completion*
 | Phase 01 P01 | 3min | 2 tasks | 4 files |
+| Phase 01 P02 | 4min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,9 @@ Recent decisions affecting current work:
 - [Roadmap]: Animation and mobile as final passes (Phases 8-9) -- polish after all pages are rebuilt
 - [Phase 01]: OLED dark background #121212 for better card contrast and reduced eye strain
 - [Phase 01]: Light mode default for new visitors instead of system preference
+- [Phase 01]: All headings use font-serif (Newsreader) for editorial brand feel, including card titles and logo
+- [Phase 01]: 4pt/8dp grid spacing scale as CSS variables for consistent rhythm across all components
+- [Phase 01]: Animation durations 150/200/300/400ms with reduced motion support
 
 ### Pending Todos
 
@@ -78,6 +82,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T14:51:12.759Z
-Stopped at: Completed 01-01-PLAN.md
+Last session: 2026-03-17T14:57:00Z
+Stopped at: Completed 01-02-PLAN.md (Phase 01 complete)
 Resume file: None

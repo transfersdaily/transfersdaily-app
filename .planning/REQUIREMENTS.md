@@ -10,10 +10,10 @@ Requirements for initial release. Focus: make the website look better — visual
 ### Design System
 
 - [ ] **DS-01**: Consolidated reusable card component system (article cards, league cards, transfer cards) replacing scattered one-off components
-- [ ] **DS-02**: Premium editorial typography scale with proper hierarchy (headlines, body, captions, metadata)
+- [x] **DS-02**: Premium editorial typography scale with proper hierarchy (headlines, body, captions, metadata)
 - [x] **DS-03**: Branded color system distinct from generic shadcn defaults, reflecting sports media identity
 - [x] **DS-04**: Consistent dark/light mode theming across all public pages
-- [ ] **DS-05**: Responsive design tokens (spacing scale, breakpoints, container widths, grid system)
+- [x] **DS-05**: Responsive design tokens (spacing scale, breakpoints, container widths, grid system)
 - [ ] **DS-06**: Micro-animation system using framer-motion (page transitions, hover states, card reveals, loading)
 - [ ] **DS-07**: Consolidated single AdSlot component replacing 12 duplicate ad components (AdInContent1/2/3, AdSidebar, AdBanner, etc.)
 
@@ -92,10 +92,10 @@ Deferred to next milestone. Interactive engagement features inspired by football
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DS-01 | Phase 3 | Pending |
-| DS-02 | Phase 1 | Pending |
+| DS-02 | Phase 1 | Complete |
 | DS-03 | Phase 1 | Complete |
 | DS-04 | Phase 1 | Complete |
-| DS-05 | Phase 1 | Pending |
+| DS-05 | Phase 1 | Complete |
 | DS-06 | Phase 8 | Pending |
 | DS-07 | Phase 4 | Pending |
 | ART-01 | Phase 6 | Pending |
