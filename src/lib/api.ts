@@ -41,6 +41,23 @@ export interface Article {
   slug?: string
 }
 
+export interface ClubImageMapping {
+  id: number
+  club_name: string
+  club_name_variants: string[]
+  league: string
+  domain: string
+  news_url: string
+  image_css_selector: string
+  fallback_css_selector: string | null
+  crest_url: string | null
+  jersey_url: string | null
+  is_active: boolean
+  last_verified_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 // Helper function to decode JWT token (basic decode, no verification)
 function decodeJWT(token: string) {
   try {
@@ -1174,7 +1191,67 @@ export const adminApi = {
       console.error('Error fetching pipeline stats:', error)
       throw error
     }
-  }
+  },
+
+  // Image Mappings API functions
+  async getImageMappings(params?: { search?: string; league?: string }): Promise<{ mappings: ClubImageMapping[]; total: number }> {
+    try {
+      const queryParams = new URLSearchParams()
+      if (params?.search) queryParams.append('search', params.search)
+      if (params?.league) queryParams.append('league', params.league)
+
+      const queryString = queryParams.toString()
+      const endpoint = `${API_CONFIG.endpoints.admin.imageMappings.all}${queryString ? `?${queryString}` : ''}`
+
+      const response = await apiRequest<any>(endpoint)
+
+      return {
+        mappings: response.mappings || [],
+        total: response.total || 0,
+      }
+    } catch (error) {
+      console.error('Error fetching image mappings:', error)
+      throw error
+    }
+  },
+
+  async createImageMapping(
+    data: Omit<ClubImageMapping, 'id' | 'created_at' | 'updated_at' | 'last_verified_at'>
+  ): Promise<ClubImageMapping> {
+    try {
+      const response = await apiRequest<any>(API_CONFIG.endpoints.admin.imageMappings.all, {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to create image mapping')
+      }
+
+      return response.mapping
+    } catch (error) {
+      console.error('Error creating image mapping:', error)
+      throw error
+    }
+  },
+
+  async updateImageMapping(id: number, data: Partial<ClubImageMapping>): Promise<ClubImageMapping> {
+    try {
+      const response = await apiRequest<any>(API_CONFIG.endpoints.admin.imageMappings.all, {
+        method: 'PUT',
+        body: JSON.stringify({ id, ...data }),
+      })
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to update image mapping')
+      }
+
+      return response.mapping
+    } catch (error) {
+      console.error('Error updating image mapping:', error)
+      throw error
+    }
+  },
 }
 
 // User API functions
