@@ -47,6 +47,9 @@
     --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
     --easing-in: cubic-bezier(0.4, 0, 1, 1);
     --easing-out: cubic-bezier(0, 0, 0.2, 1);
+
+    /* Navbar height for sticky offset */
+    --navbar-height: 4rem; /* 64px, matches h-16 */
   }
 
   .dark {
