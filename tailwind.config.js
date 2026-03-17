@@ -88,10 +88,35 @@ module.exports = {
   			serif: ['var(--font-serif)', 'Georgia', 'serif'],
   			sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
   		},
+  		spacing: {
+  			'1': 'var(--space-1)',
+  			'2': 'var(--space-2)',
+  			'3': 'var(--space-3)',
+  			'4': 'var(--space-4)',
+  			'5': 'var(--space-5)',
+  			'6': 'var(--space-6)',
+  			'8': 'var(--space-8)',
+  			'10': 'var(--space-10)',
+  			'12': 'var(--space-12)',
+  			'16': 'var(--space-16)',
+  			'20': 'var(--space-20)',
+  			'24': 'var(--space-24)',
+  		},
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
+  		},
+  		zIndex: {
+  			'0': '0',
+  			'10': '10',
+  			'20': '20',
+  			'40': '40',
+  			'100': '100',
+  			'1000': '1000',
+  		},
+  		screens: {
+  			'xs': '375px',
   		},
   		keyframes: {
   			'accordion-down': {
@@ -117,13 +142,39 @@ module.exports = {
   				'100%': {
   					transform: 'translateX(100%)'
   				}
-  			}
+  			},
+  			'fade-in': {
+  				'0%': { opacity: '0' },
+  				'100%': { opacity: '1' },
+  			},
+  			'fade-in-up': {
+  				'0%': { opacity: '0', transform: 'translateY(8px)' },
+  				'100%': { opacity: '1', transform: 'translateY(0)' },
+  			},
+  			'slide-in-right': {
+  				'0%': { opacity: '0', transform: 'translateX(16px)' },
+  				'100%': { opacity: '1', transform: 'translateX(0)' },
+  			},
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-  			shimmer: 'shimmer 2s infinite'
-  		}
+  			shimmer: 'shimmer 2s infinite',
+  			'fade-in': 'fade-in var(--duration-normal) var(--easing-out)',
+  			'fade-in-up': 'fade-in-up var(--duration-slow) var(--easing-out)',
+  			'slide-in-right': 'slide-in-right var(--duration-slow) var(--easing-out)',
+  		},
+  		transitionDuration: {
+  			'fast': 'var(--duration-fast)',
+  			'normal': 'var(--duration-normal)',
+  			'slow': 'var(--duration-slow)',
+  			'complex': 'var(--duration-complex)',
+  		},
+  		transitionTimingFunction: {
+  			'ease-default': 'var(--easing-default)',
+  			'ease-in': 'var(--easing-in)',
+  			'ease-out': 'var(--easing-out)',
+  		},
   	}
   },
   plugins: [require("tailwindcss-animate")],
