@@ -56,9 +56,9 @@ export const typography = {
     meta: "font-sans text-xs text-muted-foreground",
   },
 
-  // Logo sizing
+  // Logo sizing - uses sans-serif for brand identity (not editorial serif)
   logo: {
-    navbar: "font-serif text-xl md:text-2xl font-bold tracking-tight",
+    navbar: "font-sans text-xl md:text-2xl font-bold tracking-tight",
   },
 }
 
