@@ -91,44 +91,44 @@ Deferred to next milestone. Interactive engagement features inspired by football
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DS-01 | - | Pending |
-| DS-02 | - | Pending |
-| DS-03 | - | Pending |
-| DS-04 | - | Pending |
-| DS-05 | - | Pending |
-| DS-06 | - | Pending |
-| DS-07 | - | Pending |
-| ART-01 | - | Pending |
-| ART-02 | - | Pending |
-| ART-03 | - | Pending |
-| ART-04 | - | Pending |
-| ART-05 | - | Pending |
-| ART-06 | - | Pending |
-| ART-07 | - | Pending |
-| ART-08 | - | Pending |
-| HOME-01 | - | Pending |
-| HOME-02 | - | Pending |
-| HOME-03 | - | Pending |
-| HOME-04 | - | Pending |
-| HOME-05 | - | Pending |
-| HOME-06 | - | Pending |
-| MOB-01 | - | Pending |
-| MOB-02 | - | Pending |
-| MOB-03 | - | Pending |
-| MOB-04 | - | Pending |
-| MOB-05 | - | Pending |
-| NAV-01 | - | Pending |
-| NAV-02 | - | Pending |
-| NAV-03 | - | Pending |
-| AD-01 | - | Pending |
-| AD-02 | - | Pending |
-| AD-03 | - | Pending |
+| DS-01 | Phase 3 | Pending |
+| DS-02 | Phase 1 | Pending |
+| DS-03 | Phase 1 | Pending |
+| DS-04 | Phase 1 | Pending |
+| DS-05 | Phase 1 | Pending |
+| DS-06 | Phase 8 | Pending |
+| DS-07 | Phase 4 | Pending |
+| ART-01 | Phase 6 | Pending |
+| ART-02 | Phase 6 | Pending |
+| ART-03 | Phase 7 | Pending |
+| ART-04 | Phase 6 | Pending |
+| ART-05 | Phase 7 | Pending |
+| ART-06 | Phase 7 | Pending |
+| ART-07 | Phase 7 | Pending |
+| ART-08 | Phase 6 | Pending |
+| HOME-01 | Phase 5 | Pending |
+| HOME-02 | Phase 5 | Pending |
+| HOME-03 | Phase 5 | Pending |
+| HOME-04 | Phase 5 | Pending |
+| HOME-05 | Phase 5 | Pending |
+| HOME-06 | Phase 5 | Pending |
+| MOB-01 | Phase 9 | Pending |
+| MOB-02 | Phase 9 | Pending |
+| MOB-03 | Phase 9 | Pending |
+| MOB-04 | Phase 9 | Pending |
+| MOB-05 | Phase 9 | Pending |
+| NAV-01 | Phase 2 | Pending |
+| NAV-02 | Phase 2 | Pending |
+| NAV-03 | Phase 2 | Pending |
+| AD-01 | Phase 4 | Pending |
+| AD-02 | Phase 4 | Pending |
+| AD-03 | Phase 4 | Pending |
 
 **Coverage:**
 - v1 requirements: 32 total
-- Mapped to phases: 0
-- Unmapped: 32
+- Mapped to phases: 32
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-17*
-*Last updated: 2026-03-17 after initial definition*
+*Last updated: 2026-03-17 after roadmap phase mapping*
