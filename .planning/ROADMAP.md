@@ -171,7 +171,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Design Tokens & Theming | 0/2 | Planning complete | - |
-| 2. Navigation & Site Chrome | 0/2 | Planning complete | - |
+| 2. Navigation & Site Chrome | 1/2 | In Progress|  |
 | 3. Card System & Component Consolidation | 0/? | Not started | - |
 | 4. Ad System Overhaul | 0/? | Not started | - |
 | 5. Homepage Redesign | 0/? | Not started | - |

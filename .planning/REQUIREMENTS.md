@@ -47,8 +47,8 @@ Requirements for initial release. Focus: make the website look better — visual
 
 ### Navigation & Chrome
 
-- [ ] **NAV-01**: Redesigned public navbar with modern, clean look
-- [ ] **NAV-02**: Redesigned footer with organized layout
+- [x] **NAV-01**: Redesigned public navbar with modern, clean look
+- [x] **NAV-02**: Redesigned footer with organized layout
 - [ ] **NAV-03**: Improved search experience with better visual feedback
 
 ### Ad Optimization
@@ -117,8 +117,8 @@ Deferred to next milestone. Interactive engagement features inspired by football
 | MOB-03 | Phase 9 | Pending |
 | MOB-04 | Phase 9 | Pending |
 | MOB-05 | Phase 9 | Pending |
-| NAV-01 | Phase 2 | Pending |
-| NAV-02 | Phase 2 | Pending |
+| NAV-01 | Phase 2 | Complete |
+| NAV-02 | Phase 2 | Complete |
 | NAV-03 | Phase 2 | Pending |
 | AD-01 | Phase 4 | Pending |
 | AD-02 | Phase 4 | Pending |
