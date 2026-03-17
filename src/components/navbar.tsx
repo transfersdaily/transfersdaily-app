@@ -32,7 +32,7 @@ function NavLink({ href, icon, children }: { href: string; icon?: React.ReactNod
         'px-3 py-2 min-h-[44px] flex items-center gap-1.5 cursor-pointer',
         'motion-safe:transition-colors duration-fast motion-reduce:transition-none',
         isActive
-          ? 'text-primary border-b-2 border-primary font-semibold'
+          ? 'text-primary font-bold'
           : 'text-foreground hover:text-primary'
       )}
     >
