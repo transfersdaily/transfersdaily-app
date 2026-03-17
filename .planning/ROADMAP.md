@@ -47,11 +47,11 @@ Plans:
   1. The public navbar has a modern sports media look with clear hierarchy, branding, and league/category links
   2. The footer is organized with distinct sections (about, leagues, legal) and consistent styling with the rest of the site
   3. Search provides immediate visual feedback (loading state, results preview, empty state) and is accessible from every page
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Restyle navbar and footer with Phase 1 design tokens, active state, skip-to-content, accessibility
+- [ ] 02-02-PLAN.md — Command palette search (Cmd+K) with instant autocomplete and navbar integration
 
 ### Phase 3: Card System & Component Consolidation
 **Goal**: A single, composable card component system renders articles, leagues, and transfers consistently across the entire site
@@ -171,7 +171,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Design Tokens & Theming | 0/2 | Planning complete | - |
-| 2. Navigation & Site Chrome | 0/? | Not started | - |
+| 2. Navigation & Site Chrome | 0/2 | Planning complete | - |
 | 3. Card System & Component Consolidation | 0/? | Not started | - |
 | 4. Ad System Overhaul | 0/? | Not started | - |
 | 5. Homepage Redesign | 0/? | Not started | - |
