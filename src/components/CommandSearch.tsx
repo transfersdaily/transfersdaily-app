@@ -82,7 +82,7 @@ export function CommandSearch({ locale, open, onOpenChange }: CommandSearchProps
         const data = await transfersApi.search(query, { language: locale });
         setResults(data || []);
         // Track the search
-        searchApi.trackSearch(query, { language: locale }).catch(() => {});
+        searchApi.trackSearch(query).catch(() => {});
       } catch (error: any) {
         if (error?.name !== 'AbortError') {
           setResults([]);
