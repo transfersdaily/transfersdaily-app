@@ -33,11 +33,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The site uses a branded color palette that is visually distinct from default shadcn/ui gray tones
   3. Toggling between dark and light mode produces a polished, consistent appearance on every public page with no broken or unstyled elements
   4. Spacing, container widths, and grid layouts respond predictably across mobile, tablet, and desktop breakpoints
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Branded color palette + Newsreader/Roboto fonts + dark mode tokens
+- [ ] 01-02-PLAN.md — Editorial typography scale + spacing/animation/z-index tokens
 
 ### Phase 2: Navigation & Site Chrome
 **Goal**: Visitors navigate the site through a modern, clean navbar with intuitive search and a well-organized footer
@@ -170,7 +170,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Design Tokens & Theming | 0/? | Not started | - |
+| 1. Design Tokens & Theming | 0/2 | Planning complete | - |
 | 2. Navigation & Site Chrome | 0/? | Not started | - |
 | 3. Card System & Component Consolidation | 0/? | Not started | - |
 | 4. Ad System Overhaul | 0/? | Not started | - |
