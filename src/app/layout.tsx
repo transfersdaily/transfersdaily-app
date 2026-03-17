@@ -3,7 +3,7 @@ import { Newsreader, Roboto } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/lib/auth'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
-import PlausibleProvider from 'next-plausible'
+import Script from 'next/script'
 
 const newsreader = Newsreader({
   subsets: ['latin'],
@@ -76,33 +76,35 @@ export default function RootLayout({
         />
         
         {/* Google AdSense Script */}
-        <script 
-          async 
+        <script
+          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6269937543968234"
           crossOrigin="anonymous"
         />
+
+        {/* Google Analytics 4 */}
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-2VJKVM04W7" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">
+          {`window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-2VJKVM04W7');`}
+        </Script>
       </head>
       <body className={`${roboto.variable} ${newsreader.variable} font-sans`}>
-        <PlausibleProvider 
-          domain="transfersdaily.com"
-          trackOutboundLinks={true}
-          trackFileDownloads={true}
-          enabled={process.env.NODE_ENV === 'production'}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+          storageKey="transfers-daily-theme"
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-            storageKey="transfers-daily-theme"
-          >
-            <AuthProvider>
-              <ErrorBoundary>
-                {children}
-              </ErrorBoundary>
-            </AuthProvider>
-          </ThemeProvider>
-        </PlausibleProvider>
+          <AuthProvider>
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
