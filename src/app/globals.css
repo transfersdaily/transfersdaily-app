@@ -3,34 +3,48 @@
 @tailwind utilities;
 
 @layer base {
+  /* Dark-only theme — UI/UX Pro Max: Video Streaming/OTT + OLED Dark */
   :root {
-    --background: 0 86% 97%;
-    --foreground: 0 75% 15%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 75% 15%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 75% 15%;
-    --primary: 0 72% 51%;
+    --background: 0 0% 0%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 347 77% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 86% 97%;
-    --secondary-foreground: 0 75% 15%;
-    --muted: 285 12% 94%;
-    --muted-foreground: 215 16% 47%;
-    --accent: 32 95% 44%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 347 77% 50%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 96% 89%;
-    --input: 0 96% 89%;
-    --ring: 0 72% 51%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 347 77% 50%;
     --radius: 0.5rem;
+    --navbar-height: 3.5rem;
 
-    /* Spacing scale (4pt/8dp grid) */
+    /* Transfer status colors */
+    --transfer-completed: 142 71% 45%;
+    --transfer-rumor: 48 96% 53%;
+    --transfer-confirmed: 217 91% 60%;
+    --transfer-loan: 270 67% 58%;
+
+    /* League colors */
+    --premier-league: 277 100% 18%;
+    --la-liga: 0 85% 55%;
+    --bundesliga: 0 0% 85%;
+    --serie-a: 210 100% 30%;
+    --ligue-1: 220 100% 30%;
+
+    /* Spacing scale */
     --space-1: 0.25rem;
     --space-2: 0.5rem;
     --space-3: 0.75rem;
     --space-4: 1rem;
-    --space-5: 1.25rem;
     --space-6: 1.5rem;
     --space-8: 2rem;
     --space-10: 2.5rem;
@@ -43,35 +57,31 @@
     --duration-fast: 150ms;
     --duration-normal: 200ms;
     --duration-slow: 300ms;
-    --duration-complex: 400ms;
     --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
-    --easing-in: cubic-bezier(0.4, 0, 1, 1);
     --easing-out: cubic-bezier(0, 0, 0.2, 1);
-
-    /* Navbar height for sticky offset */
-    --navbar-height: 4rem; /* 64px, matches h-16 */
   }
 
+  /* Force dark class for compatibility with components that check .dark */
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 72% 51%;
+    --background: 0 0% 0%;
+    --foreground: 210 40% 98%;
+    --card: 0 0% 5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 347 77% 50%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 64%;
-    --accent: 32 95% 44%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 347 77% 50%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 63% 31%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 0 72% 51%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 347 77% 50%;
   }
 
   * {
@@ -80,109 +90,72 @@
 
   body {
     @apply bg-background text-foreground;
+    color-scheme: dark;
   }
 }
 
-/* Custom scrollbar */
+/* Scrollbar — dark theme */
 ::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-muted;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/50;
-}
-/* Custom scrollbar styles */
-.custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--muted-foreground)) transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--muted-foreground));
+::-webkit-scrollbar-thumb {
+  background-color: hsl(0 0% 25%);
   border-radius: 3px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: hsl(var(--foreground));
+::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(0 0% 40%);
 }
 
-
-/* Mobile-optimized content spacing */
-@layer components {
-  .mobile-content-padding {
-    @apply px-4 md:px-6 lg:px-8;
-  }
-  
-  .mobile-card-padding {
-    @apply p-3 md:p-4;
-  }
-  
-  .mobile-section-spacing {
-    @apply py-6 md:py-8 lg:py-12;
-  }
-  
-  .mobile-touch-target {
-    @apply min-h-[44px] flex items-center;
-  }
-}
-
-
-/* Mobile touch target utilities */
+/* Touch target utilities */
 @layer utilities {
   .touch-target {
     @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
   }
-  
-  .touch-target-sm {
-    @apply min-h-[40px] min-w-[40px] flex items-center justify-center;
-  }
-  
-  .touch-target-lg {
-    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
-  }
 }
-/* Mobile-optimized grid and spacing */
+
+/* Layout utilities */
 @layer components {
-  .mobile-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6;
-  }
-  
   .mobile-container {
     @apply container mx-auto px-4 md:px-6 lg:px-8;
   }
-  
-  .mobile-section {
-    @apply py-6 md:py-8 lg:py-12;
+
+  .mobile-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6;
   }
-  
+
   .mobile-card-grid {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6;
   }
 }
 
-/* Editorial typography utilities */
+/* Editorial typography — Bebas Neue headlines */
 @layer utilities {
   .text-hero {
-    font-size: clamp(1.75rem, 5vw, 4rem);
-    font-weight: 900;
-    letter-spacing: -0.05em;
-    line-height: 1.1;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.0;
+    text-transform: uppercase;
+  }
+
+  .text-section-title {
+    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .text-card-title {
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
   }
 
   .text-editorial-body {
@@ -190,11 +163,31 @@
     line-height: 1.75;
     max-width: 65ch;
   }
+}
 
-  .text-section-title {
-    font-size: clamp(1.25rem, 3vw, 2rem);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.2;
+/* News type badges */
+@layer components {
+  .badge-transfer {
+    @apply text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm;
+    background-color: hsl(var(--primary));
+    color: white;
+  }
+
+  .badge-match-report {
+    @apply text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm;
+    background-color: hsl(217 91% 60%);
+    color: white;
+  }
+
+  .badge-rumor {
+    @apply text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm;
+    background-color: hsl(48 96% 53%);
+    color: black;
+  }
+
+  .badge-confirmed {
+    @apply text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm;
+    background-color: hsl(142 71% 45%);
+    color: white;
   }
 }

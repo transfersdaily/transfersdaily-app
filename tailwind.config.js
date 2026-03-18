@@ -85,8 +85,8 @@ module.exports = {
   			warning: 'hsl(var(--warning))'
   		},
   		fontFamily: {
-  			serif: ['var(--font-serif)', 'Georgia', 'serif'],
-  			sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+  			display: ['var(--font-display)', 'Bebas Neue', 'Impact', 'sans-serif'],
+  			sans: ['var(--font-sans)', 'Source Sans 3', 'system-ui', 'sans-serif'],
   		},
   		spacing: {
   			'1': 'var(--space-1)',
