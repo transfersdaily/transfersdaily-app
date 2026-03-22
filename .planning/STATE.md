@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Completed 02-02-PLAN.md
-last_updated: "2026-03-17T22:31:53.000Z"
-last_activity: 2026-03-18 -- Completed 02-02 command palette search + UI polish fixes
+status: in-progress
+stopped_at: Checkpoint in 03-02-PLAN.md Task 4 (visual verification)
+last_updated: "2026-03-22T11:15:00.000Z"
+last_activity: 2026-03-22 -- Completed 03-02 tasks 1-3, awaiting visual verification checkpoint
 progress:
   total_phases: 9
   completed_phases: 2
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Readers experience fast, trustworthy transfer news wrapped in a premium editorial design that maximizes engagement and ad revenue.
-**Current focus:** Phase 2 Complete -- Ready for Phase 3
+**Current focus:** Phase 3 -- Card System & Component Consolidation
 
 ## Current Position
 
-Phase: 2 of 9 (Navigation & Site Chrome) -- COMPLETE
+Phase: 3 of 9 (Card System & Component Consolidation) -- IN PROGRESS
 Plan: 2 of 2 in current phase
-Status: Phase 02 Complete
-Last activity: 2026-03-18 -- Completed 02-02 command palette search + UI polish
+Status: 03-02 checkpoint pending (visual verification)
+Last activity: 2026-03-22 -- Completed 03-02 tasks 1-3, awaiting visual verification
 
 Progress: [██████████] 100%
 
@@ -54,6 +54,7 @@ Progress: [██████████] 100%
 | Phase 01 P02 | 4min | 2 tasks | 4 files |
 | Phase 02 P01 | 4min | 2 tasks | 5 files |
 | Phase 02 P02 | 5min | 7 tasks | 7 files |
+| Phase 03 P02 | 5min | 3 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -79,6 +80,8 @@ Recent decisions affecting current work:
 - [Phase 02]: Active nav state uses bold + primary color, no underline/border-bottom
 - [Phase 02]: Ad containers collapse via MutationObserver when no ad fills the slot
 - [Phase 02]: Homepage section headings use uppercase tracking-wider for premium sports media feel
+- [Phase 03]: ArticleCard with CVA variants (hero, standard, compact, mini) replaces all scattered card patterns
+- [Phase 03]: All consumer files migrated -- no file imports TransferCard, TransferCardSkeleton, or SidebarArticleItem
 
 ### Pending Todos
 
@@ -91,6 +94,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-17T22:31:53.000Z
-Stopped at: Completed 02-02-PLAN.md (Phase 02 complete)
+Last session: 2026-03-22T11:15:00.000Z
+Stopped at: Checkpoint in 03-02-PLAN.md Task 4 (visual verification pending)
 Resume file: None
