@@ -103,9 +103,8 @@ export function RecommendedArticles({
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-1 h-5 bg-primary rounded-full"></div>
-        <h3 className="text-lg font-bold text-foreground tracking-tight">
-          {t('sidebar.recommended', 'Recommended Articles')}
+        <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground">
+          {t('sidebar.recommended', 'Recommended')}
         </h3>
       </div>
       {isLoading ? (
