@@ -14,7 +14,7 @@ Requirements for initial release. Focus: make the website look better — visual
 - [x] **DS-03**: Branded color system distinct from generic shadcn defaults, reflecting sports media identity
 - [x] **DS-04**: Consistent dark/light mode theming across all public pages
 - [x] **DS-05**: Responsive design tokens (spacing scale, breakpoints, container widths, grid system)
-- [ ] **DS-06**: Micro-animation system using framer-motion (page transitions, hover states, card reveals, loading)
+- [x] **DS-06**: Micro-animation system using framer-motion (page transitions, hover states, card reveals, loading)
 - [ ] **DS-07**: Consolidated single AdSlot component replacing 12 duplicate ad components (AdInContent1/2/3, AdSidebar, AdBanner, etc.)
 
 ### Article Experience
@@ -96,7 +96,7 @@ Deferred to next milestone. Interactive engagement features inspired by football
 | DS-03 | Phase 1 | Complete |
 | DS-04 | Phase 1 | Complete |
 | DS-05 | Phase 1 | Complete |
-| DS-06 | Phase 8 | Pending |
+| DS-06 | Phase 8 | Complete |
 | DS-07 | Phase 4 | Pending |
 | ART-01 | Phase 6 | Complete |
 | ART-02 | Phase 6 | Complete |
