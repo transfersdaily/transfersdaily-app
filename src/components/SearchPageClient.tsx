@@ -171,7 +171,7 @@ export function SearchPageClient({
               </ol>
             </nav>
             
-            <h1 className="text-3xl font-bold mb-6">
+            <h1 className="font-display text-xl md:text-2xl font-bold uppercase tracking-tight text-foreground mb-6">
               {hasSearched && searchTerm 
                 ? `${t('search.resultsFor')} "${searchTerm}"`
                 : t('search.title') || 'Search Transfer News'
@@ -251,7 +251,7 @@ export function SearchPageClient({
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <h3 className="font-semibold">{t('search.trending')}</h3>
+                      <h3 className="font-display text-sm font-bold uppercase tracking-tight text-foreground">{t('search.trending')}</h3>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {trendingSearches.map((search, index) => (
@@ -271,7 +271,7 @@ export function SearchPageClient({
                 <Card>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <h3 className="font-semibold">{t('search.recent')}</h3>
+                      <h3 className="font-display text-sm font-bold uppercase tracking-tight text-foreground">{t('search.recent')}</h3>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {recentSearches.map((search, index) => (
@@ -317,7 +317,7 @@ export function SearchPageClient({
                 </>
               ) : (
                 <div className="text-center py-12">
-                  <h3 className="text-lg font-semibold mb-2">{t('search.noResults')}</h3>
+                  <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-2">{t('search.noResults')}</h3>
                   <p className="text-muted-foreground mb-6">
                     {t('search.tryDifferent')} &quot;{searchTerm}&quot;
                   </p>

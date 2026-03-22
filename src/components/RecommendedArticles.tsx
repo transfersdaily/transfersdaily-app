@@ -102,11 +102,9 @@ export function RecommendedArticles({
   // Always render the section, even if empty or error
   return (
     <div>
-      <div className="flex items-center gap-3 mb-4">
-        <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground">
-          {t('sidebar.recommended', 'Recommended')}
-        </h3>
-      </div>
+      <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">
+        {t('sidebar.recommended', 'Recommended')}
+      </h3>
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (

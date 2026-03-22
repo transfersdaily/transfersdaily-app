@@ -146,11 +146,7 @@ export function LeaguePageClient({
       <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
         <div className="lg:col-span-7">
           {/* Header Section - Using PageHeader component */}
-          <PageHeader 
-            title={leagueName}
-            logoSrc={leagueLogo.src}
-            logoAlt={leagueLogo.alt}
-          />
+          <PageHeader title={leagueName} />
 
           {/* Ad: Rectangle after header */}
 

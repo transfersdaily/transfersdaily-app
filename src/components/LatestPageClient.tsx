@@ -136,7 +136,7 @@ export function LatestPageClient({
               </>
             ) : (
               <div className="text-center py-12">
-                <h3 className="text-lg font-semibold mb-2">{t('common.notFound')}</h3>
+                <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-2">{t('common.notFound')}</h3>
                 <p className="text-muted-foreground">
                   {t('common.checkBackLater') || 'Check back later for new transfers'}
                 </p>

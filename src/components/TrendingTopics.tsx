@@ -119,9 +119,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
   if (isLoading) {
     return (
       <div className="p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground">Most Searched</h3>
-        </div>
+        <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">Most Searched</h3>
         <div className="space-y-3">
           {[...Array(5)].map((_, i) => (
             <div key={i} className="flex items-center justify-between py-2">
@@ -137,9 +135,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
   if (hasError) {
     return (
       <div className="p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground">Most Searched</h3>
-        </div>
+        <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">Most Searched</h3>
         <div className="text-center py-6">
           <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingTrends')}</p>
         </div>
@@ -150,9 +146,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
   if (topics.length === 0) {
     return (
       <div className="p-5">
-        <div className="flex items-center gap-3 mb-4">
-          <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground">Most Searched</h3>
-        </div>
+        <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">Most Searched</h3>
         <div className="text-center py-6">
           <p className="text-sm text-muted-foreground/80">{t('sidebar.noTrendingTopics')}</p>
         </div>

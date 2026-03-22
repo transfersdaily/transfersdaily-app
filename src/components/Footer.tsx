@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { FaXTwitter, FaFacebook, FaThreads, FaBluesky } from "react-icons/fa6"
-import { Trophy, ChevronDown, ArrowUp } from "lucide-react"
+import { ChevronDown, ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useDictionary } from "@/lib/dictionary-provider"
 import { useParams } from "next/navigation"
@@ -63,14 +63,9 @@ export function Footer() {
           <div className="hidden md:grid md:grid-cols-4 gap-12 lg:gap-16">
             {/* Brand & Links */}
             <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="bg-primary p-2 rounded-lg">
-                  <Trophy className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div className={typography.logo.navbar}>
-                  <span className="text-primary">Transfers</span>
-                  <span className="text-foreground">Daily</span>
-                </div>
+              <div className={typography.logo.navbar}>
+                <span className="text-primary">Transfers</span>
+                <span className="text-foreground">Daily</span>
               </div>
               <p className={cn(typography.body.small, 'text-muted-foreground leading-relaxed max-w-sm')}>
                 {t('footer.description', 'Your trusted source for the latest football transfer news, rumors, and analysis from around the world.')}
@@ -78,7 +73,7 @@ export function Footer() {
 
               {/* Social Media Icons */}
               <div className="space-y-4">
-                <h4 className="font-sans text-sm font-semibold leading-normal text-primary uppercase tracking-wider">{t('footer.followUs', 'Follow Us')}</h4>
+                <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.followUs', 'Follow Us')}</h4>
                 <div className="flex items-center gap-4">
                   <Link
                     href="https://twitter.com/transfersdaily"
@@ -114,7 +109,7 @@ export function Footer() {
 
             {/* Quick Links */}
             <div className="space-y-6">
-              <h4 className="font-sans text-sm font-semibold leading-normal text-primary uppercase tracking-wider">{t('footer.quickLinks', 'Quick Links')}</h4>
+              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.quickLinks', 'Quick Links')}</h4>
               <ul className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
                 <li><Link href={getLocalizedPath("/latest")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.latest', 'Latest News')}</Link></li>
                 <li><Link href={getLocalizedPath("/search")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('common.search', 'Search')}</Link></li>
@@ -125,7 +120,7 @@ export function Footer() {
 
             {/* Leagues */}
             <div className="space-y-6">
-              <h4 className="font-sans text-sm font-semibold leading-normal text-primary uppercase tracking-wider">{t('footer.leagues', 'Leagues')}</h4>
+              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.leagues', 'Leagues')}</h4>
               <ul className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
                 <li><Link href={getLocalizedPath("/league/premier-league")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Premier League</Link></li>
                 <li><Link href={getLocalizedPath("/league/la-liga")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">La Liga</Link></li>
@@ -137,7 +132,7 @@ export function Footer() {
 
             {/* Contact & Legal */}
             <div className="space-y-6">
-              <h4 className="font-sans text-sm font-semibold leading-normal text-primary uppercase tracking-wider">Contact</h4>
+              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Contact</h4>
               <div className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
                 <p>Get in touch with our team</p>
                 <a href="mailto:info@transfersdaily.com" className="block font-medium cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">
@@ -146,7 +141,7 @@ export function Footer() {
               </div>
 
               <div className="space-y-4 pt-4">
-                <h4 className="font-sans text-sm font-semibold leading-normal text-primary uppercase tracking-wider">Legal</h4>
+                <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Legal</h4>
                 <ul className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
                   <li><Link href={getLocalizedPath("/privacy")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Privacy Policy</Link></li>
                   <li><Link href={getLocalizedPath("/terms")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Terms of Service</Link></li>
@@ -159,14 +154,9 @@ export function Footer() {
           <div className="md:hidden space-y-4 md:space-y-8">
             {/* Brand */}
             <div className="text-center space-y-2 md:space-y-4">
-              <div className="flex items-center justify-center gap-3">
-                <div className="bg-primary p-2 rounded-lg hidden md:block">
-                  <Trophy className="h-6 w-6 text-primary-foreground" />
-                </div>
-                <div className={typography.logo.navbar}>
-                  <span className="text-primary">Transfers</span>
-                  <span className="text-foreground">Daily</span>
-                </div>
+              <div className={typography.logo.navbar}>
+                <span className="text-primary">Transfers</span>
+                <span className="text-foreground">Daily</span>
               </div>
               <p className={cn(typography.body.small, 'text-muted-foreground')}>
                 Your trusted source for football transfer news
@@ -175,7 +165,7 @@ export function Footer() {
 
             {/* Social Media - Mobile */}
             <div className="text-center space-y-2 md:space-y-4">
-              <h4 className="font-sans text-sm font-semibold leading-normal text-primary uppercase tracking-wider">Follow Us</h4>
+              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Follow Us</h4>
               <div className="flex items-center justify-center gap-4">
                 <Link href="https://twitter.com/transfersdaily" className="bg-muted hover:bg-primary p-3 rounded-full cursor-pointer motion-safe:transition-colors duration-fast motion-reduce:transition-none">
                   <FaXTwitter className="h-5 w-5 text-muted-foreground" />

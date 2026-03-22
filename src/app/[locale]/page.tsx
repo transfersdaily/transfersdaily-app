@@ -159,7 +159,7 @@ function LeagueSection({
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground py-2">No articles available</p>
+        <p className="font-sans text-sm text-muted-foreground py-2">No articles available</p>
       )}
     </section>
   );
