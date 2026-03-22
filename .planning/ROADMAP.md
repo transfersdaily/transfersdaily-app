@@ -153,12 +153,12 @@ Plans:
   3. The header collapses when scrolling down and reappears when scrolling up, maximizing content area
   4. A bottom navigation bar provides quick access to key sections (Home, Leagues, Search, Latest) on mobile
   5. All public page layouts are responsive-first and render correctly from 320px to 1440px+ without horizontal scrolling
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 09-01: TBD
-- [ ] 09-02: TBD
-- [ ] 09-03: TBD
+- [ ] 09-01-PLAN.md — Collapsing header hook and restyled bottom navigation with locale-aware links
+- [ ] 09-02-PLAN.md — CSS scroll-snap swipe carousel for homepage Latest and League sections
+- [ ] 09-03-PLAN.md — Touch target audit (48px minimum) and responsive layout safety
 
 ## Progress
 
@@ -176,7 +176,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | 6. Article Page Restructure | 2/2 | Complete | 2026-03-22 |
 | 7. Article Engagement Features | 0/2 | Planning complete | - |
 | 8. Animation System | 0/2 | Planning complete | - |
-| 9. Mobile Experience Optimization | 0/? | Not started | - |
+| 9. Mobile Experience Optimization | 0/3 | Planning complete | - |
 
 ---
 *Roadmap created: 2026-03-17*
