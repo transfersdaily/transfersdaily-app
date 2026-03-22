@@ -57,8 +57,8 @@ completed: 2026-03-22
 - **Duration:** 5 min
 - **Started:** 2026-03-22T11:10:00Z
 - **Completed:** 2026-03-22T11:15:00Z
-- **Tasks:** 3 of 3 auto tasks (+ 1 checkpoint pending)
-- **Files modified:** 5
+- **Tasks:** 4 of 4 (3 auto + 1 checkpoint approved)
+- **Files modified:** 12
 
 ## Accomplishments
 - Homepage hero section, side articles, and league sections all render via ArticleCard variants (hero, compact)
@@ -73,7 +73,14 @@ Each task was committed atomically:
 1. **Task 1: Migrate homepage hero, side articles, LeagueSection to ArticleCard** - `e9b2b42` (feat)
 2. **Task 2: Migrate RecommendedArticles sidebar to ArticleCard mini** - `3f8343c` (feat)
 3. **Task 3: Clean up unused imports in LatestPageClient, LeaguePageClient, SearchPageClient** - `a382144` (chore)
-4. **Task 4: Visual verification checkpoint** - PENDING (checkpoint:human-verify)
+4. **Task 4: Visual verification checkpoint** - Approved by user
+
+**Post-checkpoint fixes (typography and cleanup):**
+- `aef1bc2` - fix: standardize font-display typography across all pages and components
+- `57ce441` - fix: standardize typography across sidebar and button headings
+- `e682261` - fix: remove sidebar card wrappers, fix heading spacing
+- `04bb4c7` - fix: standardize all empty state text to text-sm text-muted-foreground
+- `746e494` - fix: replace hardcoded English empty states with t() translations
 
 ## Files Created/Modified
 - `src/app/[locale]/page.tsx` - Homepage: hero, side articles, LeagueSection, skeletons all use ArticleCard
@@ -81,6 +88,13 @@ Each task was committed atomically:
 - `src/components/LatestPageClient.tsx` - Removed TransferCard/TransferGridSkeleton, uses ArticleCardSkeleton
 - `src/components/LeaguePageClient.tsx` - Removed TransferCard/TransferGridSkeleton, uses ArticleCardSkeleton
 - `src/components/SearchPageClient.tsx` - Removed TransferCard, uses ArticleCardSkeleton for search loading
+- `src/components/Footer.tsx` - Footer headings updated to font-display
+- `src/components/PageHeader.tsx` - Simplified with font-display
+- `src/components/Sidebar.tsx` - Card wrappers removed, spacing fixed
+- `src/components/LeagueHero.tsx` - Typography standardized
+- `src/components/TrendingTopics.tsx` - Typography standardized
+- `src/components/ViewAllButton.tsx` - Typography standardized
+- `src/lib/typography.ts` - Typography utilities updated
 
 ## Decisions Made
 - Removed unused Image, Link, Badge, Card, Skeleton imports from homepage since ArticleCard handles all rendering internally
@@ -112,7 +126,8 @@ None - no external service configuration required.
 ## Next Phase Readiness
 - All card consumers now use ArticleCard -- old TransferCard and SidebarArticleItem are dead code
 - Ready for Phase 4 (ad system overhaul) -- ad placements preserved throughout migration
-- Visual verification checkpoint pending user approval
+- Visual verification approved -- additional typography and empty state fixes applied post-checkpoint
+- Phase 3 complete -- ready for Phase 4 (ad system overhaul)
 
 ---
 *Phase: 03-card-system-component-consolidation*
