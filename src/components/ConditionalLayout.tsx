@@ -20,7 +20,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <main id="main-content" className="pb-16 md:pb-0" style={{ scrollMarginTop: 'var(--navbar-height)' }}>
+      <main id="main-content" className="pb-16 lg:pb-0" style={{ scrollMarginTop: 'var(--navbar-height)' }}>
         {children}
       </main>
       <Footer />
