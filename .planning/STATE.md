@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-03-22T14:07:00.000Z"
-last_activity: 2026-03-22 -- Completed Phase 6 Plan 2 (article page slim composer)
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-03-22T14:21:00.000Z"
+last_activity: 2026-03-22 -- Completed Phase 8 Plan 1 (animation infrastructure)
 progress:
   total_phases: 9
   completed_phases: 3
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Readers experience fast, trustworthy transfer news wrapped in a premium editorial design that maximizes engagement and ad revenue.
-**Current focus:** Phase 6 -- Article Page Restructure
+**Current focus:** Phase 8 -- Animation System
 
 ## Current Position
 
-Phase: 6 of 9 (Article Page Restructure)
-Plan: 2 of 2 in current phase
-Status: Phase 6 complete, ready for Phase 7
-Last activity: 2026-03-22 -- Completed Phase 6 Plan 2 article page slim composer
+Phase: 8 of 9 (Animation System)
+Plan: 1 of 2 in current phase
+Status: Phase 8 Plan 1 complete, ready for Plan 2
+Last activity: 2026-03-22 -- Completed Phase 8 Plan 1 animation infrastructure
 
 Progress: [██████████] 100%
 
@@ -59,6 +59,7 @@ Progress: [██████████] 100%
 | Phase 04 P02 | 2min | 2 tasks | 5 files |
 | Phase 06 P01 | 2min | 2 tasks | 6 files |
 | Phase 06 P02 | 3min | 2 tasks | 1 files |
+| Phase 08 P01 | 2min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -94,6 +95,9 @@ Recent decisions affecting current work:
 - [Phase 06]: All article sub-components are server components (no 'use client')
 - [Phase 06]: LeagueColorMap duplicated inline in ArticleHero and ArticleMeta to avoid coupling
 - [Phase 06]: Reading time uses 200wpm with Math.ceil, minimum 1 minute
+- [Phase 08]: useInView hook over whileInView for explicit animation trigger control
+- [Phase 08]: Plain div fallback when prefers-reduced-motion active (zero motion overhead)
+- [Phase 08]: 50ms stagger delay per card via index prop for grid reveal sequences
 
 ### Pending Todos
 
@@ -106,6 +110,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T14:07:00.000Z
-Stopped at: Completed 06-02-PLAN.md
+Last session: 2026-03-22T14:21:00.000Z
+Stopped at: Completed 08-01-PLAN.md
 Resume file: None
