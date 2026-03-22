@@ -122,11 +122,11 @@ Plans:
   2. A related articles section at the bottom of each article displays relevant content using the card system, encouraging continued reading
   3. Article content and images show skeleton loading states instead of blank space while data loads
   4. A sticky progress bar at the top of the viewport shows how far the reader has scrolled through the article
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 07-01: TBD
-- [ ] 07-02: TBD
+- [ ] 07-01-PLAN.md — ShareButtons and ReadingProgressBar client components wired into article page
+- [ ] 07-02-PLAN.md — Article skeleton loading state and related articles league filtering
 
 ### Phase 8: Animation System
 **Goal**: Public pages feel polished and responsive with subtle micro-animations that enhance the experience without slowing it down
@@ -174,7 +174,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | 4. Ad System Overhaul | 1/2 | In progress | - |
 | 5. Homepage Redesign | 0/2 | Planning complete | - |
 | 6. Article Page Restructure | 2/2 | Complete | 2026-03-22 |
-| 7. Article Engagement Features | 0/? | Not started | - |
+| 7. Article Engagement Features | 0/2 | Planning complete | - |
 | 8. Animation System | 0/? | Not started | - |
 | 9. Mobile Experience Optimization | 0/? | Not started | - |
 
