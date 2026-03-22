@@ -159,7 +159,9 @@ function LeagueSection({
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">{t('common.noTransfersFound', 'No transfers found')}</p>
+        <div className="text-center py-8">
+          <p className="text-sm text-muted-foreground">{t('common.noTransfersFound', 'No transfers found')}</p>
+        </div>
       )}
     </section>
   );

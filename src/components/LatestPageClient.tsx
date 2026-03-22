@@ -163,15 +163,13 @@ export function LatestPageClient({
 
         {/* Sidebar */}
         <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-          {isLoading ? (
-            <div className="bg-muted/10 border-l -mr-4 pr-4">
-              <div className="p-4">
-                <SidebarSkeleton />
-              </div>
-            </div>
-          ) : (
-            <Sidebar locale={locale} dict={dict} />
-          )}
+          <div className="space-y-6 pt-6">
+            {isLoading ? (
+              <SidebarSkeleton />
+            ) : (
+              <Sidebar locale={locale} dict={dict} />
+            )}
+          </div>
         </aside>
       </div>
     </div>
