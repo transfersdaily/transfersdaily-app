@@ -31,7 +31,7 @@ Requirements for initial release. Focus: make the website look better — visual
 ### Homepage
 
 - [ ] **HOME-01**: Redesigned hero/featured article section with strong visual impact
-- [ ] **HOME-02**: Category-based transfer feeds (confirmed transfers, rumors, completed deals)
+- [ ] **HOME-02**: Organized transfer feeds by league (Premier League, La Liga, Serie A, Bundesliga, Ligue 1) on homepage
 - [ ] **HOME-03**: Trending/popular articles sidebar widget
 - [ ] **HOME-04**: Mobile-optimized homepage layout with responsive grid
 - [ ] **HOME-05**: Decompose homepage from 925+ lines into clean, maintainable sub-components
