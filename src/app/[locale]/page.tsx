@@ -1,20 +1,19 @@
 import { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { TransferGrid } from '@/components/TransferGrid';
 import { Sidebar } from '@/components/Sidebar';
 import { SidebarSkeleton } from '@/components/SidebarSkeleton';
-import { ArticleCard, ArticleCardSkeleton } from '@/components/ArticleCard';
-import { ViewAllButton } from '@/components/ViewAllButton';
+import { HeroSection } from '@/components/sections/HeroSection';
+import { LatestSection } from '@/components/sections/LatestSection';
+import { LeagueSection } from '@/components/sections/LeagueSection';
 import { type Locale, getDictionary, locales } from '@/lib/i18n';
-import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
+import { getBestDate } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { type Transfer } from '@/lib/api';
 import { API_CONFIG } from '@/lib/config';
 import { AdSlot } from '@/components/ads';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 300;
 
 export async function generateMetadata({
   params,
@@ -118,55 +117,6 @@ export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-// League section component for per-league article grids
-function LeagueSection({
-  title,
-  slug,
-  transfers,
-  locale,
-  dict,
-  t,
-}: {
-  title: string;
-  slug: string;
-  transfers: Transfer[];
-  locale: Locale;
-  dict: any;
-  t: (key: string, fallback?: string) => string;
-}) {
-  return (
-    <section className="py-4 md:py-6" aria-label={`${title} transfers`}>
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground">
-          {title}
-        </h2>
-        <ViewAllButton href={`/${locale}/league/${slug}`}>
-          {t('common.viewAll', 'View All')}
-        </ViewAllButton>
-      </div>
-
-      {transfers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {transfers.slice(0, 4).map((transfer) => (
-            <ArticleCard
-              key={transfer.id}
-              variant="compact"
-              title={transfer.title}
-              href={`/${locale}/article/${transfer.slug}`}
-              imageUrl={transfer.imageUrl}
-              timeAgo={formatTimeAgo(transfer.publishedAt, t)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-sm text-muted-foreground">{t('common.noTransfersFound', 'No transfers found')}</p>
-        </div>
-      )}
-    </section>
-  );
-}
-
 export default async function HomePage({
   params,
 }: {
@@ -208,95 +158,19 @@ export default async function HomePage({
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
           {/* Main Content */}
           <div className="col-span-1 lg:col-span-7">
+            <HeroSection
+              featuredTransfer={initialData.featuredTransfer}
+              latestTransfers={initialData.latestTransfers}
+              locale={locale}
+              t={t}
+            />
 
-            {/* Hero Section - Featured Article */}
-            <section className="pt-6 pb-4" aria-labelledby="featured-transfer">
-              <Suspense
-                fallback={
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 h-[420px]">
-                    <div className="md:col-span-2 h-full">
-                      <ArticleCardSkeleton variant="hero" />
-                    </div>
-                    <div className="hidden md:flex flex-col gap-3">
-                      <ArticleCardSkeleton variant="hero" />
-                      <ArticleCardSkeleton variant="hero" />
-                    </div>
-                  </div>
-                }
-              >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 h-[420px]">
-                  {/* Main Featured Article */}
-                  {initialData.featuredTransfer ? (
-                    <div className="md:col-span-2 h-full">
-                      <ArticleCard
-                        variant="hero"
-                        title={initialData.featuredTransfer.title}
-                        href={`/${locale}/article/${initialData.featuredTransfer.slug}`}
-                        imageUrl={initialData.featuredTransfer.imageUrl}
-                        league={initialData.featuredTransfer.league}
-                        timeAgo={formatTimeAgo(initialData.featuredTransfer.publishedAt, t)}
-                        excerpt={initialData.featuredTransfer.excerpt}
-                        priority
-                      />
-                    </div>
-                  ) : (
-                    <div className="md:col-span-2 h-full rounded-lg bg-card flex items-center justify-center">
-                      <p className="text-sm text-muted-foreground">{t('common.noFeaturedTransfer')}</p>
-                    </div>
-                  )}
-
-                  {/* Side Articles */}
-                  <div className="hidden md:flex flex-col gap-3">
-                    {initialData.latestTransfers?.slice(0, 2).map((transfer: any) => (
-                      <div key={transfer.id} className="flex-1">
-                        <ArticleCard
-                          variant="hero"
-                          title={transfer.title}
-                          href={`/${locale}/article/${transfer.slug}`}
-                          imageUrl={transfer.imageUrl}
-                          league={transfer.league}
-                        />
-                      </div>
-                    )) || (
-                      <>
-                        <div className="flex-1 rounded-lg bg-card" />
-                        <div className="flex-1 rounded-lg bg-card" />
-                      </>
-                    )}
-                  </div>
-                </div>
-              </Suspense>
-            </section>
-
-            {/* Latest News Grid */}
-            <section className="py-4 md:py-6" aria-labelledby="latest-transfers">
-              <div className="flex justify-between items-center mb-4">
-                <h2
-                  id="latest-transfers"
-                  className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground"
-                >
-                  {t('homepage.latestTransfers')}
-                </h2>
-                <ViewAllButton href={`/${locale}/latest`}>
-                  {t('common.viewAll')}
-                </ViewAllButton>
-              </div>
-
-              <Suspense fallback={
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <ArticleCardSkeleton key={i} variant="standard" />
-                  ))}
-                </div>
-              }>
-                <TransferGrid
-                  transfers={initialData.latestTransfers.slice(2, 8)}
-                  locale={locale}
-                  dict={dict}
-                  limit={6}
-                />
-              </Suspense>
-            </section>
+            <LatestSection
+              transfers={initialData.latestTransfers.slice(2, 8)}
+              locale={locale}
+              dict={dict}
+              t={t}
+            />
           </div>
 
           {/* Sidebar */}
@@ -314,20 +188,19 @@ export default async function HomePage({
         {/* Full-width ad between sections */}
         <AdSlot placement="homepage.pre-latest" />
 
-        {/* League Sections — full width, no sidebar */}
+        {/* League Sections -- full width, no sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
           <div className="col-span-1 lg:col-span-7">
-            {initialData.leagues.map((league, index) => (
-              <div key={league.id}>
-                <LeagueSection
-                  title={league.name}
-                  slug={league.slug}
-                  transfers={initialData.leagueTransfers[league.slug] || []}
-                  locale={locale}
-                  dict={dict}
-                  t={t}
-                />
-              </div>
+            {initialData.leagues.map((league) => (
+              <LeagueSection
+                key={league.id}
+                title={league.name}
+                slug={league.slug}
+                transfers={initialData.leagueTransfers[league.slug] || []}
+                locale={locale}
+                dict={dict}
+                t={t}
+              />
             ))}
           </div>
         </div>
