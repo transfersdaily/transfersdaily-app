@@ -1,34 +1,21 @@
 import { Suspense } from 'react';
-import { mobileTypography, mobileSpacing } from '@/lib/mobile-utils';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import { TransferCard } from '@/components/TransferCard';
 import { TransferGrid } from '@/components/TransferGrid';
 import { Sidebar } from '@/components/Sidebar';
-import { TransferGridSkeleton } from '@/components/TransferCardSkeleton';
 import { SidebarSkeleton } from '@/components/SidebarSkeleton';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
+import { ArticleCard, ArticleCardSkeleton } from '@/components/ArticleCard';
 import { ViewAllButton } from '@/components/ViewAllButton';
-import { NewsletterSection } from '@/components/NewsletterSection';
 import { type Locale, getDictionary, locales } from '@/lib/i18n';
 import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
-import { Clock } from 'lucide-react';
 import { type Transfer } from '@/lib/api';
-// API configuration
 import { API_CONFIG } from '@/lib/config';
-// Ad components - simplified to use only real ad units
-import { AdBanner, AdInContent1, AdInContent2, AdInContent3, AdSidebar, AdSidebar2, AdMobileSticky } from '@/components/ads';
+import { AdInContent1, AdInContent2, AdInContent3, AdSidebar, AdSidebar2, AdMobileSticky } from '@/components/ads';
 
-// Force dynamic rendering to ensure fresh data
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-// Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({
   params,
 }: {
@@ -38,7 +25,6 @@ export async function generateMetadata({
   const dict = await getDictionary(locale);
   const t = createTranslator(dict);
 
-  // Language-specific SEO titles and descriptions
   const seoData = {
     en: {
       title: 'Transfer Daily - Latest Football Transfer News, Rumors & Updates',
@@ -49,11 +35,11 @@ export async function generateMetadata({
     },
     es: {
       title:
-        'Transfer Daily - Últimas Noticias de Fichajes de Fútbol y Rumores',
+        'Transfer Daily - Ultimas Noticias de Fichajes de Futbol y Rumores',
       description:
-        'Obtén las últimas noticias de fichajes de fútbol, traspasos confirmados y rumores de última hora de Premier League, La Liga, Serie A, Bundesliga y Ligue 1.',
+        'Obten las ultimas noticias de fichajes de futbol, traspasos confirmados y rumores de ultima hora de Premier League, La Liga, Serie A, Bundesliga y Ligue 1.',
       keywords:
-        'fichajes fútbol, noticias fútbol, rumores traspasos, fichajes Premier League, fichajes La Liga, fichajes Serie A, fichajes Bundesliga, fichajes Ligue 1, mercado fichajes',
+        'fichajes futbol, noticias futbol, rumores traspasos, fichajes Premier League, fichajes La Liga, fichajes Serie A, fichajes Bundesliga, fichajes Ligue 1, mercado fichajes',
     },
     it: {
       title: 'Transfer Daily - Ultime Notizie di Calciomercato e Rumors',
@@ -64,19 +50,19 @@ export async function generateMetadata({
     },
     fr: {
       title:
-        'Transfer Daily - Dernières Actualités Transferts Football et Rumeurs',
+        'Transfer Daily - Dernieres Actualites Transferts Football et Rumeurs',
       description:
-        'Découvrez les dernières actualités des transferts de football, accords confirmés et rumeurs de Premier League, La Liga, Serie A, Bundesliga et Ligue 1.',
+        'Decouvrez les dernieres actualites des transferts de football, accords confirmes et rumeurs de Premier League, La Liga, Serie A, Bundesliga et Ligue 1.',
       keywords:
-        'transferts football, actualités football, rumeurs transferts, transferts Premier League, transferts La Liga, transferts Serie A, transferts Bundesliga, transferts Ligue 1',
+        'transferts football, actualites football, rumeurs transferts, transferts Premier League, transferts La Liga, transferts Serie A, transferts Bundesliga, transferts Ligue 1',
     },
     de: {
       title:
-        'Transfer Daily - Neueste Fußball-Transfer-Nachrichten und Gerüchte',
+        'Transfer Daily - Neueste Fussball-Transfer-Nachrichten und Geruchte',
       description:
-        'Erhalten Sie die neuesten Fußball-Transfer-Nachrichten, bestätigte Deals und Gerüchte aus Premier League, La Liga, Serie A, Bundesliga und Ligue 1.',
+        'Erhalten Sie die neuesten Fussball-Transfer-Nachrichten, bestatigte Deals und Geruchte aus Premier League, La Liga, Serie A, Bundesliga und Ligue 1.',
       keywords:
-        'Fußball Transfers, Fußball Nachrichten, Transfer Gerüchte, Premier League Transfers, La Liga Transfers, Serie A Transfers, Bundesliga Transfers, Ligue 1 Transfers',
+        'Fussball Transfers, Fussball Nachrichten, Transfer Geruchte, Premier League Transfers, La Liga Transfers, Serie A Transfers, Bundesliga Transfers, Ligue 1 Transfers',
     },
   };
 
@@ -91,131 +77,94 @@ export async function generateMetadata({
     creator: 'Transfer Daily',
     publisher: 'Transfer Daily',
     applicationName: 'Transfer Daily',
-
-    // Enhanced format detection
-    formatDetection: {
-      email: false,
-      address: false,
-      telephone: false,
-    },
-
-    // Metadata base for relative URLs
+    formatDetection: { email: false, address: false, telephone: false },
     metadataBase: new URL('https://transferdaily.com'),
-
-    // Canonical and alternate language URLs
     alternates: {
       canonical: locale === 'en' ? '/' : `/${locale}`,
-      languages: {
-        en: '/',
-        es: '/es',
-        it: '/it',
-        fr: '/fr',
-        de: '/de',
-        'x-default': '/',
-      },
+      languages: { en: '/', es: '/es', it: '/it', fr: '/fr', de: '/de', 'x-default': '/' },
     },
-
-    // Enhanced Open Graph metadata
     openGraph: {
       title: currentSeo.title,
       description: fallbackDescription,
-      url:
-        locale === 'en'
-          ? 'https://transferdaily.com'
-          : `https://transferdaily.com/${locale}`,
+      url: locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`,
       siteName: 'Transfer Daily',
-      locale:
-        locale === 'en'
-          ? 'en_US'
-          : locale === 'es'
-          ? 'es_ES'
-          : locale === 'it'
-          ? 'it_IT'
-          : locale === 'fr'
-          ? 'fr_FR'
-          : 'de_DE',
-      alternateLocale: locales
-        .filter((l) => l !== locale)
-        .map((l) =>
-          l === 'en'
-            ? 'en_US'
-            : l === 'es'
-            ? 'es_ES'
-            : l === 'it'
-            ? 'it_IT'
-            : l === 'fr'
-            ? 'fr_FR'
-            : 'de_DE'
-        ),
+      locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
       type: 'website',
-      images: [
-        {
-          url: '/og-image.jpg',
-          width: 1200,
-          height: 630,
-          alt: 'Transfer Daily - Latest Football Transfer News',
-          type: 'image/jpeg',
-        },
-        {
-          url: '/og-image-square.jpg',
-          width: 1200,
-          height: 1200,
-          alt: 'Transfer Daily - Football Transfer News',
-          type: 'image/jpeg',
-        },
-      ],
+      images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Transfer Daily - Latest Football Transfer News' }],
     },
-
-    // Enhanced Twitter metadata
     twitter: {
       card: 'summary_large_image',
       site: '@transferdaily',
       creator: '@transferdaily',
       title: currentSeo.title,
       description: fallbackDescription,
-      images: {
-        url: '/og-image.jpg',
-        alt: 'Transfer Daily - Latest Football Transfer News',
-      },
+      images: { url: '/og-image.jpg', alt: 'Transfer Daily - Latest Football Transfer News' },
     },
-
-    // Enhanced robots configuration
     robots: {
       index: true,
       follow: true,
-      nocache: false,
-      googleBot: {
-        index: true,
-        follow: true,
-        noimageindex: false,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
+      googleBot: { index: true, follow: true, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 },
     },
-
-    // Verification tags - Real verification codes for search engines
     verification: {
       google: 'CsP6O3h8IjLJMuHGZlqCA2LtBio3Bh8ov6rLYmPKXU8',
       yandex: '409c7b778268e192',
-      other: {
-        'msvalidate.01': '151EC670865590C0F31CA873198F81E5',
-      },
+      other: { 'msvalidate.01': '151EC670865590C0F31CA873198F81E5' },
     },
-
-    // Additional metadata
     category: 'Sports',
-    classification: 'Football Transfer News',
-    referrer: 'origin-when-cross-origin',
   };
 }
 
-// Generate static params for all locales
 export async function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-// Server-side rendered page component
+// League section component for per-league article grids
+function LeagueSection({
+  title,
+  slug,
+  transfers,
+  locale,
+  dict,
+  t,
+}: {
+  title: string;
+  slug: string;
+  transfers: Transfer[];
+  locale: Locale;
+  dict: any;
+  t: (key: string, fallback?: string) => string;
+}) {
+  return (
+    <section className="py-4 md:py-6" aria-label={`${title} transfers`}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground">
+          {title}
+        </h2>
+        <ViewAllButton href={`/${locale}/league/${slug}`}>
+          View All
+        </ViewAllButton>
+      </div>
+
+      {transfers.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {transfers.slice(0, 4).map((transfer) => (
+            <ArticleCard
+              key={transfer.id}
+              variant="compact"
+              title={transfer.title}
+              href={`/${locale}/article/${transfer.slug}`}
+              imageUrl={transfer.imageUrl}
+              timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground py-2">No articles available</p>
+      )}
+    </section>
+  );
+}
+
 export default async function HomePage({
   params,
 }: {
@@ -223,273 +172,92 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
 
-  // Validate locale
   if (!locales.includes(locale)) {
     notFound();
   }
 
-  // Get translations server-side
   const dict = await getDictionary(locale);
   const t = createTranslator(dict);
-
-  // Get initial data server-side (real API data) with language parameter
   const initialData = await getInitialData(locale);
 
-  // Generate comprehensive structured data
   const websiteStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Transfer Daily',
-    alternateName: 'Transfer Daily - Football Transfer News',
-    url:
-      locale === 'en'
-        ? 'https://transferdaily.com'
-        : `https://transferdaily.com/${locale}`,
-    description:
-      t('footer.description') ||
-      'Latest football transfer news, rumors, and updates from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1',
+    url: locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`,
+    description: t('footer.description') || 'Latest football transfer news',
     inLanguage: locale,
-    isAccessibleForFree: true,
     potentialAction: {
       '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `https://transferdaily.com/${locale}/search?q={search_term_string}`,
-      },
+      target: { '@type': 'EntryPoint', urlTemplate: `https://transferdaily.com/${locale}/search?q={search_term_string}` },
       'query-input': 'required name=search_term_string',
     },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Transfer Daily',
-      url: 'https://transferdaily.com',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://transferdaily.com/logo.png',
-        width: 200,
-        height: 60,
-      },
-      sameAs: [
-        'https://x.com/TransfersDly',
-        'https://bsky.app/profile/transfers-daily.bsky.social',
-      ],
-    },
-  };
-
-  const organizationStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: 'Transfer Daily',
-    url: 'https://transferdaily.com',
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://transferdaily.com/logo.png',
-      width: 200,
-      height: 60,
-    },
-    description:
-      'Leading source for football transfer news, rumors, and analysis covering Premier League, La Liga, Serie A, Bundesliga, and Ligue 1',
-    foundingDate: '2024',
-    sameAs: [
-      'https://x.com/TransfersDly',
-      'https://bsky.app/profile/transfers-daily.bsky.social',
-    ],
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'customer service',
-      url: `https://transferdaily.com/${locale}/contact`,
-    },
-    areaServed: 'Worldwide',
-    knowsAbout: [
-      'Football Transfers',
-      'Soccer News',
-      'Premier League',
-      'La Liga',
-      'Serie A',
-      'Bundesliga',
-      'Ligue 1',
-      'Transfer Window',
-      'Football Rumors',
-    ],
-  };
-
-  const breadcrumbStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: t('navigation.home') || 'Home',
-        item:
-          locale === 'en'
-            ? 'https://transferdaily.com'
-            : `https://transferdaily.com/${locale}`,
-      },
-    ],
   };
 
   return (
     <main className="min-h-screen bg-background">
-      {/* Enhanced JSON-LD Structured Data for SEO */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(websiteStructuredData),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(organizationStructuredData),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(breadcrumbStructuredData),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }}
       />
 
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-          {/* Main Content - 70% */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 min-h-screen">
+          {/* Main Content */}
           <div className="col-span-1 lg:col-span-7">
-            {/* Hero Section - Featured */}
-            <section className="py-8" aria-labelledby="featured-transfer">
-              <div className="mb-3 md:mb-6">
-                <h2
-                  id="featured-transfer"
-                  className="text-base md:text-xl font-bold mb-3 text-foreground uppercase tracking-wider"
-                >
-                  {t('homepage.featuredArticle')}
-                </h2>
-                <div className="w-24 h-1 bg-primary rounded-full"></div>
-              </div>
 
+            {/* Hero Section - Featured Article */}
+            <section className="pt-6 pb-4" aria-labelledby="featured-transfer">
               <Suspense
                 fallback={
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-[500px]">
-                    <Card className="overflow-hidden md:col-span-2 relative">
-                      <Skeleton className="w-full h-full" />
-                    </Card>
-                    <div className="hidden md:flex flex-col gap-4">
-                      <Card className="overflow-hidden h-[240px] relative">
-                        <Skeleton className="w-full h-full" />
-                      </Card>
-                      <Card className="overflow-hidden h-[240px] relative">
-                        <Skeleton className="w-full h-full" />
-                      </Card>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 h-[420px]">
+                    <div className="md:col-span-2 h-full">
+                      <ArticleCardSkeleton variant="hero" />
+                    </div>
+                    <div className="hidden md:flex flex-col gap-3">
+                      <ArticleCardSkeleton variant="hero" />
+                      <ArticleCardSkeleton variant="hero" />
                     </div>
                   </div>
                 }
               >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 h-[500px]">
-                  {/* Main Featured Article - Large Card */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 h-[420px]">
+                  {/* Main Featured Article */}
                   {initialData.featuredTransfer ? (
-                    <article className="md:col-span-2">
-                      <Link
+                    <div className="md:col-span-2 h-full">
+                      <ArticleCard
+                        variant="hero"
+                        title={initialData.featuredTransfer.title}
                         href={`/${locale}/article/${initialData.featuredTransfer.slug}`}
-                        className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
-                        aria-label={`${t('common.readFullArticle')}: ${
-                          initialData.featuredTransfer.title
-                        }`}
-                      >
-                        <Card className="overflow-hidden h-full relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group bg-card border border-border shadow-md rounded-xl">
-                          <div className="h-full bg-card relative">
-                            {initialData.featuredTransfer.imageUrl && (
-                              <Image
-                                src={initialData.featuredTransfer.imageUrl}
-                                alt={`Featured: ${initialData.featuredTransfer.title} - ${initialData.featuredTransfer.league}`}
-                                width={600}
-                                height={500}
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                priority
-                              />
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent" />
-                            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent" />
-                            <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform transition-transform duration-300 group-hover:translate-y-[-4px]">
-                              <Badge className="mb-3 bg-primary/20 text-primary border-none backdrop-blur-sm">
-                                {initialData.featuredTransfer.league?.toUpperCase()}
-                              </Badge>
-                              <h3 className="text-lg lg:text-xl font-bold mb-3 leading-tight text-white drop-shadow-2xl [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)]">
-                                {initialData.featuredTransfer.title}
-                              </h3>
-                              <p className="text-white text-sm leading-relaxed line-clamp-2 mb-4 drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
-                                {initialData.featuredTransfer.excerpt}
-                              </p>
-                              <div className="flex items-center gap-2 text-sm text-white drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
-                                <Clock className="h-4 w-4 drop-shadow-lg" />
-                                <time dateTime={initialData.featuredTransfer.publishedAt}>
-                                  {formatTimeAgo(initialData.featuredTransfer.publishedAt, t)}
-                                </time>
-                              </div>
-                            </div>
-                          </div>
-                        </Card>
-                      </Link>
-                    </article>
+                        imageUrl={initialData.featuredTransfer.imageUrl}
+                        league={initialData.featuredTransfer.league}
+                        timeAgo={formatTimeAgo(initialData.featuredTransfer.publishedAt, t)}
+                        excerpt={initialData.featuredTransfer.excerpt}
+                        priority
+                      />
+                    </div>
                   ) : (
-                    <Card className="overflow-hidden md:col-span-2 h-full relative">
-                      <div className="h-full bg-muted flex items-center justify-center">
-                        <p className="text-muted-foreground">
-                          {t('common.noFeaturedTransfer')}
-                        </p>
-                      </div>
-                    </Card>
+                    <div className="md:col-span-2 h-full rounded-lg bg-card flex items-center justify-center">
+                      <p className="text-muted-foreground text-sm">{t('common.noFeaturedTransfer')}</p>
+                    </div>
                   )}
 
-                  {/* Side Articles - Two Small Cards */}
-                  <div className="hidden md:flex flex-col gap-4">
-                    {initialData.latestTransfers?.slice(0, 2).map((transfer: any, index: number) => (
-                      <article key={transfer.id} className="flex-1">
-                        <Link
+                  {/* Side Articles */}
+                  <div className="hidden md:flex flex-col gap-3">
+                    {initialData.latestTransfers?.slice(0, 2).map((transfer: any) => (
+                      <div key={transfer.id} className="flex-1">
+                        <ArticleCard
+                          variant="hero"
+                          title={transfer.title}
                           href={`/${locale}/article/${transfer.slug}`}
-                          className="focus:outline-none focus:ring-4 focus:ring-primary/50 rounded-lg"
-                          aria-label={`${t('common.readFullArticle')}: ${transfer.title}`}
-                        >
-                          <Card className="overflow-hidden h-full relative cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group bg-card border border-border shadow-md rounded-xl">
-                            <div className="h-full bg-card relative">
-                              {transfer.imageUrl && (
-                                <Image
-                                  src={transfer.imageUrl}
-                                  alt={`${transfer.title} - ${transfer.league}`}
-                                  width={300}
-                                  height={240}
-                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                />
-                              )}
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
-                              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                <Badge className="mb-2 bg-primary/20 text-primary border-none backdrop-blur-sm text-xs">
-                                  {transfer.league?.toUpperCase()}
-                                </Badge>
-                                <h3 className="text-sm font-bold mb-2 leading-tight text-white drop-shadow-2xl [text-shadow:_2px_2px_4px_rgb(0_0_0_/_80%)] line-clamp-2">
-                                  {transfer.title}
-                                </h3>
-                                <div className="flex items-center gap-2 text-xs text-white drop-shadow-lg [text-shadow:_1px_1px_2px_rgb(0_0_0_/_70%)]">
-                                  <Clock className="h-3 w-3 drop-shadow-lg" />
-                                  <time dateTime={transfer.publishedAt}>
-                                    {formatTimeAgo(transfer.publishedAt, t)}
-                                  </time>
-                                </div>
-                              </div>
-                            </div>
-                          </Card>
-                        </Link>
-                      </article>
+                          imageUrl={transfer.imageUrl}
+                          league={transfer.league}
+                        />
+                      </div>
                     )) || (
                       <>
-                        <Card className="overflow-hidden flex-1 relative">
-                          <div className="h-full bg-muted flex items-center justify-center">
-                            <p className="text-muted-foreground text-sm">No articles</p>
-                          </div>
-                        </Card>
-                        <Card className="overflow-hidden flex-1 relative">
-                          <div className="h-full bg-muted flex items-center justify-center">
-                            <p className="text-muted-foreground text-sm">No articles</p>
-                          </div>
-                        </Card>
+                        <div className="flex-1 rounded-lg bg-card" />
+                        <div className="flex-1 rounded-lg bg-card" />
                       </>
                     )}
                   </div>
@@ -497,248 +265,96 @@ export default async function HomePage({
               </Suspense>
             </section>
 
-            {/* Latest Transfer News Section */}
-            <section className="py-4 md:py-8" aria-labelledby="latest-transfers">
-              <div className="flex justify-between items-start mb-3 md:mb-6">
-                <div>
-                  <h2
-                    id="latest-transfers"
-                    className="text-base md:text-xl font-bold mb-3 text-foreground uppercase tracking-wider"
-                  >
-                    {t('homepage.latestTransfers')}
-                  </h2>
-                  <div className="w-24 h-1 bg-primary rounded-full"></div>
-                </div>
-                <ViewAllButton
-                  href={`/${locale}/latest`}
+            {/* Latest News Grid */}
+            <section className="py-4 md:py-6" aria-labelledby="latest-transfers">
+              <div className="flex justify-between items-center mb-4">
+                <h2
+                  id="latest-transfers"
+                  className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground"
                 >
+                  {t('homepage.latestTransfers')}
+                </h2>
+                <ViewAllButton href={`/${locale}/latest`}>
                   {t('common.viewAll')}
                 </ViewAllButton>
               </div>
 
-              <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <div className="space-y-4">
-                  <TransferGrid
-                    transfers={initialData.latestTransfers.slice(2, 5)}
-                    locale={locale}
-                    dict={dict}
-                    limit={3}
-                  />
-                  
-                  <TransferGrid
-                    transfers={initialData.latestTransfers.slice(5, 8)}
-                    locale={locale}
-                    dict={dict}
-                    limit={3}
-                  />
+              <Suspense fallback={
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <ArticleCardSkeleton key={i} variant="standard" />
+                  ))}
                 </div>
+              }>
+                <TransferGrid
+                  transfers={initialData.latestTransfers.slice(2, 8)}
+                  locale={locale}
+                  dict={dict}
+                  limit={6}
+                />
               </Suspense>
             </section>
 
-            {/* Ad: Content Banner */}
             <AdInContent3 />
 
-            {/* Browse by League Section */}
-            <section className="py-4 md:py-8" aria-labelledby="browse-leagues">
-              <div className="mb-3 md:mb-6">
-                <h2
-                  id="browse-leagues"
-                  className="text-base md:text-xl font-bold mb-3 text-foreground uppercase tracking-wider"
-                >
-                  {t('homepage.browseByLeague')}
-                </h2>
-                <div className="w-24 h-1 bg-primary rounded-full"></div>
+            {/* Per-League Sections */}
+            {initialData.leagues.map((league, index) => (
+              <div key={league.id}>
+                <LeagueSection
+                  title={league.name}
+                  slug={league.slug}
+                  transfers={initialData.leagueTransfers[league.slug] || []}
+                  locale={locale}
+                  dict={dict}
+                  t={t}
+                />
+                {index === 1 && <AdInContent1 />}
+                {index === 3 && <AdInContent2 />}
               </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                {initialData.leagues.map((league: any) => (
-                  <Link
-                    key={league.id}
-                    href={`/${locale}/league/${league.slug}`}
-                    className="group p-4 rounded-xl border border-border hover:border-primary hover:shadow-md transition-all duration-200 bg-card shadow-md"
-                  >
-                    <div className="flex flex-col items-center text-center space-y-3">
-                      <div className="w-16 h-16 relative">
-                        <Image
-                          src={league.logoUrl || '/placeholder-image.svg'}
-                          alt={`${league.name} logo`}
-                          width={64}
-                          height={64}
-                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-200"
-                        />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-sm group-hover:text-primary transition-colors text-foreground">
-                          {league.name}
-                        </h3>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-              
-            </section>
-
-            {/* Completed Transfers Section */}
-            <section className="py-4 md:py-8" aria-labelledby="completed-transfers">
-              <div className="flex justify-between items-start mb-3 md:mb-6">
-                <div>
-                  <h2
-                    id="completed-transfers"
-                    className="text-base md:text-lg lg:text-xl font-bold mb-3 text-foreground uppercase tracking-wider"
-                  >
-                    {t('homepage.completedTransfers')}
-                  </h2>
-                  <div className="w-24 h-1 bg-primary rounded-full"></div>
-                </div>
-                <ViewAllButton
-                  href={`/${locale}/transfers/completed`}
-                >
-                  {t('common.viewAll')}
-                </ViewAllButton>
-              </div>
-
-              <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <div className="space-y-4">
-                  <TransferGrid
-                    transfers={initialData.completedTransfers.slice(0, 3)}
-                    locale={locale}
-                    dict={dict}
-                    limit={3}
-                  />
-                  
-                  {/* Ad: In Content 1 */}
-                  <AdInContent1 />
-                  
-                  <TransferGrid
-                    transfers={initialData.completedTransfers.slice(3, 6)}
-                    locale={locale}
-                    dict={dict}
-                    limit={3}
-                  />
-                </div>
-              </Suspense>
-            </section>
-
-            {/* Trending Transfer News Section */}
-            <section className="py-4 md:py-8" aria-labelledby="trending-transfers">
-              
-              <div className="flex justify-between items-start mb-3 md:mb-6">
-                <div>
-                  <h2
-                    id="trending-transfers"
-                    className="text-base md:text-lg lg:text-xl font-bold mb-3 text-foreground uppercase tracking-wider"
-                  >
-                    {t('homepage.trendingArticles')}
-                  </h2>
-                  <div className="w-24 h-1 bg-primary rounded-full"></div>
-                </div>
-                <ViewAllButton
-                  href={`/${locale}/latest`}
-                >
-                  {t('common.viewAll')}
-                </ViewAllButton>
-              </div>
-
-              <Suspense fallback={<TransferGridSkeleton count={6} />}>
-                <div className="space-y-4">
-                  <TransferGrid
-                    transfers={initialData.trendingTransfers.slice(0, 3)}
-                    locale={locale}
-                    dict={dict}
-                    limit={3}
-                  />
-                  
-                  {/* Ad: In Content 2 */}
-                  <AdInContent2 />
-                  
-                  <TransferGrid
-                    transfers={initialData.trendingTransfers.slice(3, 6)}
-                    locale={locale}
-                    dict={dict}
-                    limit={3}
-                  />
-                </div>
-              </Suspense>
-            </section>
-
-            {/* Newsletter Section */}
-            <NewsletterSection locale={locale} dict={dict} />
+            ))}
           </div>
 
-          {/* Sidebar - 30% */}
+          {/* Sidebar */}
           <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-            <div className="space-y-6">
-              {/* Ad: Sidebar Top */}
+            <div className="space-y-6 pt-6">
               <AdSidebar />
-              
               <Suspense fallback={<SidebarSkeleton />}>
                 <Sidebar locale={locale} dict={dict} />
               </Suspense>
-              
-              {/* Ad: Sidebar Bottom */}
               <AdSidebar2 />
             </div>
           </aside>
         </div>
       </div>
-      
-      {/* Mobile Sticky Ad */}
+
       <AdMobileSticky />
     </main>
   );
 }
 
-// Server-side data fetching - fetch real articles from API
+// Server-side data fetching
 async function getInitialData(language = 'en') {
-  // Static leagues for navigation - these have images and should not be touched
   const staticLeagues = [
-    {
-      id: 'premier-league',
-      name: 'Premier League',
-      country: 'England',
-      logoUrl: '/logos/leagues/premier-league.png',
-      slug: 'premier-league'
-    },
-    {
-      id: 'la-liga',
-      name: 'La Liga',
-      country: 'Spain',
-      logoUrl: '/logos/leagues/la-liga.png',
-      slug: 'la-liga'
-    },
-    {
-      id: 'serie-a',
-      name: 'Serie A',
-      country: 'Italy',
-      logoUrl: '/logos/leagues/serie-a.png',
-      slug: 'serie-a'
-    },
-    {
-      id: 'bundesliga',
-      name: 'Bundesliga',
-      country: 'Germany',
-      logoUrl: '/logos/leagues/bundesliga.png',
-      slug: 'bundesliga'
-    },
-    {
-      id: 'ligue-1',
-      name: 'Ligue 1',
-      country: 'France',
-      logoUrl: '/logos/leagues/ligue-1.png',
-      slug: 'ligue-1'
-    }
+    { id: 'premier-league', name: 'Premier League', country: 'England', logoUrl: '/logos/leagues/premier-league.png', slug: 'premier-league' },
+    { id: 'la-liga', name: 'La Liga', country: 'Spain', logoUrl: '/logos/leagues/la-liga.png', slug: 'la-liga' },
+    { id: 'serie-a', name: 'Serie A', country: 'Italy', logoUrl: '/logos/leagues/serie-a.png', slug: 'serie-a' },
+    { id: 'bundesliga', name: 'Bundesliga', country: 'Germany', logoUrl: '/logos/leagues/bundesliga.png', slug: 'bundesliga' },
+    { id: 'ligue-1', name: 'Ligue 1', country: 'France', logoUrl: '/logos/leagues/ligue-1.png', slug: 'ligue-1' },
   ];
 
+  const emptyResult = {
+    featuredTransfer: null as Transfer | null,
+    latestTransfers: [] as Transfer[],
+    leagues: staticLeagues,
+    leagueTransfers: {} as Record<string, Transfer[]>,
+  };
+
   try {
-    // Fetch real articles from the backend API
     let featuredTransfer: Transfer | null = null;
     let latestTransfers: Transfer[] = [];
-    let trendingTransfers: Transfer[] = [];
-    let completedTransfers: Transfer[] = [];
 
+    // Fetch latest articles
     try {
-      // Direct API call to backend with proper error handling
       const apiUrl = `${API_CONFIG.baseUrl}/public/articles`;
       const params = new URLSearchParams({
         limit: '20',
@@ -749,30 +365,19 @@ async function getInitialData(language = 'en') {
 
       const response = await fetch(`${apiUrl}?${params}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        // Add timeout to prevent hanging
-        signal: AbortSignal.timeout(10000), // 10 second timeout
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        signal: AbortSignal.timeout(10000),
       });
 
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.data?.articles?.length > 0) {
-          const articles = data.data.articles;
-
-          // Transform articles to the expected format
-          const transformedArticles = articles.map((article: any) => {
-            // Since we're fetching with status=published, these are all published articles
+          const transformedArticles = data.data.articles.map((article: any) => {
             const bestDate = getBestDate(article.published_at, article.updated_at, article.created_at, true);
-
             return {
               id: article.id,
               title: article.title,
-              excerpt: article.content
-                ? article.content.substring(0, 200) + '...'
-                : article.meta_description || '',
+              excerpt: article.content ? article.content.substring(0, 200) + '...' : article.meta_description || '',
               content: article.content,
               league: article.league || 'Unknown',
               transferValue: article.transfer_fee,
@@ -786,140 +391,75 @@ async function getInitialData(language = 'en') {
             };
           });
 
-          // Set featured transfer (first article)
           featuredTransfer = transformedArticles[0];
-
-          // Set latest transfers (next 8 articles, since we use 2 in featured section)
           latestTransfers = transformedArticles.slice(1, 9);
-
-          // Set trending transfers with better logic (avoid duplicates)
-          if (transformedArticles.length >= 15) {
-            // If we have enough articles, use articles 9-14
-            trendingTransfers = transformedArticles.slice(9, 15);
-          } else if (transformedArticles.length >= 9) {
-            // If we have 9-14 articles, use the remaining ones and fill with earlier ones (avoiding duplicates)
-            const remaining = transformedArticles.slice(9);
-            const needed = 6 - remaining.length;
-            
-            // Get filler articles from the beginning, but avoid the featured article (index 0)
-            // and avoid articles already used in remaining and latest transfers
-            const usedIds = new Set([
-              ...remaining.map((article: any) => article.id),
-              ...transformedArticles.slice(1, 9).map((article: any) => article.id)
-            ]);
-            const availableForFiller = transformedArticles.filter((article: any) => 
-              !usedIds.has(article.id) && article.id !== featuredTransfer?.id
-            );
-            const filler = availableForFiller.slice(0, needed);
-            
-            trendingTransfers = [...remaining, ...filler];
-          } else {
-            // If we have fewer than 9 articles, use what we have without duplicating
-            // Skip the featured article (index 0) and articles used in latest transfers
-            const availableArticles = transformedArticles.slice(9);
-            trendingTransfers = availableArticles.slice(0, 6);
-          }
         }
-      } else {
-        console.error(
-          '❌ API request failed:',
-          response.status,
-          response.statusText
-        );
       }
     } catch (apiError: any) {
-      console.error('❌ Error fetching articles from API:', apiError.message);
-      console.error(
-        '❌ This is likely a CORS issue. The API is not accessible from localhost:3000'
-      );
+      console.error('Error fetching articles from API:', apiError.message);
     }
 
-    // Fetch completed transfers separately
-    try {
-      const completedApiUrl = `${API_CONFIG.baseUrl}/public/articles`;
-      const completedParams = new URLSearchParams({
-        limit: '6',
-        page: '1',
-        status: 'published',
-        language: language,
-        transfer_status: 'completed', // Filter by transfer_status instead of category
-        sortBy: 'published_at',
-        sortOrder: 'desc'
-      });
+    // Fetch per-league articles in parallel
+    const leagueTransfers: Record<string, Transfer[]> = {};
+    const leagueFetches = staticLeagues.map(async (league) => {
+      try {
+        const apiUrl = `${API_CONFIG.baseUrl}/public/articles`;
+        const params = new URLSearchParams({
+          limit: '4',
+          page: '1',
+          status: 'published',
+          language: language,
+          league: league.name,
+        });
 
-      const completedResponse = await fetch(`${completedApiUrl}?${completedParams}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        signal: AbortSignal.timeout(10000), // 10 second timeout
-      });
+        const response = await fetch(`${apiUrl}?${params}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          signal: AbortSignal.timeout(8000),
+        });
 
-      if (completedResponse.ok) {
-        const completedData = await completedResponse.json();
-        if (completedData.success && completedData.data?.articles?.length > 0) {
-          const completedArticles = completedData.data.articles;
-
-          // Transform completed articles to the expected format
-          completedTransfers = completedArticles.map((article: any) => {
-            const bestDate = getBestDate(article.published_at, article.updated_at, article.created_at, true);
-
-            return {
-              id: article.id,
-              title: article.title,
-              excerpt: article.content
-                ? article.content.substring(0, 200) + '...'
-                : article.meta_description || '',
-              content: article.content,
-              league: article.league || 'Unknown',
-              transferValue: article.transfer_fee,
-              playerName: article.player_name,
-              fromClub: article.from_club,
-              toClub: article.to_club,
-              status: 'completed',
-              publishedAt: bestDate,
-              imageUrl: article.image_url,
-              slug: article.slug || generateSlug(article.title || ''),
-            };
-          });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success && data.data?.articles?.length > 0) {
+            leagueTransfers[league.slug] = data.data.articles.map((article: any) => {
+              const bestDate = getBestDate(article.published_at, article.updated_at, article.created_at, true);
+              return {
+                id: article.id,
+                title: article.title,
+                excerpt: article.content ? article.content.substring(0, 200) + '...' : article.meta_description || '',
+                league: article.league || league.name,
+                status: article.transfer_status || 'rumor',
+                publishedAt: bestDate,
+                imageUrl: article.image_url,
+                slug: article.slug || generateSlug(article.title || ''),
+              };
+            });
+          }
         }
-      } else {
-        console.error('❌ Completed transfers API request failed:', completedResponse.status, completedResponse.statusText);
+      } catch {
+        // Silently fail per-league fetch
       }
-    } catch (completedApiError: any) {
-      console.error('❌ Error fetching completed transfers from API:', completedApiError.message);
-    }
+    });
 
-    const finalData = {
+    await Promise.allSettled(leagueFetches);
+
+    return {
       featuredTransfer,
       latestTransfers,
-      trendingTransfers,
-      completedTransfers,
       leagues: staticLeagues,
+      leagueTransfers,
     };
-
-    return finalData;
   } catch (error) {
-    console.error('💥 Error in getInitialData:', error);
-    return {
-      featuredTransfer: null,
-      latestTransfers: [],
-      trendingTransfers: [],
-      completedTransfers: [],
-      leagues: staticLeagues,
-    };
+    console.error('Error in getInitialData:', error);
+    return emptyResult;
   }
 }
 
-// Helper function to generate slug from title
 function generateSlug(title: string): string {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
     .trim();
 }
-
-
