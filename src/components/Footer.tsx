@@ -110,23 +110,23 @@ export function Footer() {
             {/* Quick Links */}
             <div className="space-y-6">
               <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.quickLinks', 'Quick Links')}</h4>
-              <ul className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
-                <li><Link href={getLocalizedPath("/latest")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.latest', 'Latest News')}</Link></li>
-                <li><Link href={getLocalizedPath("/search")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('common.search', 'Search')}</Link></li>
-                <li><Link href={getLocalizedPath("/about")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.about', 'About')}</Link></li>
-                <li><Link href={getLocalizedPath("/contact")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.contact', 'Contact Us')}</Link></li>
+              <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
+                <li><Link href={getLocalizedPath("/latest")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.latest', 'Latest News')}</Link></li>
+                <li><Link href={getLocalizedPath("/search")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('common.search', 'Search')}</Link></li>
+                <li><Link href={getLocalizedPath("/about")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.about', 'About')}</Link></li>
+                <li><Link href={getLocalizedPath("/contact")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.contact', 'Contact Us')}</Link></li>
               </ul>
             </div>
 
             {/* Leagues */}
             <div className="space-y-6">
               <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.leagues', 'Leagues')}</h4>
-              <ul className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
-                <li><Link href={getLocalizedPath("/league/premier-league")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Premier League</Link></li>
-                <li><Link href={getLocalizedPath("/league/la-liga")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">La Liga</Link></li>
-                <li><Link href={getLocalizedPath("/league/serie-a")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Serie A</Link></li>
-                <li><Link href={getLocalizedPath("/league/bundesliga")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Bundesliga</Link></li>
-                <li><Link href={getLocalizedPath("/league/ligue-1")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Ligue 1</Link></li>
+              <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
+                <li><Link href={getLocalizedPath("/league/premier-league")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Premier League</Link></li>
+                <li><Link href={getLocalizedPath("/league/la-liga")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">La Liga</Link></li>
+                <li><Link href={getLocalizedPath("/league/serie-a")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Serie A</Link></li>
+                <li><Link href={getLocalizedPath("/league/bundesliga")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Bundesliga</Link></li>
+                <li><Link href={getLocalizedPath("/league/ligue-1")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Ligue 1</Link></li>
               </ul>
             </div>
 
@@ -135,16 +135,16 @@ export function Footer() {
               <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Contact</h4>
               <div className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
                 <p>Get in touch with our team</p>
-                <a href="mailto:info@transfersdaily.com" className="block font-medium cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">
+                <a href="mailto:info@transfersdaily.com" className="block font-medium min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">
                   info@transfersdaily.com
                 </a>
               </div>
 
               <div className="space-y-4 pt-4">
                 <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Legal</h4>
-                <ul className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
-                  <li><Link href={getLocalizedPath("/privacy")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Privacy Policy</Link></li>
-                  <li><Link href={getLocalizedPath("/terms")} className="cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Terms of Service</Link></li>
+                <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
+                  <li><Link href={getLocalizedPath("/privacy")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Privacy Policy</Link></li>
+                  <li><Link href={getLocalizedPath("/terms")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Terms of Service</Link></li>
                 </ul>
               </div>
             </div>
@@ -189,10 +189,10 @@ export function Footer() {
                 title: 'Quick Links',
                 content: (
                   <ul className={cn(typography.body.small, 'space-y-1 md:space-y-3 text-muted-foreground')}>
-                    <li><Link href={getLocalizedPath("/latest")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Latest News</Link></li>
-                    <li><Link href={getLocalizedPath("/search")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Search</Link></li>
-                    <li><Link href={getLocalizedPath("/about")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">About</Link></li>
-                    <li><Link href={getLocalizedPath("/contact")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Contact</Link></li>
+                    <li><Link href={getLocalizedPath("/latest")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Latest News</Link></li>
+                    <li><Link href={getLocalizedPath("/search")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Search</Link></li>
+                    <li><Link href={getLocalizedPath("/about")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">About</Link></li>
+                    <li><Link href={getLocalizedPath("/contact")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Contact</Link></li>
                   </ul>
                 )
               },
@@ -202,11 +202,11 @@ export function Footer() {
                 content: (
                   <div className="space-y-2 md:space-y-4">
                     <ul className={cn(typography.body.small, 'space-y-1 md:space-y-3 text-muted-foreground')}>
-                      <li><Link href={getLocalizedPath("/league/premier-league")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Premier League</Link></li>
-                      <li><Link href={getLocalizedPath("/league/la-liga")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">La Liga</Link></li>
-                      <li><Link href={getLocalizedPath("/league/serie-a")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Serie A</Link></li>
-                      <li><Link href={getLocalizedPath("/league/bundesliga")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Bundesliga</Link></li>
-                      <li><Link href={getLocalizedPath("/league/ligue-1")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Ligue 1</Link></li>
+                      <li><Link href={getLocalizedPath("/league/premier-league")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Premier League</Link></li>
+                      <li><Link href={getLocalizedPath("/league/la-liga")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">La Liga</Link></li>
+                      <li><Link href={getLocalizedPath("/league/serie-a")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Serie A</Link></li>
+                      <li><Link href={getLocalizedPath("/league/bundesliga")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Bundesliga</Link></li>
+                      <li><Link href={getLocalizedPath("/league/ligue-1")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Ligue 1</Link></li>
                     </ul>
                   </div>
                 )
@@ -216,11 +216,11 @@ export function Footer() {
                 title: 'Contact & Legal',
                 content: (
                   <div className={cn(typography.body.small, 'space-y-2 md:space-y-4 text-muted-foreground')}>
-                    <a href="mailto:info@transfersdaily.com" className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer font-medium hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">
+                    <a href="mailto:info@transfersdaily.com" className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer font-medium hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">
                       info@transfersdaily.com
                     </a>
-                    <Link href={getLocalizedPath("/privacy")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Privacy Policy</Link>
-                    <Link href={getLocalizedPath("/terms")} className="block py-1 md:py-2 min-h-[44px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Terms of Service</Link>
+                    <Link href={getLocalizedPath("/privacy")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Privacy Policy</Link>
+                    <Link href={getLocalizedPath("/terms")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Terms of Service</Link>
                   </div>
                 )
               }
