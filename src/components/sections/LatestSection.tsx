@@ -1,5 +1,4 @@
-import { Suspense } from 'react';
-import { ArticleCard, ArticleCardSkeleton } from '@/components/ArticleCard';
+import { ArticleCard } from '@/components/ArticleCard';
 import { SwipeCarousel } from '@/components/SwipeCarousel';
 import { TransferGrid } from '@/components/TransferGrid';
 import { ViewAllButton } from '@/components/ViewAllButton';
@@ -34,6 +33,7 @@ export function LatestSection({
         </ViewAllButton>
       </div>
 
+      {/* Mobile: swipeable carousel */}
       <SwipeCarousel>
         {transfers.slice(0, 6).map((transfer) => (
           <ArticleCard
@@ -49,21 +49,14 @@ export function LatestSection({
         ))}
       </SwipeCarousel>
 
+      {/* Desktop: grid */}
       <div className="hidden md:block">
-        <Suspense fallback={
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <ArticleCardSkeleton key={i} variant="standard" />
-            ))}
-          </div>
-        }>
-          <TransferGrid
-            transfers={transfers}
-            locale={locale}
-            dict={dict}
-            limit={6}
-          />
-        </Suspense>
+        <TransferGrid
+          transfers={transfers}
+          locale={locale}
+          dict={dict}
+          limit={6}
+        />
       </div>
     </section>
   );
