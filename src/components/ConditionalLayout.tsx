@@ -19,12 +19,12 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
+    <div className="max-w-[1440px] mx-auto bg-card/30 min-h-screen border-x border-border/20">
       <main id="main-content" className="pb-16 lg:pb-0" style={{ scrollMarginTop: 'var(--navbar-height)' }}>
         {children}
       </main>
       <Footer />
       <MobileBottomNav />
-    </>
+    </div>
   )
 }

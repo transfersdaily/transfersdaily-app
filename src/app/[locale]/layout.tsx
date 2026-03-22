@@ -40,10 +40,10 @@ export default async function LocaleLayout({
       </a>
       <ConditionalLayout>
         <ServerNavbar locale={locale} dictionary={dictionary} />
-        
+
         {/* Site-wide Header Banner */}
         <AdSlot placement="homepage.header" />
-        
+
         <PageTransition>{children}</PageTransition>
       </ConditionalLayout>
     </DictionaryProvider>
