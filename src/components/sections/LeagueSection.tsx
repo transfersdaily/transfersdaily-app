@@ -1,5 +1,6 @@
 import { ArticleCard } from '@/components/ArticleCard';
 import { MotionCard } from '@/components/MotionCard';
+import { SwipeCarousel } from '@/components/SwipeCarousel';
 import { ViewAllButton } from '@/components/ViewAllButton';
 import { formatTimeAgo } from '@/lib/date-utils';
 import { type Transfer } from '@/lib/api';
@@ -34,19 +35,36 @@ export function LeagueSection({
       </div>
 
       {transfers.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {transfers.slice(0, 4).map((transfer, index) => (
-            <MotionCard key={transfer.id} index={index}>
+        <>
+          <SwipeCarousel itemClassName="w-[80vw]">
+            {transfers.slice(0, 4).map((transfer) => (
               <ArticleCard
+                key={transfer.id}
                 variant="compact"
                 title={transfer.title}
                 href={`/${locale}/article/${transfer.slug}`}
                 imageUrl={transfer.imageUrl}
                 timeAgo={formatTimeAgo(transfer.publishedAt, t)}
               />
-            </MotionCard>
-          ))}
-        </div>
+            ))}
+          </SwipeCarousel>
+
+          <div className="hidden md:block">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {transfers.slice(0, 4).map((transfer, index) => (
+                <MotionCard key={transfer.id} index={index}>
+                  <ArticleCard
+                    variant="compact"
+                    title={transfer.title}
+                    href={`/${locale}/article/${transfer.slug}`}
+                    imageUrl={transfer.imageUrl}
+                    timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+                  />
+                </MotionCard>
+              ))}
+            </div>
+          </div>
+        </>
       ) : (
         <div className="text-center py-8">
           <p className="text-sm text-muted-foreground">{t('common.noTransfersFound', 'No transfers found')}</p>
