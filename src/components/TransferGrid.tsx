@@ -1,4 +1,5 @@
 import { ArticleCard } from '@/components/ArticleCard';
+import { MotionCard } from '@/components/MotionCard';
 import { AdSlot } from '@/components/ads';
 import { type Locale, type Dictionary } from '@/lib/i18n';
 import { type Transfer } from '@/lib/api';
@@ -35,15 +36,17 @@ export function TransferGrid({
     // Add transfer card
     gridItems.push(
       <div key={transfer.id} className="col-span-1">
-        <ArticleCard
-          variant="standard"
-          title={transfer.title}
-          excerpt={transfer.excerpt}
-          league={transfer.league}
-          timeAgo={formatTimeAgo(transfer.publishedAt, t)}
-          href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
-          imageUrl={transfer.imageUrl}
-        />
+        <MotionCard index={index}>
+          <ArticleCard
+            variant="standard"
+            title={transfer.title}
+            excerpt={transfer.excerpt}
+            league={transfer.league}
+            timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+            href={`/${locale}/article/${transfer.slug || 'no-slug'}`}
+            imageUrl={transfer.imageUrl}
+          />
+        </MotionCard>
       </div>
     );
 

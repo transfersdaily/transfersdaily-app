@@ -1,4 +1,5 @@
 import { ArticleCard } from '@/components/ArticleCard';
+import { MotionCard } from '@/components/MotionCard';
 import { ViewAllButton } from '@/components/ViewAllButton';
 import { formatTimeAgo } from '@/lib/date-utils';
 import { type Transfer } from '@/lib/api';
@@ -34,15 +35,16 @@ export function LeagueSection({
 
       {transfers.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {transfers.slice(0, 4).map((transfer) => (
-            <ArticleCard
-              key={transfer.id}
-              variant="compact"
-              title={transfer.title}
-              href={`/${locale}/article/${transfer.slug}`}
-              imageUrl={transfer.imageUrl}
-              timeAgo={formatTimeAgo(transfer.publishedAt, t)}
-            />
+          {transfers.slice(0, 4).map((transfer, index) => (
+            <MotionCard key={transfer.id} index={index}>
+              <ArticleCard
+                variant="compact"
+                title={transfer.title}
+                href={`/${locale}/article/${transfer.slug}`}
+                imageUrl={transfer.imageUrl}
+                timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+              />
+            </MotionCard>
           ))}
         </div>
       ) : (

@@ -2,6 +2,7 @@ import { ConditionalLayout } from '@/components/ConditionalLayout'
 import { locales, type Locale, getDictionary } from '@/lib/i18n'
 import { DictionaryProvider } from '@/lib/dictionary-provider'
 import { ServerNavbar } from '@/components/ServerNavbar'
+import { PageTransition } from '@/components/PageTransition'
 import { AdSlot } from '@/components/ads'
 import { notFound } from 'next/navigation'
 
@@ -43,7 +44,7 @@ export default async function LocaleLayout({
         {/* Site-wide Header Banner */}
         <AdSlot placement="homepage.header" />
         
-        {children}
+        <PageTransition>{children}</PageTransition>
       </ConditionalLayout>
     </DictionaryProvider>
   )
