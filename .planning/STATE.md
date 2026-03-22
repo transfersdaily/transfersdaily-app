@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 04-02-PLAN.md
-last_updated: "2026-03-22T12:17:02.000Z"
-last_activity: 2026-03-22 -- Completed Phase 4 Plan 2 (consumer migration)
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-22T13:57:00.000Z"
+last_activity: 2026-03-22 -- Completed Phase 6 Plan 1 (article sub-component extraction)
 progress:
   total_phases: 9
   completed_phases: 3
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Readers experience fast, trustworthy transfer news wrapped in a premium editorial design that maximizes engagement and ad revenue.
-**Current focus:** Phase 4 -- Ad System Overhaul
+**Current focus:** Phase 6 -- Article Page Restructure
 
 ## Current Position
 
-Phase: 4 of 9 (Ad System Overhaul) -- COMPLETE
-Plan: 2 of 2 in current phase
-Status: Phase 4 complete, ready for Phase 5
-Last activity: 2026-03-22 -- Completed Phase 4 Plan 2 consumer migration
+Phase: 6 of 9 (Article Page Restructure)
+Plan: 1 of 2 in current phase
+Status: Plan 1 complete, ready for Plan 2
+Last activity: 2026-03-22 -- Completed Phase 6 Plan 1 article sub-component extraction
 
 Progress: [██████████] 100%
 
@@ -57,6 +57,7 @@ Progress: [██████████] 100%
 | Phase 03 P02 | 5min | 3 tasks | 5 files |
 | Phase 04 P01 | 3min | 2 tasks | 3 files |
 | Phase 04 P02 | 2min | 2 tasks | 5 files |
+| Phase 06 P01 | 2min | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -89,6 +90,9 @@ Recent decisions affecting current work:
 - [Phase 04]: Placement string pattern: 'page.position' maps to AD_SLOTS.PAGE.POSITION via getSlotConfig()
 - [Phase 04]: All consumer files migrated to AdSlot -- no file imports any of the 12 old ad components
 - [Phase 04]: Barrel export cleaned to AdSlot + shouldShowAds only
+- [Phase 06]: All article sub-components are server components (no 'use client')
+- [Phase 06]: LeagueColorMap duplicated inline in ArticleHero and ArticleMeta to avoid coupling
+- [Phase 06]: Reading time uses 200wpm with Math.ceil, minimum 1 minute
 
 ### Pending Todos
 
@@ -101,6 +105,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:17:02.000Z
-Stopped at: Completed 04-02-PLAN.md
+Last session: 2026-03-22T13:57:00.000Z
+Stopped at: Completed 06-01-PLAN.md
 Resume file: None
