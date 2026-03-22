@@ -107,12 +107,11 @@ Plans:
   2. Reading time is displayed prominently near the article title so readers know the commitment before scrolling
   3. Breadcrumb navigation shows the path (Home > League > Article) and allows quick back-navigation
   4. The article page file is decomposed from 726+ lines into clean sub-components (header, body, sidebar, related) with the main file under 200 lines
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: TBD
-- [ ] 06-02: TBD
-- [ ] 06-03: TBD
+- [ ] 06-01-PLAN.md — Extract ArticleHero, ArticleMeta, ArticleBreadcrumb, ArticleBody components with hero gradient, reading time, and breadcrumbs
+- [ ] 06-02-PLAN.md — Recompose page.tsx as slim composer and migrate TransferCard to ArticleCard
 
 ### Phase 7: Article Engagement Features
 **Goal**: Readers engage longer with articles through sharing tools, related content, smooth loading, and visible reading progress
@@ -174,7 +173,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | 3. Card System & Component Consolidation | 2/2 | Complete | 2026-03-22 |
 | 4. Ad System Overhaul | 1/2 | In progress | - |
 | 5. Homepage Redesign | 0/2 | Planning complete | - |
-| 6. Article Page Restructure | 0/? | Not started | - |
+| 6. Article Page Restructure | 0/2 | Planning complete | - |
 | 7. Article Engagement Features | 0/? | Not started | - |
 | 8. Animation System | 0/? | Not started | - |
 | 9. Mobile Experience Optimization | 0/? | Not started | - |
