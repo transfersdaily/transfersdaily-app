@@ -64,7 +64,7 @@ export function TrendingArticles({
   return (
     <div>
       <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">
-        {t('sidebar.trending', 'Trending')}
+        {t('sidebar.trendingArticles', 'Trending')}
       </h3>
       {isLoading ? (
         <div className="space-y-3">
@@ -81,7 +81,7 @@ export function TrendingArticles({
       ) : articles.length === 0 ? (
         <div className="text-center py-6">
           <p className="text-sm text-muted-foreground">
-            {t('sidebar.noTrendingArticles', 'No trending articles')}
+            {t('sidebar.noTrendingArticles')}
           </p>
         </div>
       ) : (
