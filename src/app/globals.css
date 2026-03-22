@@ -134,20 +134,20 @@
   }
 }
 
-/* Editorial typography — Bebas Neue headlines */
+/* Editorial typography — Oswald headlines */
 @layer utilities {
   .text-hero {
-    font-size: clamp(2rem, 6vw, 4.5rem);
-    font-weight: 400;
-    letter-spacing: 0.02em;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
     line-height: 1.0;
     text-transform: uppercase;
   }
 
   .text-section-title {
-    font-size: clamp(1.125rem, 2.5vw, 1.5rem);
-    font-weight: 400;
-    letter-spacing: 0.05em;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
     line-height: 1.2;
     text-transform: uppercase;
   }
@@ -190,4 +190,22 @@
     background-color: hsl(142 71% 45%);
     color: white;
   }
+}
+
+/* Ad slot — force hide unfilled ads, prevent white blocks on dark theme */
+.ad-slot-hidden {
+  display: none !important;
+}
+
+.ad-slot-hidden * {
+  display: none !important;
+}
+
+/* Force AdSense ins to be transparent on dark theme */
+ins.adsbygoogle {
+  background: transparent !important;
+}
+
+ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important;
 }
