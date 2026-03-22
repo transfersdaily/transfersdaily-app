@@ -1,5 +1,5 @@
 import { ArticleCard } from '@/components/ArticleCard';
-import { AdInFeed } from '@/components/ads';
+import { AdSlot } from '@/components/ads';
 import { type Locale, type Dictionary } from '@/lib/i18n';
 import { type Transfer } from '@/lib/api';
 import { formatTimeAgo } from '@/lib/date-utils';
@@ -51,7 +51,7 @@ export function TransferGrid({
     if ((index + 1) % 6 === 0 && index < displayTransfers.length - 1) {
       gridItems.push(
         <div key={`ad-${index}`} className="col-span-1 md:col-span-2 lg:col-span-3">
-          <AdInFeed />
+          <AdSlot placement="homepage.in-latest-grid" />
         </div>
       );
     }

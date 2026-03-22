@@ -11,7 +11,7 @@ import { getBestDate, formatTimeAgo } from '@/lib/date-utils';
 import { createTranslator } from '@/lib/dictionary-server';
 import { type Transfer } from '@/lib/api';
 import { API_CONFIG } from '@/lib/config';
-import { AdInContent1, AdInContent2, AdInContent3, AdSidebar, AdSidebar2, AdMobileSticky } from '@/components/ads';
+import { AdSlot } from '@/components/ads';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -295,7 +295,7 @@ export default async function HomePage({
               </Suspense>
             </section>
 
-            <AdInContent3 />
+            <AdSlot placement="homepage.pre-latest" />
 
             {/* Per-League Sections */}
             {initialData.leagues.map((league, index) => (
@@ -308,8 +308,8 @@ export default async function HomePage({
                   dict={dict}
                   t={t}
                 />
-                {index === 1 && <AdInContent1 />}
-                {index === 3 && <AdInContent2 />}
+                {index === 1 && <AdSlot placement="homepage.post-hero" />}
+                {index === 3 && <AdSlot placement="homepage.post-latest" />}
               </div>
             ))}
           </div>
@@ -317,17 +317,17 @@ export default async function HomePage({
           {/* Sidebar */}
           <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
             <div className="space-y-6 pt-6">
-              <AdSidebar />
+              <AdSlot placement="homepage.sidebar-top" />
               <Suspense fallback={<SidebarSkeleton />}>
                 <Sidebar locale={locale} dict={dict} />
               </Suspense>
-              <AdSidebar2 />
+              <AdSlot placement="homepage.sidebar-middle-1" />
             </div>
           </aside>
         </div>
       </div>
 
-      <AdMobileSticky />
+      <AdSlot placement="homepage.mobile-sticky" sticky />
     </main>
   );
 }
