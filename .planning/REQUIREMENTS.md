@@ -19,14 +19,14 @@ Requirements for initial release. Focus: make the website look better — visual
 
 ### Article Experience
 
-- [ ] **ART-01**: Hero image with gradient overlay on article detail pages
-- [ ] **ART-02**: Reading time estimate displayed prominently on article pages
+- [x] **ART-01**: Hero image with gradient overlay on article detail pages
+- [x] **ART-02**: Reading time estimate displayed prominently on article pages
 - [ ] **ART-03**: Social sharing buttons (copy link, X/Twitter, WhatsApp)
-- [ ] **ART-04**: Breadcrumb navigation on article pages
+- [x] **ART-04**: Breadcrumb navigation on article pages
 - [ ] **ART-05**: Related articles section at bottom of article pages using new card system
 - [ ] **ART-06**: Skeleton loading states for article content and images
 - [ ] **ART-07**: Sticky reading progress bar showing scroll position while reading articles
-- [ ] **ART-08**: Decompose article page from 726+ lines into clean, maintainable sub-components
+- [x] **ART-08**: Decompose article page from 726+ lines into clean, maintainable sub-components
 
 ### Homepage
 
@@ -98,14 +98,14 @@ Deferred to next milestone. Interactive engagement features inspired by football
 | DS-05 | Phase 1 | Complete |
 | DS-06 | Phase 8 | Pending |
 | DS-07 | Phase 4 | Pending |
-| ART-01 | Phase 6 | Pending |
-| ART-02 | Phase 6 | Pending |
+| ART-01 | Phase 6 | Complete |
+| ART-02 | Phase 6 | Complete |
 | ART-03 | Phase 7 | Pending |
-| ART-04 | Phase 6 | Pending |
+| ART-04 | Phase 6 | Complete |
 | ART-05 | Phase 7 | Pending |
 | ART-06 | Phase 7 | Pending |
 | ART-07 | Phase 7 | Pending |
-| ART-08 | Phase 6 | Pending |
+| ART-08 | Phase 6 | Complete |
 | HOME-01 | Phase 5 | Pending |
 | HOME-02 | Phase 5 | Pending |
 | HOME-03 | Phase 5 | Pending |
