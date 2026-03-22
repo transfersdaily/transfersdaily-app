@@ -10,13 +10,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, ChevronDown, Search, User, Newspaper, Trophy, ArrowRightLeft } from 'lucide-react';
+import { Menu, ChevronDown, Search, User } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useDictionary } from '@/lib/dictionary-provider';
 import { useParams, usePathname } from 'next/navigation';
 import { type Locale } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-import { ThemeToggle } from '@/components/ThemeToggle';
+
 import { CommandSearch } from '@/components/CommandSearch';
 import { typography } from '@/lib/typography';
 import { cn, zIndex, motion } from '@/lib/theme';
@@ -93,7 +93,6 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
         <nav className="hidden md:flex items-center justify-center flex-1 space-x-8">
           <NavLink
             href={getLocalizedPath('/latest')}
-            icon={<Newspaper className="h-4 w-4" />}
           >
             {t('navigation.latest', 'Latest')}
           </NavLink>
@@ -110,7 +109,6 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                   'motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                 )}
               >
-                <Trophy className="h-4 w-4" />
                 <span>{t('navigation.leagues', 'Leagues')}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -138,7 +136,6 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                   'motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                 )}
               >
-                <ArrowRightLeft className="h-4 w-4" />
                 <span>{t('navigation.transfers', 'Transfers')}</span>
                 <ChevronDown className="h-3 w-3" />
               </Button>
@@ -164,24 +161,16 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <LanguageSwitcher variant="compact" currentLocale={locale} />
           </div>
 
-          {/* Search Button + Cmd+K hint */}
-          <div className="hidden sm:flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary motion-safe:transition-colors duration-fast"
-              onClick={() => setSearchOpen(true)}
-            >
-              <Search className="h-4 w-4" />
-              <span className="sr-only">{t('common.search', 'Search')}</span>
-            </Button>
-            <kbd className="hidden lg:inline-flex items-center gap-1 px-1.5 py-0.5 text-xs text-muted-foreground bg-muted rounded border border-border font-mono">
-              <span className="text-xs">⌘</span>K
-            </kbd>
-          </div>
-
-          {/* Theme Toggle */}
-          <ThemeToggle className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary" />
+          {/* Search Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary motion-safe:transition-colors duration-fast"
+            onClick={() => setSearchOpen(true)}
+          >
+            <Search className="h-4 w-4" />
+            <span className="sr-only">{t('common.search', 'Search')}</span>
+          </Button>
 
           {/* User Menu */}
           {user ? (
@@ -267,7 +256,6 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                     )}
                     onClick={() => setIsOpen(false)}
                   >
-                    <Newspaper className="h-4 w-4 mr-2" />
                     {t('navigation.latest', 'Latest')}
                   </Link>
                 </div>

@@ -66,13 +66,17 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
     return () => observer.disconnect();
   }, [shouldLazy]);
 
-  // Monitor ad fill status via MutationObserver
+  // Monitor ad fill status via MutationObserver + timeout fallback for adblockers
   useEffect(() => {
     if (!isVisible || !containerRef.current) return;
 
     const checkAdStatus = () => {
       const ins = containerRef.current?.querySelector('ins.adsbygoogle');
-      if (!ins) return;
+      if (!ins) {
+        // No ins element at all — likely adblocker prevented it
+        setAdEmpty(true);
+        return;
+      }
       const status = ins.getAttribute('data-ad-status');
       if (status === 'filled' || (ins as HTMLElement).offsetHeight > 0) {
         setAdLoaded(true);
@@ -82,7 +86,18 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
       }
     };
 
-    const timer = setTimeout(checkAdStatus, 2000);
+    // Quick check after 1.5s for fast ad loads
+    const quickTimer = setTimeout(checkAdStatus, 1500);
+
+    // Fallback: if ad still hasn't loaded after 4s, collapse
+    const fallbackTimer = setTimeout(() => {
+      if (!adLoaded) {
+        const ins = containerRef.current?.querySelector('ins.adsbygoogle');
+        if (!ins || (ins as HTMLElement).offsetHeight === 0) {
+          setAdEmpty(true);
+        }
+      }
+    }, 4000);
 
     const ins = containerRef.current?.querySelector('ins.adsbygoogle');
     let observer: MutationObserver | null = null;
@@ -92,10 +107,11 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
     }
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(quickTimer);
+      clearTimeout(fallbackTimer);
       observer?.disconnect();
     };
-  }, [isVisible]);
+  }, [isVisible, adLoaded]);
 
   // Early returns after all hooks
   if (isAdFree) return null;
