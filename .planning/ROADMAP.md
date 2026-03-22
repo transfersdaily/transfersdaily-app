@@ -92,12 +92,11 @@ Plans:
   3. A trending/popular sidebar or widget surfaces high-engagement articles
   4. The homepage renders via ISR with revalidation instead of force-dynamic, producing faster page loads
   5. The homepage page file is decomposed from 925+ lines into composed section components under 200 lines total
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 05-01: TBD
-- [ ] 05-02: TBD
-- [ ] 05-03: TBD
+- [ ] 05-01-PLAN.md — Decompose homepage into section components (HeroSection, LatestSection, LeagueSection) and switch to ISR
+- [ ] 05-02-PLAN.md — Add TrendingArticles sidebar widget and verify mobile layout
 
 ### Phase 6: Article Page Restructure
 **Goal**: The article reading experience feels premium with hero imagery, clear metadata, and a well-structured, maintainable codebase
@@ -174,7 +173,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | 2. Navigation & Site Chrome | 2/2 | Complete | 2026-03-18 |
 | 3. Card System & Component Consolidation | 2/2 | Complete | 2026-03-22 |
 | 4. Ad System Overhaul | 1/2 | In progress | - |
-| 5. Homepage Redesign | 0/? | Not started | - |
+| 5. Homepage Redesign | 0/2 | Planning complete | - |
 | 6. Article Page Restructure | 0/? | Not started | - |
 | 7. Article Engagement Features | 0/? | Not started | - |
 | 8. Animation System | 0/? | Not started | - |
