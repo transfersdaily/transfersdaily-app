@@ -1,18 +1,18 @@
 import './globals.css'
-import { Bebas_Neue, Source_Sans_3 } from 'next/font/google'
+import { Oswald, Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import { AuthProvider } from '@/lib/auth'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import Script from 'next/script'
 
-const bebasNeue = Bebas_Neue({
+const oswald = Oswald({
   subsets: ['latin'],
-  weight: '400',
+  weight: ['400', '500', '600', '700'],
   variable: '--font-display',
   display: 'swap',
 })
 
-const sourceSans = Source_Sans_3({
+const inter = Inter({
   subsets: ['latin'],
   weight: ['300', '400', '500', '600', '700'],
   variable: '--font-sans',
@@ -50,12 +50,6 @@ export default function RootLayout({
 
         <meta name="google-adsense-account" content="ca-pub-6269937543968234" />
 
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6269937543968234"
-          crossOrigin="anonymous"
-        />
-
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-2VJKVM04W7" strategy="afterInteractive" />
         <Script id="ga4-init" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];
@@ -64,7 +58,7 @@ export default function RootLayout({
             gtag('config', 'G-2VJKVM04W7');`}
         </Script>
       </head>
-      <body className={`${sourceSans.variable} ${bebasNeue.variable} font-sans`}>
+      <body className={`${inter.variable} ${oswald.variable} font-sans`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

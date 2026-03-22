@@ -209,3 +209,11 @@ ins.adsbygoogle {
 ins.adsbygoogle[data-ad-status="unfilled"] {
   display: none !important;
 }
+
+/* Hide Google Auto Ads injected outside our AdSlot containers */
+body > ins.adsbygoogle,
+body > div > ins.adsbygoogle:not([data-ad-slot]),
+#google_ads_frame1,
+.google-auto-placed {
+  display: none !important;
+}
