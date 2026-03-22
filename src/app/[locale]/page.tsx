@@ -159,7 +159,7 @@ function LeagueSection({
           ))}
         </div>
       ) : (
-        <p className="font-sans text-sm text-muted-foreground py-2">No articles available</p>
+        <p className="text-sm text-muted-foreground">No articles available</p>
       )}
     </section>
   );
@@ -238,7 +238,7 @@ export default async function HomePage({
                     </div>
                   ) : (
                     <div className="md:col-span-2 h-full rounded-lg bg-card flex items-center justify-center">
-                      <p className="text-muted-foreground text-sm">{t('common.noFeaturedTransfer')}</p>
+                      <p className="text-sm text-muted-foreground">{t('common.noFeaturedTransfer')}</p>
                     </div>
                   )}
 

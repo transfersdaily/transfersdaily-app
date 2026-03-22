@@ -113,11 +113,11 @@ export function RecommendedArticles({
         </div>
       ) : hasError ? (
         <div className="text-center py-6">
-          <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingArticles')}</p>
+          <p className="text-sm text-muted-foreground">{t('sidebar.errorLoadingArticles')}</p>
         </div>
       ) : articles.length === 0 ? (
         <div className="text-center py-6">
-          <p className="text-sm text-muted-foreground/80">{t('sidebar.noRecommendedArticles')}</p>
+          <p className="text-sm text-muted-foreground">{t('sidebar.noRecommendedArticles')}</p>
         </div>
       ) : (
         <div className="space-y-3">

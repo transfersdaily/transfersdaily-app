@@ -137,7 +137,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
       <div>
         <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">Most Searched</h3>
         <div className="text-center py-6">
-          <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingTrends')}</p>
+          <p className="text-sm text-muted-foreground">{t('sidebar.errorLoadingTrends')}</p>
         </div>
       </div>
     )
@@ -148,7 +148,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
       <div>
         <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">Most Searched</h3>
         <div className="text-center py-6">
-          <p className="text-sm text-muted-foreground/80">{t('sidebar.noTrendingTopics')}</p>
+          <p className="text-sm text-muted-foreground">{t('sidebar.noTrendingTopics')}</p>
         </div>
       </div>
     )
