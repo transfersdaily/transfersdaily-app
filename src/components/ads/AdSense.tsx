@@ -18,22 +18,6 @@ declare global {
   }
 }
 
-// Load the AdSense script once globally (no auto-ads)
-let scriptLoaded = false;
-function ensureAdSenseScript() {
-  if (scriptLoaded || typeof window === 'undefined') return;
-  if (document.querySelector('script[src*="adsbygoogle"]')) {
-    scriptLoaded = true;
-    return;
-  }
-  const script = document.createElement('script');
-  script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6269937543968234';
-  script.async = true;
-  script.crossOrigin = 'anonymous';
-  document.head.appendChild(script);
-  scriptLoaded = true;
-}
-
 export function AdSense({
   adSlot,
   adFormat = 'auto',
@@ -47,7 +31,6 @@ export function AdSense({
 
   useEffect(() => {
     setIsClient(true);
-    ensureAdSenseScript();
   }, []);
 
   useEffect(() => {
