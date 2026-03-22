@@ -204,7 +204,8 @@ export default async function HomePage({
       />
 
       <div className="container mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 min-h-screen">
+        {/* Hero + Latest + Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
           {/* Main Content */}
           <div className="col-span-1 lg:col-span-7">
 
@@ -296,24 +297,6 @@ export default async function HomePage({
                 />
               </Suspense>
             </section>
-
-            <AdSlot placement="homepage.pre-latest" />
-
-            {/* Per-League Sections */}
-            {initialData.leagues.map((league, index) => (
-              <div key={league.id}>
-                <LeagueSection
-                  title={league.name}
-                  slug={league.slug}
-                  transfers={initialData.leagueTransfers[league.slug] || []}
-                  locale={locale}
-                  dict={dict}
-                  t={t}
-                />
-                {index === 1 && <AdSlot placement="homepage.post-hero" />}
-                {index === 3 && <AdSlot placement="homepage.post-latest" />}
-              </div>
-            ))}
           </div>
 
           {/* Sidebar */}
@@ -326,6 +309,27 @@ export default async function HomePage({
               <AdSlot placement="homepage.sidebar-middle-1" />
             </div>
           </aside>
+        </div>
+
+        {/* Full-width ad between sections */}
+        <AdSlot placement="homepage.pre-latest" />
+
+        {/* League Sections — full width, no sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
+          <div className="col-span-1 lg:col-span-7">
+            {initialData.leagues.map((league, index) => (
+              <div key={league.id}>
+                <LeagueSection
+                  title={league.name}
+                  slug={league.slug}
+                  transfers={initialData.leagueTransfers[league.slug] || []}
+                  locale={locale}
+                  dict={dict}
+                  t={t}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
