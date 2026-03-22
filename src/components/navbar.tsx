@@ -20,6 +20,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 import { CommandSearch } from '@/components/CommandSearch';
 import { typography } from '@/lib/typography';
 import { cn, zIndex, motion } from '@/lib/theme';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 
 function NavLink({ href, icon, children }: { href: string; icon?: React.ReactNode; children: React.ReactNode }) {
   const pathname = usePathname();
@@ -50,6 +51,7 @@ interface NavbarProps {
 export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const scrollDirection = useScrollDirection();
   const { user, signOut } = useAuth();
   const params = useParams();
   const locale = propLocale || (params?.locale as Locale) || 'en';
@@ -76,7 +78,12 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
 
   return (
     <>
-    <header className="sticky top-0 z-20 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className={cn(
+      "sticky top-0 z-20 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      "transition-transform duration-[200ms] ease-out motion-reduce:transition-none",
+      "md:translate-y-0",
+      scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'
+    )}>
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
         <Link
