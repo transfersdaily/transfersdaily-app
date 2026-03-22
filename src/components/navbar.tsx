@@ -79,7 +79,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
   return (
     <>
     <header className={cn(
-      "sticky top-0 z-20 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
+      "sticky top-0 z-20 w-full border-b border-border bg-card/95 backdrop-blur-lg supports-[backdrop-filter]:bg-card/80",
       "transition-transform duration-[200ms] ease-out motion-reduce:transition-none",
       "md:translate-y-0",
       scrollDirection === 'down' ? '-translate-y-full' : 'translate-y-0'

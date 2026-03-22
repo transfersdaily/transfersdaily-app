@@ -15,9 +15,9 @@ const cardVariants = cva(
       variant: {
         hero: "relative rounded-lg overflow-hidden h-full",
         standard:
-          "flex flex-col h-full overflow-hidden bg-card border border-border rounded-lg hover:-translate-y-0.5",
-        compact: "flex gap-3 p-3 rounded-lg hover:bg-card/80 transition-colors",
-        mini: "flex gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors",
+          "flex flex-col h-full overflow-hidden bg-card border border-border/50 rounded-lg hover:-translate-y-0.5 hover:border-border",
+        compact: "flex gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors",
+        mini: "flex gap-3 p-3 rounded-lg hover:bg-secondary/50 transition-colors",
       },
     },
     defaultVariants: {

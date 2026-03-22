@@ -54,9 +54,9 @@ export function Footer() {
 
   return (
     <>
-      <footer className="bg-background border-t border-border relative overflow-hidden">
-        {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted opacity-50"></div>
+      <footer className="bg-card border-t border-border relative overflow-hidden">
+        {/* Subtle gradient for depth */}
+        <div className="absolute inset-0 bg-gradient-to-b from-card via-card to-background opacity-80"></div>
 
         <div className="container mx-auto px-4 md:px-6 py-8 md:py-16 pb-20 md:pb-8 relative z-10">
           {/* Desktop Layout */}
