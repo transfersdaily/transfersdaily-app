@@ -439,6 +439,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
   try {
     return (
       <main className="min-h-screen bg-background">
+        <ReadingProgressBar />
+
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
@@ -479,6 +481,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
                 transferFee={article.transfer_fee}
                 dict={dict}
               />
+
+              <ShareButtons url={`https://transferdaily.com/${locale}/article/${slug}`} title={article.title} />
 
               {/* Article Body */}
               <div className="mt-6 md:mt-8">
