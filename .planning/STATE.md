@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-03-22T12:11:52.000Z"
-last_activity: 2026-03-22 -- Completed Phase 4 Plan 1 (ad infrastructure)
+stopped_at: Completed 04-02-PLAN.md
+last_updated: "2026-03-22T12:17:02.000Z"
+last_activity: 2026-03-22 -- Completed Phase 4 Plan 2 (consumer migration)
 progress:
   total_phases: 9
   completed_phases: 3
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-03-17)
 
 ## Current Position
 
-Phase: 4 of 9 (Ad System Overhaul) -- IN PROGRESS
-Plan: 1 of 2 in current phase
-Status: Plan 04-01 complete, ready for Plan 04-02
-Last activity: 2026-03-22 -- Completed Phase 4 Plan 1 ad infrastructure
+Phase: 4 of 9 (Ad System Overhaul) -- COMPLETE
+Plan: 2 of 2 in current phase
+Status: Phase 4 complete, ready for Phase 5
+Last activity: 2026-03-22 -- Completed Phase 4 Plan 2 consumer migration
 
 Progress: [██████████] 100%
 
@@ -56,6 +56,7 @@ Progress: [██████████] 100%
 | Phase 02 P02 | 5min | 7 tasks | 7 files |
 | Phase 03 P02 | 5min | 3 tasks | 5 files |
 | Phase 04 P01 | 3min | 2 tasks | 3 files |
+| Phase 04 P02 | 2min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,8 @@ Recent decisions affecting current work:
 - [Phase 04]: Real slot IDs from existing 12 components mapped to AD_SLOTS config positions
 - [Phase 04]: AdFreeZone logic inlined in AdSlot instead of wrapping with separate component
 - [Phase 04]: Placement string pattern: 'page.position' maps to AD_SLOTS.PAGE.POSITION via getSlotConfig()
+- [Phase 04]: All consumer files migrated to AdSlot -- no file imports any of the 12 old ad components
+- [Phase 04]: Barrel export cleaned to AdSlot + shouldShowAds only
 
 ### Pending Todos
 
@@ -98,6 +101,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:11:52.000Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-03-22T12:17:02.000Z
+Stopped at: Completed 04-02-PLAN.md
 Resume file: None
