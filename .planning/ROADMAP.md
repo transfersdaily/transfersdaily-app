@@ -137,11 +137,11 @@ Plans:
   2. Cards reveal with subtle entrance animations when scrolled into view
   3. Interactive elements (buttons, links, cards) have polished hover and focus states with motion feedback
   4. Users with reduced-motion preferences see no animations (respects prefers-reduced-motion)
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 08-01: TBD
-- [ ] 08-02: TBD
+- [ ] 08-01-PLAN.md — Install framer-motion and create MotionCard + PageTransition animation primitives
+- [ ] 08-02-PLAN.md — Wire animations into all card grids and locale layout with visual verification
 
 ### Phase 9: Mobile Experience Optimization
 **Goal**: The 65-75% of visitors on mobile devices have a fast, touch-friendly, native-feeling browsing experience
@@ -175,7 +175,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | 5. Homepage Redesign | 0/2 | Planning complete | - |
 | 6. Article Page Restructure | 2/2 | Complete | 2026-03-22 |
 | 7. Article Engagement Features | 0/2 | Planning complete | - |
-| 8. Animation System | 0/? | Not started | - |
+| 8. Animation System | 0/2 | Planning complete | - |
 | 9. Mobile Experience Optimization | 0/? | Not started | - |
 
 ---
