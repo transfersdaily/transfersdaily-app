@@ -50,6 +50,12 @@ export default function RootLayout({
 
         <meta name="google-adsense-account" content="ca-pub-6269937543968234" />
 
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6269937543968234"
+          crossOrigin="anonymous"
+        />
+
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-2VJKVM04W7" strategy="afterInteractive" />
         <Script id="ga4-init" strategy="afterInteractive">
           {`window.dataLayer = window.dataLayer || [];

@@ -210,10 +210,21 @@ ins.adsbygoogle[data-ad-status="unfilled"] {
   display: none !important;
 }
 
-/* Hide Google Auto Ads injected outside our AdSlot containers */
-body > ins.adsbygoogle,
-body > div > ins.adsbygoogle:not([data-ad-slot]),
-#google_ads_frame1,
-.google-auto-placed {
-  display: none !important;
+/* Style Google Auto Ads to match site layout — center and constrain width */
+.google-auto-placed,
+ins.adsbygoogle[data-ad-format="auto"] {
+  max-width: 1400px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 2rem !important;
+  padding-right: 2rem !important;
+  background: transparent !important;
+}
+
+/* Auto-placed ad iframes — center within container */
+.google-auto-placed iframe,
+ins.adsbygoogle iframe {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
 }
