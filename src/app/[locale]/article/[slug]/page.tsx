@@ -11,7 +11,7 @@ import { typography } from "@/lib/typography"
 import { API_CONFIG } from '@/lib/config'
 import { getBestDate, formatDisplayDate, getValidDateForMeta, formatTimeAgo } from '@/lib/date-utils'
 import { AdSlot } from "@/components/ads"
-import { ArticleBreadcrumb, ArticleHero, ArticleMeta, ArticleBody } from '@/components/article'
+import { ArticleBreadcrumb, ArticleHero, ArticleMeta, ArticleBody, ShareButtons, ReadingProgressBar } from '@/components/article'
 import { ArticleCard } from '@/components/ArticleCard'
 import { calculateReadingTime } from '@/lib/reading-time'
 
@@ -168,12 +168,30 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
   }
 }
 
-// Server-side function to get related articles
-async function getRelatedArticles(limit: number = 4, locale: string = 'en'): Promise<Transfer[]> {
+// Server-side function to get related articles, filtered by league when available
+async function getRelatedArticles(league: string | undefined, currentSlug: string, limit: number = 3, locale: string = 'en'): Promise<Transfer[]> {
 
   try {
-    const articles = await transfersApi.getLatest(limit, 0, locale)
-    return articles
+    // Fetch more than needed so we can filter by league and exclude current article
+    const articles = await transfersApi.getLatest(limit + 5, 0, locale)
+
+    // Exclude current article
+    const withoutCurrent = articles.filter(a => (a.slug || a.id) !== currentSlug)
+
+    if (league) {
+      const byLeague = withoutCurrent.filter(a => a.league === league)
+      if (byLeague.length >= limit) {
+        return byLeague.slice(0, limit)
+      }
+      // Fall back to unfiltered if not enough league matches
+      if (byLeague.length > 0) {
+        // Pad with non-league articles to reach limit
+        const rest = withoutCurrent.filter(a => a.league !== league)
+        return [...byLeague, ...rest].slice(0, limit)
+      }
+    }
+
+    return withoutCurrent.slice(0, limit)
   } catch (error) {
     console.error('[getRelatedArticles] Error fetching related articles:', error)
     return []
@@ -339,29 +357,22 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
   let article: Article | null = null;
   let relatedArticles: Transfer[] = [];
 
+  // Fetch article first so we can use its league for related articles
   try {
-    const [articleResult, relatedArticlesResult] = await Promise.allSettled([
-      getArticleBySlug(slug, locale),
-      getRelatedArticles(4, locale)
-    ]);
-
-    if (articleResult.status === 'fulfilled') {
-      article = articleResult.value;
-    } else {
-      console.error('[ArticlePage] Failed to fetch article:', articleResult.reason);
-    }
-
-    if (relatedArticlesResult.status === 'fulfilled') {
-      relatedArticles = relatedArticlesResult.value;
-    } else {
-      console.error('[ArticlePage] Failed to fetch related articles:', relatedArticlesResult.reason);
-    }
+    article = await getArticleBySlug(slug, locale);
   } catch (error) {
-    console.error('[ArticlePage] Error in data fetching:', error);
+    console.error('[ArticlePage] Failed to fetch article:', error);
   }
 
   if (!article) {
     notFound()
+  }
+
+  // Then fetch related articles with league context
+  try {
+    relatedArticles = await getRelatedArticles(article.league, slug, 3, locale);
+  } catch (error) {
+    console.error('[ArticlePage] Failed to fetch related articles:', error);
   }
 
   const readingTime = calculateReadingTime(article.content || '')
@@ -507,11 +518,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
           {/* Related Articles */}
           {relatedArticles.length > 0 && (
             <section className="mt-12 md:mt-16 pb-12">
-              <h2 className="text-base md:text-lg lg:text-xl font-bold mb-4 md:mb-6 text-foreground">
+              <h2 className="font-display text-lg md:text-xl uppercase tracking-tight font-bold mb-4 md:mb-6 text-foreground">
                 {getTranslation(dict, 'article.relatedArticles', 'Related Articles')}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {relatedArticles.slice(0, 4).map((transfer) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedArticles.slice(0, 3).map((transfer) => (
                   <ArticleCard
                     key={transfer.id}
                     variant="standard"
