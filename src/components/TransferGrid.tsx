@@ -23,7 +23,7 @@ export function TransferGrid({
   if (!transfers || transfers.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-sm text-muted-foreground">No transfers available</p>
+        <p className="text-sm text-muted-foreground">{t('common.noTransfersFound', 'No transfers found')}</p>
       </div>
     );
   }

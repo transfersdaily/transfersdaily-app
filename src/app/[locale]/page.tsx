@@ -141,7 +141,7 @@ function LeagueSection({
           {title}
         </h2>
         <ViewAllButton href={`/${locale}/league/${slug}`}>
-          View All
+          {t('common.viewAll', 'View All')}
         </ViewAllButton>
       </div>
 
@@ -159,7 +159,7 @@ function LeagueSection({
           ))}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">No articles available</p>
+        <p className="text-sm text-muted-foreground">{t('common.noTransfersFound', 'No transfers found')}</p>
       )}
     </section>
   );
