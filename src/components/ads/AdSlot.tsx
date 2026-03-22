@@ -26,12 +26,10 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
   const config = getSlotConfig(placement);
   const shouldLazy = lazy !== undefined ? lazy : (config?.lazy ?? AD_CONFIG.LAZY_LOAD);
 
-  // AdFreeZone logic — no ads on admin/login/debug
   const isAdFree = pathname?.includes('/admin') ||
                    pathname?.includes('/login') ||
                    pathname?.includes('/debug');
 
-  // Mobile detection for sticky
   useEffect(() => {
     if (!sticky) return;
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -40,7 +38,6 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
     return () => window.removeEventListener('resize', check);
   }, [sticky]);
 
-  // Lazy loading via IntersectionObserver
   useEffect(() => {
     if (!shouldLazy) { setIsVisible(true); return; }
     const el = containerRef.current;
@@ -53,47 +50,63 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
     return () => obs.disconnect();
   }, [shouldLazy]);
 
-  // Check if ad actually filled — collapse if not
-  const checkFill = useCallback(() => {
-    const ins = containerRef.current?.querySelector('ins.adsbygoogle');
-    if (!ins) { setCollapsed(true); return; }
-    const status = ins.getAttribute('data-ad-status');
-    if (status === 'filled') {
-      setAdFilled(true);
-    } else if (status === 'unfilled') {
-      setCollapsed(true);
-    }
-  }, []);
-
+  // Repeatedly check if the ad filled — collapse if not
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || collapsed || adFilled) return;
 
-    // Check quickly, then again as fallback
-    const t1 = setTimeout(checkFill, 1500);
-    const t2 = setTimeout(() => {
-      // If still not filled after 3s, collapse
-      if (!containerRef.current?.querySelector('ins.adsbygoogle[data-ad-status="filled"]')) {
-        setCollapsed(true);
+    const check = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const ins = container.querySelector('ins.adsbygoogle');
+      if (!ins) { setCollapsed(true); return; }
+
+      const status = ins.getAttribute('data-ad-status');
+      if (status === 'filled') {
+        setAdFilled(true);
+        return;
       }
+      if (status === 'unfilled') {
+        setCollapsed(true);
+        return;
+      }
+
+      // Check if ins has actual rendered ad content (child iframes)
+      const hasContent = ins.querySelector('iframe') !== null ||
+                         (ins as HTMLElement).offsetHeight > 10;
+      if (hasContent) {
+        setAdFilled(true);
+      }
+    };
+
+    // Check at 500ms, 1.5s, and 3s
+    const t1 = setTimeout(check, 500);
+    const t2 = setTimeout(check, 1500);
+    const t3 = setTimeout(() => {
+      // Final fallback — if still not filled, collapse
+      if (!adFilled) setCollapsed(true);
     }, 3000);
 
-    // Also watch for attribute changes
+    // Also listen for attribute changes
     const ins = containerRef.current?.querySelector('ins.adsbygoogle');
     let obs: MutationObserver | null = null;
     if (ins) {
-      obs = new MutationObserver(checkFill);
+      obs = new MutationObserver(check);
       obs.observe(ins, { attributes: true, childList: true, subtree: true });
     }
 
-    return () => { clearTimeout(t1); clearTimeout(t2); obs?.disconnect(); };
-  }, [isVisible, checkFill]);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      obs?.disconnect();
+    };
+  }, [isVisible, collapsed, adFilled]);
 
-  // Early returns
   if (isAdFree) return null;
   if (!config) return null;
   if (collapsed) return null;
 
-  // Sticky mode
   if (sticky) {
     if (!isMobile || stickyDismissed) return null;
     return (
@@ -103,25 +116,22 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
             <X className="h-3 w-3" />
           </button>
           {isVisible && (
-            <AdSense
-              adSlot={config.slotId}
-              adFormat={config.format === 'fluid' ? 'auto' : config.format}
-              adLayout={config.layout}
-              adLayoutKey={config.layoutKey}
-              style={{ width: '100%' }}
-            />
+            <AdSense adSlot={config.slotId} adFormat={config.format === 'fluid' ? 'auto' : config.format} adLayout={config.layout} adLayoutKey={config.layoutKey} style={{ width: '100%' }} />
           )}
         </div>
       </div>
     );
   }
 
-  // Standard slot — only show AdSense, no skeleton (avoids white block issue)
-  // Container collapses to null when ad doesn't fill
+  // Hide the container visually while waiting for the ad to fill or collapse
+  // This prevents white blocks from flashing during the 3s check window
+  const hideUntilFilled = !adFilled ? { overflow: 'hidden' as const, height: 0 } : {};
+
   return (
     <div
       ref={containerRef}
       className={`w-full ${className ?? ''}`}
+      style={hideUntilFilled}
     >
       {isVisible ? (
         <AdSense
@@ -132,7 +142,6 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
           style={{ width: '100%' }}
         />
       ) : (
-        // Minimal placeholder for IntersectionObserver to target (no visible height)
         <div style={{ height: 1 }} />
       )}
     </div>
