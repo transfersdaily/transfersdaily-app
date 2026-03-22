@@ -91,6 +91,7 @@
   body {
     @apply bg-background text-foreground;
     color-scheme: dark;
+    overflow-x: hidden;
   }
 }
 
@@ -115,7 +116,7 @@
 /* Touch target utilities */
 @layer utilities {
   .touch-target {
-    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
   }
 }
 

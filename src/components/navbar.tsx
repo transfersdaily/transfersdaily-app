@@ -30,7 +30,7 @@ function NavLink({ href, icon, children }: { href: string; icon?: React.ReactNod
       href={href}
       className={cn(
         typography.nav.primary,
-        'px-3 py-2 min-h-[44px] flex items-center gap-1.5 cursor-pointer',
+        'px-3 py-2 min-h-[48px] flex items-center gap-1.5 cursor-pointer',
         'motion-safe:transition-colors duration-fast motion-reduce:transition-none',
         isActive
           ? 'text-primary font-bold'
@@ -111,7 +111,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                 variant="ghost"
                 className={cn(
                   typography.nav.primary,
-                  'flex items-center space-x-1 px-3 py-2 min-h-[44px] cursor-pointer',
+                  'flex items-center space-x-1 px-3 py-2 min-h-[48px] cursor-pointer',
                   'text-foreground hover:bg-secondary hover:text-primary',
                   'motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                 )}
@@ -123,7 +123,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <DropdownMenuContent align="start" className="w-48">
               {leagues.map((league) => (
                 <DropdownMenuItem key={league.name} asChild>
-                  <Link href={getLocalizedPath(`/league/${league.slug}`)} className={cn(typography.nav.dropdown, 'min-h-[44px] flex items-center cursor-pointer')}>
+                  <Link href={getLocalizedPath(`/league/${league.slug}`)} className={cn(typography.nav.dropdown, 'min-h-[48px] flex items-center cursor-pointer')}>
                     {league.name}
                   </Link>
                 </DropdownMenuItem>
@@ -138,7 +138,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                 variant="ghost"
                 className={cn(
                   typography.nav.primary,
-                  'flex items-center space-x-1 px-3 py-2 min-h-[44px] cursor-pointer',
+                  'flex items-center space-x-1 px-3 py-2 min-h-[48px] cursor-pointer',
                   'text-foreground hover:bg-secondary hover:text-primary',
                   'motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                 )}
@@ -150,7 +150,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <DropdownMenuContent align="start" className="w-48">
               {transferTypes.map((type) => (
                 <DropdownMenuItem key={type.name} asChild>
-                  <Link href={getLocalizedPath(`/transfers/${type.slug}`)} className={cn(typography.nav.dropdown, 'min-h-[44px] flex items-center cursor-pointer')}>
+                  <Link href={getLocalizedPath(`/transfers/${type.slug}`)} className={cn(typography.nav.dropdown, 'min-h-[48px] flex items-center cursor-pointer')}>
                     {type.name}
                   </Link>
                 </DropdownMenuItem>
@@ -172,7 +172,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
           <Button
             variant="ghost"
             size="icon"
-            className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary motion-safe:transition-colors duration-fast"
+            className="hidden sm:inline-flex min-h-[48px] min-w-[48px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary motion-safe:transition-colors duration-fast"
             onClick={() => setSearchOpen(true)}
           >
             <Search className="h-4 w-4" />
@@ -186,7 +186,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
+                  className="hidden sm:inline-flex min-h-[48px] min-w-[48px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
                 >
                   <User className="h-4 w-4" />
                   <span className="sr-only">User menu</span>
@@ -206,7 +206,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:inline-flex min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
+              className="hidden sm:inline-flex min-h-[48px] min-w-[48px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
               asChild
             >
               <Link href="/login">
@@ -222,7 +222,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden min-h-[44px] min-w-[44px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
+                className="md:hidden min-h-[48px] min-w-[48px] cursor-pointer text-foreground hover:bg-secondary hover:text-primary"
               >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
@@ -238,7 +238,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                 <div className="bg-muted rounded-lg p-4">
                   <button
                     onClick={() => { setIsOpen(false); setSearchOpen(true); }}
-                    className={cn(typography.nav.primary, 'w-full text-left px-2 py-2 rounded min-h-[44px] flex items-center gap-2 cursor-pointer hover:bg-background hover:text-primary motion-safe:transition-colors duration-fast')}
+                    className={cn(typography.nav.primary, 'w-full text-left px-2 py-2 rounded min-h-[48px] flex items-center gap-2 cursor-pointer hover:bg-background hover:text-primary motion-safe:transition-colors duration-fast')}
                   >
                     <Search className="h-4 w-4" />
                     {t('common.search', 'Search')}
@@ -258,7 +258,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                     href={getLocalizedPath('/latest')}
                     className={cn(
                       typography.nav.primary,
-                      'block py-2 px-2 min-h-[44px] flex items-center cursor-pointer rounded',
+                      'block py-2 px-2 min-h-[48px] flex items-center cursor-pointer rounded',
                       'hover:bg-background hover:text-primary motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                     )}
                     onClick={() => setIsOpen(false)}
@@ -278,7 +278,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                         href={getLocalizedPath(`/league/${league.slug}`)}
                         className={cn(
                           typography.nav.primary,
-                          'block py-2 px-2 min-h-[44px] flex items-center cursor-pointer rounded',
+                          'block py-2 px-2 min-h-[48px] flex items-center cursor-pointer rounded',
                           'hover:bg-background hover:text-primary motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                         )}
                         onClick={() => setIsOpen(false)}
@@ -300,7 +300,7 @@ export function Navbar({ locale: propLocale, dict }: NavbarProps = {}) {
                         href={getLocalizedPath(`/transfers/${type.slug}`)}
                         className={cn(
                           typography.nav.primary,
-                          'block py-2 px-2 min-h-[44px] flex items-center cursor-pointer rounded',
+                          'block py-2 px-2 min-h-[48px] flex items-center cursor-pointer rounded',
                           'hover:bg-background hover:text-primary motion-safe:transition-colors duration-fast motion-reduce:transition-none'
                         )}
                         onClick={() => setIsOpen(false)}
