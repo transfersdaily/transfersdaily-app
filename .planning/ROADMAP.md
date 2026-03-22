@@ -61,11 +61,11 @@ Plans:
   1. Article cards, league cards, and transfer cards all render using variants of a shared card component system
   2. Scattered one-off card components in the codebase are replaced by the new system with no visual regressions
   3. Cards display consistently in lists, grids, and featured positions across homepage, category pages, and search results
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: TBD
-- [ ] 03-02: TBD
+- [ ] 03-01-PLAN.md — Build ArticleCard + ArticleCardSkeleton with CVA variants (hero, standard, compact, mini) and wire into TransferGrid
+- [ ] 03-02-PLAN.md — Migrate all consumers (homepage hero/league sections, sidebar, latest/league/search pages) to ArticleCard
 
 ### Phase 4: Ad System Overhaul
 **Goal**: A single configurable AdSlot component handles all ad placements across the site with no layout shift and intelligent display logic
@@ -172,7 +172,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 |-------|----------------|--------|-----------|
 | 1. Design Tokens & Theming | 0/2 | Planning complete | - |
 | 2. Navigation & Site Chrome | 2/2 | Complete | 2026-03-18 |
-| 3. Card System & Component Consolidation | 0/? | Not started | - |
+| 3. Card System & Component Consolidation | 0/2 | Planning complete | - |
 | 4. Ad System Overhaul | 0/? | Not started | - |
 | 5. Homepage Redesign | 0/? | Not started | - |
 | 6. Article Page Restructure | 0/? | Not started | - |
@@ -182,4 +182,4 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 
 ---
 *Roadmap created: 2026-03-17*
-*Last updated: 2026-03-18*
+*Last updated: 2026-03-22*
