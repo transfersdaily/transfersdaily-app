@@ -1,0 +1,142 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { transfersApi, type Transfer } from '@/lib/api';
+import { ArticleCard, ArticleCardSkeleton } from '@/components/ArticleCard';
+import { type Locale, type Dictionary, getTranslation } from '@/lib/i18n';
+import { getTranslation as getCommonTranslation } from '@/lib/translations';
+
+interface RecommendedArticlesProps {
+  locale?: Locale;
+  dict?: Dictionary;
+}
+
+export function RecommendedArticles({
+  locale = 'en',
+  dict,
+}: RecommendedArticlesProps) {
+  const [articles, setArticles] = useState<Transfer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  // Enhanced translation function with fallbacks
+  const t = (key: string, fallback?: string) => {
+    // Try dictionary first
+    if (dict) {
+      const dictTranslation = getTranslation(dict, key);
+      if (dictTranslation && dictTranslation !== key) {
+        return dictTranslation;
+      }
+    }
+
+    // Try common translations
+    const commonTranslation = getCommonTranslation(locale, key);
+    if (commonTranslation && commonTranslation !== key) {
+      return commonTranslation;
+    }
+
+    // Return fallback or key
+    return fallback || key.split('.').pop() || key;
+  };
+
+  useEffect(() => {
+    console.log('🌐 RecommendedArticles: Language changed to:', locale);
+    loadRecommendedArticles();
+  }, [locale]);
+
+  const loadRecommendedArticles = async () => {
+    try {
+      setIsLoading(true);
+      setHasError(false);
+
+      console.log(
+        '📡 RecommendedArticles: Fetching articles for language:',
+        locale
+      );
+
+      // Try to get recommended articles from API
+      const transfers = await transfersApi.getLatest(5, 0, locale);
+      if (transfers && transfers.length > 0) {
+        console.log(
+          '✅ RecommendedArticles: Received',
+          transfers.length,
+          'articles for language:',
+          locale
+        );
+        setArticles(transfers);
+      } else {
+        console.log(
+          '⚠️ RecommendedArticles: No articles received for language:',
+          locale
+        );
+        setArticles([]);
+      }
+    } catch (error) {
+      console.error(
+        '❌ RecommendedArticles: Error loading articles for language:',
+        locale,
+        error
+      );
+      setHasError(true);
+      setArticles([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatTimeAgo = (dateString: string): string => {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    );
+
+    if (diffInHours < 1) return t('common.justNow', 'Just now');
+    if (diffInHours < 24) return `${diffInHours}h`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d`;
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    return `${diffInWeeks}w`;
+  };
+
+  // Always render the section, even if empty or error
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-1 h-5 bg-primary rounded-full"></div>
+        <h3 className="text-lg font-bold text-foreground tracking-tight">
+          {t('sidebar.recommended', 'Recommended Articles')}
+        </h3>
+      </div>
+      {isLoading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <ArticleCardSkeleton key={i} variant="mini" />
+          ))}
+        </div>
+      ) : hasError ? (
+        <div className="text-center py-6">
+          <p className="text-sm text-muted-foreground/80">{t('sidebar.errorLoadingArticles')}</p>
+        </div>
+      ) : articles.length === 0 ? (
+        <div className="text-center py-6">
+          <p className="text-sm text-muted-foreground/80">{t('sidebar.noRecommendedArticles')}</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {articles.map((article) => (
+            <ArticleCard
+              key={article.id}
+              variant="mini"
+              title={article.title}
+              href={`/${locale}/article/${article.slug}`}
+              imageUrl={article.imageUrl}
+              league={article.league}
+              timeAgo={formatTimeAgo(article.publishedAt)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
