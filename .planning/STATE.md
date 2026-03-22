@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: in-progress
-stopped_at: Completed 03-02-PLAN.md (Phase 3 complete)
-last_updated: "2026-03-22T12:30:00.000Z"
-last_activity: 2026-03-22 -- Completed Phase 3 (card system & component consolidation)
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-22T12:11:52.000Z"
+last_activity: 2026-03-22 -- Completed Phase 4 Plan 1 (ad infrastructure)
 progress:
   total_phases: 9
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 7
+  completed_plans: 7
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-17)
 
 **Core value:** Readers experience fast, trustworthy transfer news wrapped in a premium editorial design that maximizes engagement and ad revenue.
-**Current focus:** Phase 3 -- Card System & Component Consolidation
+**Current focus:** Phase 4 -- Ad System Overhaul
 
 ## Current Position
 
-Phase: 3 of 9 (Card System & Component Consolidation) -- COMPLETE
-Plan: 2 of 2 in current phase (all complete)
-Status: Phase 3 complete, ready for Phase 4
-Last activity: 2026-03-22 -- Completed Phase 3 card system & component consolidation
+Phase: 4 of 9 (Ad System Overhaul) -- IN PROGRESS
+Plan: 1 of 2 in current phase
+Status: Plan 04-01 complete, ready for Plan 04-02
+Last activity: 2026-03-22 -- Completed Phase 4 Plan 1 ad infrastructure
 
 Progress: [██████████] 100%
 
@@ -55,6 +55,7 @@ Progress: [██████████] 100%
 | Phase 02 P01 | 4min | 2 tasks | 5 files |
 | Phase 02 P02 | 5min | 7 tasks | 7 files |
 | Phase 03 P02 | 5min | 3 tasks | 5 files |
+| Phase 04 P01 | 3min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -82,6 +83,9 @@ Recent decisions affecting current work:
 - [Phase 02]: Homepage section headings use uppercase tracking-wider for premium sports media feel
 - [Phase 03]: ArticleCard with CVA variants (hero, standard, compact, mini) replaces all scattered card patterns
 - [Phase 03]: All consumer files migrated -- no file imports TransferCard, TransferCardSkeleton, or SidebarArticleItem
+- [Phase 04]: Real slot IDs from existing 12 components mapped to AD_SLOTS config positions
+- [Phase 04]: AdFreeZone logic inlined in AdSlot instead of wrapping with separate component
+- [Phase 04]: Placement string pattern: 'page.position' maps to AD_SLOTS.PAGE.POSITION via getSlotConfig()
 
 ### Pending Todos
 
@@ -94,6 +98,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-22T12:30:00.000Z
-Stopped at: Completed 03-02-PLAN.md (Phase 3 complete)
+Last session: 2026-03-22T12:11:52.000Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None

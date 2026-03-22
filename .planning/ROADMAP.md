@@ -76,11 +76,11 @@ Plans:
   2. Ad containers reserve their height before loading, producing zero cumulative layout shift when ads render
   3. Ad slots below the fold lazy-load and do not block initial page render or hurt Core Web Vitals
   4. shouldShowAds() returns a real validation result based on content quality rather than always returning true
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 04-01: TBD
-- [ ] 04-02: TBD
+- [ ] 04-01-PLAN.md — Build AdSlot component with CLS reservation, lazy loading, and shouldShowAds() validation
+- [ ] 04-02-PLAN.md — Migrate all consumers to AdSlot and delete 12 old ad component files
 
 ### Phase 5: Homepage Redesign
 **Goal**: The homepage presents transfer news with strong visual hierarchy, category-based feeds, trending content, and fast server-rendered performance
@@ -173,7 +173,7 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 | 1. Design Tokens & Theming | 0/2 | Planning complete | - |
 | 2. Navigation & Site Chrome | 2/2 | Complete | 2026-03-18 |
 | 3. Card System & Component Consolidation | 2/2 | Complete | 2026-03-22 |
-| 4. Ad System Overhaul | 0/? | Not started | - |
+| 4. Ad System Overhaul | 1/2 | In progress | - |
 | 5. Homepage Redesign | 0/? | Not started | - |
 | 6. Article Page Restructure | 0/? | Not started | - |
 | 7. Article Engagement Features | 0/? | Not started | - |
