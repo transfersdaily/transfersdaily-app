@@ -40,7 +40,7 @@ export function ArticleHero({ title, imageUrl, league }: ArticleHeroProps) {
         src={imageUrl}
         alt={`${title} - ${league || "Transfer News"}`}
         fill
-        className="object-cover"
+        className="object-cover object-top"
         priority={true}
         sizes="100vw"
       />

@@ -99,7 +99,7 @@ function CardImage({
         sizes={sizes}
         priority={priority}
         className={cn(
-          "object-cover group-hover:scale-[1.03] transition-transform duration-200",
+          "object-cover object-top group-hover:scale-[1.03] transition-transform duration-200",
           className
         )}
       />
