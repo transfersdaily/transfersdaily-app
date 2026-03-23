@@ -451,21 +451,18 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
         />
 
-        {/* Breadcrumbs -- above hero, inside container */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <ArticleBreadcrumb locale={locale} league={article.league} articleTitle={article.title} />
-        </div>
-
-        {/* Hero Image -- full-width inside container */}
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-4">
-          <ArticleHero title={article.title} imageUrl={article.image_url} league={article.league} />
-        </div>
-
         {/* Content Grid */}
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 md:gap-6 lg:gap-8 mt-6 md:mt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 md:gap-6 lg:gap-8 pt-4">
             {/* Main Article Content */}
             <article className="lg:col-span-7">
+              {/* Breadcrumbs */}
+              <ArticleBreadcrumb locale={locale} league={article.league} articleTitle={article.title} />
+
+              {/* Hero Image */}
+              <div className="mt-4">
+                <ArticleHero title={article.title} imageUrl={article.image_url} league={article.league} />
+              </div>
               {/* Meta: date + reading time + transfer details */}
               <ArticleMeta
                 publishedAt={article.published_at}
@@ -513,9 +510,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
 
             {/* Sidebar */}
             <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-              <Suspense fallback={<SidebarSkeleton />}>
-                <Sidebar locale={locale} dict={dict} />
-              </Suspense>
+              <div className="space-y-6 pt-6">
+                <Suspense fallback={<SidebarSkeleton />}>
+                  <Sidebar locale={locale} dict={dict} />
+                </Suspense>
+              </div>
             </aside>
           </div>
 
