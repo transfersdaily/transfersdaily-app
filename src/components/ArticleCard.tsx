@@ -67,6 +67,13 @@ function LeagueBadge({ league }: { league: string }) {
   )
 }
 
+function isValidImageUrl(url?: string): boolean {
+  if (!url) return false
+  if (url.includes('default-transfer')) return false
+  if (url.includes('placeholder')) return false
+  return true
+}
+
 function CardImage({
   imageUrl,
   alt,
@@ -88,16 +95,17 @@ function CardImage({
   height?: number
   fill?: boolean
 }) {
-  if (imageUrl) {
+  if (isValidImageUrl(imageUrl)) {
     return (
       <Image
-        src={imageUrl}
+        src={imageUrl!}
         alt={alt}
         fill={fill}
         width={!fill ? width : undefined}
         height={!fill ? height : undefined}
         sizes={sizes}
         priority={priority}
+        style={!fill ? { width: '100%', height: 'auto' } : undefined}
         className={cn(
           "object-cover object-top group-hover:scale-[1.03] transition-transform duration-200",
           className
@@ -106,7 +114,7 @@ function CardImage({
     )
   }
 
-  // Placeholder when no image is provided
+  // Placeholder when no image or broken default image
   return (
     <div
       className={cn(
