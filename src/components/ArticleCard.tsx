@@ -293,7 +293,7 @@ export function ArticleCard({
   return (
     <Link
       href={href}
-      className={cn("block", variant === "standard" && "h-full")}
+      className={cn("block", (variant === "standard" || variant === "hero") && "h-full")}
     >
       <article className={cn(cardVariants({ variant }), className)}>
         {variant === "hero" && <HeroLayout {...layoutProps} />}
