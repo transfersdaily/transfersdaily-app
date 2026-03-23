@@ -24,7 +24,7 @@ export function ArticleHero({ title, imageUrl, league }: ArticleHeroProps) {
   if (!imageUrl) {
     // D-05: No image fallback
     return (
-      <div className="bg-card rounded-lg p-6 md:p-8 lg:p-10">
+      <div className="bg-card rounded-lg p-6 md:p-8 lg:p-10 text-left">
         <h1 className={`${typography.article.title} text-foreground`}>
           {title}
         </h1>
@@ -49,7 +49,7 @@ export function ArticleHero({ title, imageUrl, league }: ArticleHeroProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
       {/* Title + league badge positioned at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 lg:p-10">
+      <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 lg:p-10 text-left">
         {/* D-02: League badge above title */}
         {league && (
           <span
