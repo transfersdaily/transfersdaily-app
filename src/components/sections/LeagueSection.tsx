@@ -36,29 +36,33 @@ export function LeagueSection({
 
       {transfers.length > 0 ? (
         <>
-          <SwipeCarousel itemClassName="w-[80vw]">
+          <SwipeCarousel>
             {transfers.slice(0, 4).map((transfer) => (
               <ArticleCard
                 key={transfer.id}
-                variant="compact"
+                variant="standard"
                 title={transfer.title}
                 href={`/${locale}/article/${transfer.slug}`}
                 imageUrl={transfer.imageUrl}
+                league={transfer.league}
                 timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+                excerpt={transfer.excerpt}
               />
             ))}
           </SwipeCarousel>
 
           <div className="hidden md:block">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {transfers.slice(0, 4).map((transfer, index) => (
                 <MotionCard key={transfer.id} index={index}>
                   <ArticleCard
-                    variant="compact"
+                    variant="standard"
                     title={transfer.title}
                     href={`/${locale}/article/${transfer.slug}`}
                     imageUrl={transfer.imageUrl}
+                    league={transfer.league}
                     timeAgo={formatTimeAgo(transfer.publishedAt, t)}
+                    excerpt={transfer.excerpt}
                   />
                 </MotionCard>
               ))}
