@@ -7,6 +7,7 @@ import { SplineHero } from "./SplineHero"
 import { FeatureCards } from "./FeatureCards"
 import { StorySection } from "./StorySection"
 import { AnimatedSection } from "./AnimatedSection"
+import { CountUpStats } from "./CountUpStats"
 
 interface AboutPageProps {
   params: Promise<{ locale: Locale }>
@@ -50,28 +51,13 @@ export default async function AboutPage({ params }: AboutPageProps) {
           subtitle={t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
         />
 
-        {/* Stats — Animated centered typographic social proof */}
-        <section className="py-12 md:py-16 border-t border-border">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {[
-              { value: '5', label: t('about.stats.leagues', 'Major Leagues') },
-              { value: '24/7', label: t('about.stats.coverage', 'News Coverage') },
-              { value: '5', label: t('about.stats.languages', 'Languages') },
-              { value: '1000+', label: t('about.stats.articles', 'Articles Published') },
-            ].map((stat, i) => (
-              <AnimatedSection key={stat.label} delay={i * 0.1}>
-                <div className="text-center">
-                  <div className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-none tracking-tight">
-                    {stat.value}
-                  </div>
-                  <div className="font-sans text-xs md:text-sm text-muted-foreground mt-3 uppercase tracking-widest">
-                    {stat.label}
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
-        </section>
+        {/* Stats — Count-up animation */}
+        <CountUpStats stats={[
+          { value: '5', label: t('about.stats.leagues', 'Major Leagues') },
+          { value: '24/7', label: t('about.stats.coverage', 'News Coverage') },
+          { value: '5', label: t('about.stats.languages', 'Languages') },
+          { value: '1000+', label: t('about.stats.articles', 'Articles Published') },
+        ]} />
 
         {/* Story — 3-column animated timeline */}
         <StorySection
@@ -99,20 +85,6 @@ export default async function AboutPage({ params }: AboutPageProps) {
             { iconName: 'Users', title: t('about.feature5Title', 'Multi-Language'), desc: t('about.feature5Desc', 'Available in English, Spanish, French, German, and Italian so fans worldwide can follow transfers in their language.') },
             { iconName: 'Zap', title: t('about.feature6Title', 'Real-Time Updates'), desc: t('about.feature6Desc', 'Our automated pipeline delivers transfer news as it happens, with articles published within minutes of breaking developments.') },
           ]} />
-        </section>
-
-        {/* Mission — animated callout */}
-        <section className="py-12 md:py-16 border-t border-border">
-          <AnimatedSection>
-            <div className="bg-card rounded-lg border border-border/50 p-8 md:p-12 lg:p-16 text-center max-w-3xl mx-auto">
-              <h2 className="font-display text-xl md:text-2xl lg:text-3xl font-bold uppercase tracking-tight text-foreground mb-6">
-                {t('about.mission', 'Our Mission')}
-              </h2>
-              <p className="font-sans text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed">
-                {t('about.missionText', 'To provide football fans with accurate, timely, and comprehensive transfer information, helping them stay connected to the beautiful game they love.')}
-              </p>
-            </div>
-          </AnimatedSection>
         </section>
 
         {/* FAQ — animated */}
