@@ -31,17 +31,14 @@ export function StorySection({ heading, steps }: StorySectionProps) {
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.5, delay: i * 0.15, ease: [0, 0, 0.2, 1] }}
           >
-            {/* Accent line + step number as label */}
+            {/* Heading with accent line */}
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-[2px] bg-primary" />
-              <span className="font-sans text-xs font-medium text-primary uppercase tracking-widest">
-                Step {step.num}
-              </span>
+              <h3 className="font-sans text-xs font-medium text-primary uppercase tracking-widest">
+                {step.title}
+              </h3>
             </div>
 
-            <h3 className="font-display text-base md:text-lg font-bold uppercase tracking-tight text-foreground mb-3">
-              {step.title}
-            </h3>
             <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed">
               {step.text}
             </p>
