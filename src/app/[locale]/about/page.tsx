@@ -2,9 +2,9 @@ import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { Globe, Clock, Shield, Newspaper, Users, Zap } from "lucide-react"
 import { AboutFAQ } from "./AboutFAQ"
 import { SplineHero } from "./SplineHero"
+import { FeatureCards } from "./FeatureCards"
 
 interface AboutPageProps {
   params: Promise<{ locale: Locale }>
@@ -48,8 +48,8 @@ export default async function AboutPage({ params }: AboutPageProps) {
           subtitle={t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
         />
 
-        {/* Stats — Pure typographic social proof (UX Pro Max: metric-font-size 3rem, no icons) */}
-        <section className="py-10 md:py-12 border-t border-border">
+        {/* Stats — Centered typographic social proof */}
+        <section className="py-12 md:py-16 border-t border-border">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {[
               { value: '5', label: t('about.stats.leagues', 'Major Leagues') },
@@ -57,11 +57,11 @@ export default async function AboutPage({ params }: AboutPageProps) {
               { value: '5', label: t('about.stats.languages', 'Languages') },
               { value: '1000+', label: t('about.stats.articles', 'Articles Published') },
             ].map((stat) => (
-              <div key={stat.label}>
+              <div key={stat.label} className="text-center">
                 <div className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-none tracking-tight">
                   {stat.value}
                 </div>
-                <div className="font-sans text-sm md:text-base text-muted-foreground mt-3 uppercase tracking-wide">
+                <div className="font-sans text-xs md:text-sm text-muted-foreground mt-3 uppercase tracking-widest">
                   {stat.label}
                 </div>
               </div>
@@ -120,30 +120,20 @@ export default async function AboutPage({ params }: AboutPageProps) {
           </div>
         </section>
 
-        {/* What We Cover — feature highlights */}
+        {/* What We Cover — animated feature cards with background icons */}
         <section className="py-10 border-t border-border">
           <h2 className="font-display text-xl md:text-2xl font-bold uppercase tracking-tight text-foreground mb-8">
             {t('about.whatWeCover', 'What We Cover')}
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {[
-              { icon: Shield, title: t('about.feature1Title', 'Verified Transfers'), desc: t('about.feature1Desc', 'Every confirmed transfer is cross-referenced with official club announcements and trusted journalists before publication.') },
-              { icon: Clock, title: t('about.feature2Title', 'Breaking Rumors'), desc: t('about.feature2Desc', 'Stay ahead with the latest transfer rumors as they develop, clearly labeled to distinguish from confirmed deals.') },
-              { icon: Globe, title: t('about.feature3Title', '5 Major Leagues'), desc: t('about.feature3Desc', 'Comprehensive coverage of Premier League, La Liga, Serie A, Bundesliga, and Ligue 1 transfer activity.') },
-              { icon: Newspaper, title: t('about.feature4Title', 'In-Depth Analysis'), desc: t('about.feature4Desc', 'Beyond the headlines — player backgrounds, transfer history, and contextual analysis for every major deal.') },
-              { icon: Users, title: t('about.feature5Title', 'Multi-Language'), desc: t('about.feature5Desc', 'Available in English, Spanish, French, German, and Italian so fans worldwide can follow transfers in their language.') },
-              { icon: Zap, title: t('about.feature6Title', 'Real-Time Updates'), desc: t('about.feature6Desc', 'Our automated pipeline delivers transfer news as it happens, with articles published within minutes of breaking developments.') },
-            ].map((feature) => (
-              <div key={feature.title} className="p-6 md:p-8 rounded-lg bg-card border border-border/50">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-5">
-                  <feature.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="font-display text-sm font-bold uppercase tracking-tight text-foreground mb-3">{feature.title}</h3>
-                <p className="font-sans text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
-              </div>
-            ))}
-          </div>
+          <FeatureCards features={[
+            { iconName: 'Shield', title: t('about.feature1Title', 'Verified Transfers'), desc: t('about.feature1Desc', 'Every confirmed transfer is cross-referenced with official club announcements and trusted journalists before publication.') },
+            { iconName: 'Clock', title: t('about.feature2Title', 'Breaking Rumors'), desc: t('about.feature2Desc', 'Stay ahead with the latest transfer rumors as they develop, clearly labeled to distinguish from confirmed deals.') },
+            { iconName: 'Globe', title: t('about.feature3Title', '5 Major Leagues'), desc: t('about.feature3Desc', 'Comprehensive coverage of Premier League, La Liga, Serie A, Bundesliga, and Ligue 1 transfer activity.') },
+            { iconName: 'Newspaper', title: t('about.feature4Title', 'In-Depth Analysis'), desc: t('about.feature4Desc', 'Beyond the headlines — player backgrounds, transfer history, and contextual analysis for every major deal.') },
+            { iconName: 'Users', title: t('about.feature5Title', 'Multi-Language'), desc: t('about.feature5Desc', 'Available in English, Spanish, French, German, and Italian so fans worldwide can follow transfers in their language.') },
+            { iconName: 'Zap', title: t('about.feature6Title', 'Real-Time Updates'), desc: t('about.feature6Desc', 'Our automated pipeline delivers transfer news as it happens, with articles published within minutes of breaking developments.') },
+          ]} />
         </section>
 
         {/* Mission */}
