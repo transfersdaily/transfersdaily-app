@@ -26,25 +26,25 @@ export function StorySection({ heading, steps }: StorySectionProps) {
         {steps.map((step, i) => (
           <motion.div
             key={step.num}
-            className="flex gap-4"
             initial={prefersReduced ? {} : { opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.5, delay: i * 0.15, ease: [0, 0, 0.2, 1] }}
           >
-            {/* Number on the side */}
-            <div className="font-display text-4xl md:text-5xl font-bold text-primary/15 leading-none select-none shrink-0">
-              {step.num}
+            {/* Accent line + step number as label */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-[2px] bg-primary" />
+              <span className="font-sans text-xs font-medium text-primary uppercase tracking-widest">
+                Step {step.num}
+              </span>
             </div>
 
-            <div>
-              <h3 className="font-display text-base md:text-lg font-bold uppercase tracking-tight text-foreground mb-3">
-                {step.title}
-              </h3>
-              <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed">
-                {step.text}
-              </p>
-            </div>
+            <h3 className="font-display text-base md:text-lg font-bold uppercase tracking-tight text-foreground mb-3">
+              {step.title}
+            </h3>
+            <p className="font-sans text-sm md:text-base text-muted-foreground leading-relaxed">
+              {step.text}
+            </p>
           </motion.div>
         ))}
       </div>
