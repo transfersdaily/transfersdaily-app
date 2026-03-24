@@ -1,4 +1,4 @@
-import { API_CONFIG } from './config'
+import { API_CONFIG, getApiUrl } from './config'
 import { processImageUrl } from './image-utils'
 
 // Types
@@ -129,6 +129,33 @@ async function apiRequest<T>(
   }
   
   throw new Error('All API endpoints failed');
+}
+
+// Admin API request helper - routes through Next.js proxy routes
+// which handle API key injection and response transformation
+async function adminApiRequest<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const url = getApiUrl(endpoint)
+  const config: RequestInit = {
+    ...options,
+    headers: {
+      ...(await getAuthHeaders()),
+      ...options.headers
+    }
+  }
+
+  const response = await fetch(url, {
+    ...config,
+    signal: AbortSignal.timeout(10000)
+  })
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  return response.json()
 }
 
 // Helper function to get current language
@@ -632,7 +659,7 @@ export const leaguesApi = {
 export const adminApi = {
 
 
-  // Get dashboard stats
+  // Get dashboard stats — proxy returns camelCase directly (no .data wrapper)
   async getDashboardStats(): Promise<{
     totalArticles: number
     draftArticles: number
@@ -658,8 +685,9 @@ export const adminApi = {
     }>
   }> {
     try {
-      const response = await apiRequest<any>(API_CONFIG.endpoints.admin.stats)
-      return response.data || {
+      // Proxy at /api/admin/stats transforms snake_case Lambda response to camelCase
+      const response = await adminApiRequest<any>(API_CONFIG.endpoints.admin.stats)
+      return response || {
         totalArticles: 0,
         draftArticles: 0,
         publishedArticles: 0,
@@ -727,10 +755,9 @@ export const adminApi = {
       if (params?.sortBy) queryParams.append('sortBy', params.sortBy)
       if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder)
 
-      console.log('🔍 Fetching articles with params:', Object.fromEntries(queryParams))
-      
-      const response = await apiRequest<any>(`${API_CONFIG.endpoints.admin.articles}?${queryParams}`)
-      console.log('📊 Articles API response:', response)
+      // Route through proxy which transforms Lambda {items,total,page,limit,pages}
+      // to {success, data: {articles, pagination: {page,limit,total,totalPages}}}
+      const response = await adminApiRequest<any>(`${API_CONFIG.endpoints.admin.articles}?${queryParams}`)
 
       if (!response.success) {
         throw new Error(response.message || 'Failed to fetch articles')
@@ -782,30 +809,19 @@ export const adminApi = {
       if (params?.sortBy) queryParams.append('sortBy', params.sortBy)
       if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder)
       
-      console.log('Calling admin articles API:', `${API_CONFIG.endpoints.admin.articles}?${queryParams}`)
-      
-      const response = await apiRequest<any>(
+      // Route through proxy which normalizes response format
+      const response = await adminApiRequest<any>(
         `${API_CONFIG.endpoints.admin.articles}?${queryParams}`
       )
-      
-      console.log('Admin articles API response:', response)
-      
-      // Handle different response structures from normalized database
-      let articles = []
-      if (response.success && response.data) {
-        articles = response.data.articles || response.data || []
-      } else if (response.articles) {
-        articles = response.articles
-      } else if (Array.isArray(response)) {
-        articles = response
+
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to fetch articles')
       }
-      
-      console.log('Processed articles:', articles)
-      
+
       return {
-        articles: articles,
-        pagination: response.data?.pagination || response.pagination || { page: 1, limit: 50, total: articles.length, totalPages: 1 },
-        stats: response.data?.stats || response.stats || {}
+        articles: response.data?.articles || [],
+        pagination: response.data?.pagination || { page: 1, limit: 50, total: 0, totalPages: 0 },
+        stats: response.data?.stats || {}
       }
     } catch (error) {
       console.error('Error fetching draft articles:', error)
@@ -817,10 +833,10 @@ export const adminApi = {
     }
   },
 
-  // Delete article
+  // Delete article — through proxy which adds x-api-key
   async deleteArticle(id: string): Promise<boolean> {
     try {
-      await apiRequest(`${API_CONFIG.endpoints.admin.deleteArticle}/${id}`, {
+      await adminApiRequest(`${API_CONFIG.endpoints.admin.deleteArticle}/${id}`, {
         method: 'DELETE'
       })
       return true
@@ -830,10 +846,10 @@ export const adminApi = {
     }
   },
 
-  // Update article status
+  // Update article status — PATCH through proxy which routes to Lambda /admin/articles/{id}/status
   async updateArticleStatus(id: string, status: 'draft' | 'published' | 'archived'): Promise<boolean> {
     try {
-      await apiRequest(`${API_CONFIG.endpoints.admin.updateStatus}/${id}/status`, {
+      await adminApiRequest(`${API_CONFIG.endpoints.admin.updateStatus}/${id}`, {
         method: 'PATCH',
         body: JSON.stringify({ status })
       })
@@ -1046,16 +1062,16 @@ export const adminApi = {
     }
   },
 
-  // Get recent articles for dashboard
+  // Get recent articles for dashboard — through proxy with API key
   async getRecentArticles(limit = 5): Promise<any[]> {
     try {
-      const response = await apiRequest<{ success: boolean; data: { articles: any[] } }>(
+      const response = await adminApiRequest<{ success: boolean; data: { articles: any[] } }>(
         `${API_CONFIG.endpoints.admin.recentArticles}?limit=${limit}`
       )
       return response.data.articles
     } catch (error) {
       console.error('Error fetching recent articles:', error)
-      throw error // Don't return mock data
+      throw error
     }
   },
 
@@ -1246,7 +1262,7 @@ export const contactApi = {
     }
   },
 
-  // Get contact submissions (admin only)
+  // Get contact submissions (admin only) — through proxy which transforms Lambda response
   async getSubmissions(params?: {
     page?: number
     limit?: number
@@ -1270,16 +1286,18 @@ export const contactApi = {
       if (params?.status) queryParams.append('status', params.status)
       if (params?.type) queryParams.append('type', params.type)
 
-      const response = await apiRequest<{ 
+      // Route through /api/admin/contact proxy which transforms
+      // Lambda {items, total} to {success, data: {submissions, pagination}}
+      const response = await adminApiRequest<{
         success: boolean
-        data: { 
+        data: {
           submissions: any[]
           pagination: any
         }
       }>(
-        `${API_CONFIG.endpoints.contact.list}?${queryParams}`
+        `/admin/contact?${queryParams}`
       )
-      
+
       return {
         submissions: response.data?.submissions || [],
         pagination: response.data?.pagination
@@ -1290,20 +1308,20 @@ export const contactApi = {
     }
   },
 
-  // Update contact submission (admin only)
+  // Update contact submission (admin only) — through proxy
   async updateSubmission(submissionId: string, updates: {
     status?: string
     adminNotes?: string
   }): Promise<boolean> {
     try {
-      const response = await apiRequest(
-        `${API_CONFIG.endpoints.contact.list}/${submissionId}`,
+      const response = await adminApiRequest<any>(
+        `/admin/contact/${submissionId}`,
         {
           method: 'PUT',
           body: JSON.stringify(updates)
         }
       )
-      return (response as any).success || true
+      return response.success || true
     } catch (error) {
       console.error('Error updating contact submission:', error)
       return false
