@@ -4,12 +4,6 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"
 import { Loader2 } from "lucide-react"
 import { contactApi } from "@/lib/api"
 import { trackContactSubmission } from "@/lib/analytics"
@@ -294,117 +288,6 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
             </div>
           </section>
 
-          {/* FAQ Section */}
-          <section className="py-8 border-t border-border" aria-labelledby="faq-heading">
-            <h2 id="faq-heading" className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground mb-6">
-              {getTranslation(dict, 'contact.faq.title', 'Frequently Asked Questions')}
-            </h2>
-            <Accordion type="single" collapsible className="w-full max-w-xl space-y-3">
-              <AccordionItem value="item-1" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q1', 'How often is content updated?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a1', 'We update our transfer news multiple times daily during transfer windows and regularly throughout the season. Our team works around the clock to bring you the latest confirmed transfers, breaking rumors, and exclusive insights from the world of football.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-2" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q2', 'Can I submit transfer tips?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a2', 'Yes! We welcome reliable transfer information from our community. Use the contact form above to share tips with our editorial team. Please include as much detail as possible, including sources when available. All submissions are reviewed by our editorial team before publication.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-3" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q3', 'Do you offer advertising opportunities?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a3', 'We offer various advertising and partnership opportunities including banner ads, sponsored content, and newsletter placements. Our audience consists of passionate football fans interested in transfer news and club updates. Contact us for detailed media kit and pricing information.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-4" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q4', 'How can I report incorrect information?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a4', 'We take accuracy seriously. If you notice incorrect information in any of our articles, please contact us immediately using the form above. Include the article URL and details about the correction needed. We will investigate and update the content promptly.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-5" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q5', 'Can I republish your content?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a5', 'Our content is protected by copyright. For republishing requests, syndication opportunities, or content licensing, please contact us with details about your intended use. We offer various licensing options for media outlets, blogs, and commercial use.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-6" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q6', 'Do you have a mobile app?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a6', 'Currently, we focus on providing the best web experience across all devices. Our website is fully responsive and optimized for mobile browsers. We are considering a mobile app for the future - stay tuned for updates!')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-7" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q7', 'How do you verify transfer information?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a7', 'We use multiple reliable sources including official club announcements, trusted journalists, and verified social media accounts. All information is cross-referenced before publication. We clearly distinguish between confirmed transfers and rumors to maintain transparency.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-
-              <AccordionItem value="item-8" className="border border-border rounded-lg">
-                <AccordionTrigger className="text-left px-4 py-3 hover:no-underline">
-                  <span className="font-sans text-sm font-medium text-foreground">
-                    {getTranslation(dict, 'contact.faq.q8', 'Can I get notifications for specific clubs or players?')}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="px-4 pb-3">
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed">
-                    {getTranslation(dict, 'contact.faq.a8', 'While we don\'t currently offer personalized notifications, you can follow specific leagues and clubs through our organized sections. We are working on implementing notification features for future updates.')}
-                  </p>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </section>
         </div>
     </div>
   )
