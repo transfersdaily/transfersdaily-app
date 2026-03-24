@@ -14,7 +14,7 @@ import { AdSlot } from "@/components/ads"
 import { ArticleBreadcrumb, ArticleHero, ArticleMeta, ArticleBody, ShareButtons, ReadingProgressBar } from '@/components/article'
 import { ArticleCard } from '@/components/ArticleCard'
 import { calculateReadingTime } from '@/lib/reading-time'
-import { SITE_URL } from '@/lib/constants'
+import { SITE_URL, generateSlug } from '@/lib/constants'
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -58,69 +58,60 @@ interface ArticlePageProps {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-// Server-side function to fetch article data with fallback
+// Legacy slug generator (without NFD normalization) for backward compat with old links
+function generateSlugLegacy(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
+}
+
+// Server-side function to fetch article data by matching slug against recent articles
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
-
   try {
-    // Use local API proxy which handles slug matching (DB slugs are null,
-    // so direct API /public/articles/:slug always returns 404/timeout)
-    const baseOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    const localApiUrl = `${baseOrigin}/api/article/${slug}?language=${locale}`;
-
-    const localResponse = await fetch(localApiUrl, {
+    // Fetch recent articles directly from API Gateway and match by generated slug
+    // (DB slug column is null for all articles, so direct /articles/:slug always 404s)
+    const apiUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=${locale}&sortBy=published_at&sortOrder=desc`;
+    const response = await fetch(apiUrl, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      signal: AbortSignal.timeout(10000)
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(15000),
     });
 
-    if (!localResponse.ok) {
-      // Try English fallback for local API too
-      if (locale !== 'en') {
-        const fallbackLocalUrl = `${baseOrigin}/api/article/${slug}?language=en`;
-        const fallbackLocalResponse = await fetch(fallbackLocalUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          signal: AbortSignal.timeout(10000)
+    if (response.ok) {
+      const data = await response.json();
+      const articles = data.data?.articles || [];
+
+      // Match with both new (NFD-normalized) and legacy slug formats
+      const match = articles.find((a: any) => {
+        const title = a.title || '';
+        return generateSlug(title) === slug || generateSlugLegacy(title) === slug;
+      });
+
+      if (match) return match;
+    }
+
+    // If not found in current locale, try English
+    if (locale !== 'en') {
+      const enUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=en&sortBy=published_at&sortOrder=desc`;
+      const enResponse = await fetch(enUrl, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (enResponse.ok) {
+        const enData = await enResponse.json();
+        const enArticles = enData.data?.articles || [];
+        const match = enArticles.find((a: any) => {
+          const title = a.title || '';
+          return generateSlug(title) === slug || generateSlugLegacy(title) === slug;
         });
-
-        if (fallbackLocalResponse.ok) {
-          const fallbackLocalData = await fallbackLocalResponse.json();
-          if (fallbackLocalData.success && fallbackLocalData.data?.article) {
-            return fallbackLocalData.data.article;
-          }
-        }
+        if (match) return match;
       }
-
-      console.error(`Local API error: ${localResponse.status} ${localResponse.statusText} for slug: ${slug}`);
-      return null;
     }
 
-    const localData = await localResponse.json();
-
-    if (localData.success && localData.data?.article) {
-      return localData.data.article;
-    }
-
-    console.error(`Invalid API response structure:`, localData);
     return null;
-
   } catch (error) {
     console.error(`Error fetching article by slug ${slug}:`, error);
-
-    if (error instanceof Error) {
-      console.error(`Error details:`, {
-        name: error.name,
-        message: error.message
-      });
-    }
-
-    throw error;
+    return null;
   }
 }
 
