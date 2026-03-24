@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { validateAuth } from '@/lib/supabase/auth-guard'
 
 export async function GET(request: NextRequest) {
   try {
+    const { user, error: authError } = await validateAuth()
+    if (authError) return authError
+
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
     const league = searchParams.get('league')
@@ -51,6 +55,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const { user, error: authError } = await validateAuth()
+    if (authError) return authError
+
     const body = await request.json()
 
     const {
@@ -119,6 +126,9 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    const { user, error: authError } = await validateAuth()
+    if (authError) return authError
+
     const body = await request.json()
 
     const { id, ...updateFields } = body

@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Pagination } from "@/components/ui/pagination"
 import { TransferGrid } from "@/components/TransferGrid"
 import { Sidebar } from "@/components/Sidebar"
@@ -36,23 +35,22 @@ export function LatestPageClient({
   initialData, 
   initialPage
 }: LatestPageClientProps) {
-  const router = useRouter()
   const t = createTranslator(dict)
-  
+
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [isLoading, setIsLoading] = useState(false)
   const [transfers, setTransfers] = useState<Transfer[]>(initialData.transfers)
   const [pagination, setPagination] = useState(initialData.pagination)
-  
+
   const itemsPerPage = 15
 
-  // Update URL when page changes
+  // Update URL without triggering server navigation
   const updateURL = (page: number) => {
     const params = new URLSearchParams()
     if (page > 1) params.set('page', page.toString())
-    
+
     const newURL = `/${locale}/latest${params.toString() ? `?${params.toString()}` : ''}`
-    router.push(newURL, { scroll: false })
+    window.history.pushState(null, '', newURL)
   }
 
   // Load transfers when page changes

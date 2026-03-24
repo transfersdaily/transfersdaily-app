@@ -14,3 +14,15 @@ export const LEAGUE_NAMES = LEAGUES.map(l => l.name);
 export const LEAGUE_BY_NAME = Object.fromEntries(LEAGUES.map(l => [l.name, l])) as Record<string, typeof LEAGUES[number]>;
 export const LEAGUE_BY_SLUG = Object.fromEntries(LEAGUES.map(l => [l.slug, l])) as Record<string, typeof LEAGUES[number]>;
 export const LEAGUE_BG_CLASSES: Record<string, string> = Object.fromEntries(LEAGUES.map(l => [l.name, l.bgClass]));
+
+// Centralized slug generation — handles diacritics (é→e, ü→u, ñ→n)
+export function generateSlug(title: string): string {
+  return title
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}

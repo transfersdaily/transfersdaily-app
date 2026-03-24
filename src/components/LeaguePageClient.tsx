@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { 
+import {
   Pagination
 } from "@/components/ui/pagination"
 import { TransferGrid } from "@/components/TransferGrid"
@@ -74,7 +73,6 @@ export function LeaguePageClient({
   leagueName,
   leagueSlug
 }: LeaguePageClientProps) {
-  const router = useRouter()
   const t = createTranslator(dict)
   
   const [currentPage, setCurrentPage] = useState(initialPage)
@@ -90,7 +88,7 @@ export function LeaguePageClient({
     if (page > 1) params.set('page', page.toString())
     
     const newURL = `/${locale}/league/${leagueSlug}${params.toString() ? `?${params.toString()}` : ''}`
-    router.push(newURL, { scroll: false })
+    window.history.pushState(null, '', newURL)
   }
 
   // Load transfers when page changes

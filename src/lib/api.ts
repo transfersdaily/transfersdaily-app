@@ -1,6 +1,6 @@
 import { API_CONFIG, getApiUrl } from './config'
 import { processImageUrl } from './image-utils'
-import { LEAGUE_BY_NAME, LEAGUE_BY_SLUG } from '@/lib/constants'
+import { LEAGUE_BY_NAME, LEAGUE_BY_SLUG, generateSlug } from '@/lib/constants'
 
 // Types
 export interface Transfer {
@@ -176,15 +176,7 @@ function getCurrentLanguage(): string {
   return 'en' // Default to English
 }
 
-// Helper function to generate slug from title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-') // Replace spaces with hyphens
-    .replace(/-+/g, '-') // Replace multiple hyphens with single
-    .trim()
-}
+// generateSlug imported from @/lib/constants
 
 // Helper function to transform article data to transfer format
 function transformArticleToTransfer(article: any): Transfer {

@@ -6,7 +6,7 @@ import { type Transfer } from "@/lib/api"
 import { LatestPageClient } from '@/components/LatestPageClient'
 // Ad components
 import { API_CONFIG } from '@/lib/config';
-import { SITE_URL } from '@/lib/constants';
+import { SITE_URL, generateSlug } from '@/lib/constants';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
@@ -273,15 +273,7 @@ async function getLatestData(language = 'en', page = 1, league = 'all') {
   }
 }
 
-// Helper function to generate slug from title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
-}
+// generateSlug imported from @/lib/constants
 
 // Generate static params for all locales
 export async function generateStaticParams() {

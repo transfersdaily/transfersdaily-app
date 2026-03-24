@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { transfersApi, type Transfer } from '@/lib/api';
+import { articlesApi, type Transfer, type Article } from '@/lib/api';
 import { ArticleCard, ArticleCardSkeleton } from '@/components/ArticleCard';
 import { type Locale, type Dictionary, getTranslation } from '@/lib/i18n';
 import { getTranslation as getCommonTranslation } from '@/lib/translations';
@@ -16,7 +16,7 @@ export function TrendingArticles({
   locale = 'en',
   dict,
 }: TrendingArticlesProps) {
-  const [articles, setArticles] = useState<Transfer[]>([]);
+  const [articles, setArticles] = useState<Article[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -46,9 +46,9 @@ export function TrendingArticles({
       setIsLoading(true);
       setHasError(false);
 
-      const transfers = await transfersApi.getTrending(5, locale);
-      if (transfers && transfers.length > 0) {
-        setArticles(transfers);
+      const trending = await articlesApi.getTrending(5, locale);
+      if (trending && trending.length > 0) {
+        setArticles(trending);
       } else {
         setArticles([]);
       }

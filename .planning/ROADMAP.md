@@ -12,15 +12,15 @@ This roadmap transforms TransfersDaily from a generic blog template into a premi
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Design Tokens & Theming** - Establish typography, color system, dark/light mode, and responsive spacing as the design foundation
-- [ ] **Phase 2: Navigation & Site Chrome** - Redesign navbar, footer, and search experience used across every page
-- [ ] **Phase 3: Card System & Component Consolidation** - Build reusable card component system replacing scattered one-off components
-- [ ] **Phase 4: Ad System Overhaul** - Consolidate 12 ad components into one, add CLS safety, lazy loading, and real validation
-- [ ] **Phase 5: Homepage Redesign** - Rebuild homepage with hero section, category feeds, trending widget, and ISR performance
-- [ ] **Phase 6: Article Page Restructure** - Decompose article page and implement hero images, reading time, and breadcrumbs
+- [x] **Phase 1: Design Tokens & Theming** - Establish typography, color system, dark/light mode, and responsive spacing as the design foundation
+- [x] **Phase 2: Navigation & Site Chrome** - Redesign navbar, footer, and search experience used across every page
+- [x] **Phase 3: Card System & Component Consolidation** - Build reusable card component system replacing scattered one-off components
+- [x] **Phase 4: Ad System Overhaul** - Consolidate 12 ad components into one, add CLS safety, lazy loading, and real validation
+- [x] **Phase 5: Homepage Redesign** - Rebuild homepage with hero section, category feeds, trending widget, and ISR performance
+- [x] **Phase 6: Article Page Restructure** - Decompose article page and implement hero images, reading time, and breadcrumbs
 - [ ] **Phase 7: Article Engagement Features** - Add social sharing, related articles, skeleton loading, and reading progress bar
-- [ ] **Phase 8: Animation System** - Implement micro-animation system with framer-motion across all public pages
-- [ ] **Phase 9: Mobile Experience Optimization** - Touch targets, swipeable carousels, collapsing header, and bottom navigation
+- [x] **Phase 8: Animation System** - Implement micro-animation system with framer-motion across all public pages
+- [x] **Phase 9: Mobile Experience Optimization** - Touch targets, swipeable carousels, collapsing header, and bottom navigation
 
 ## Phase Details
 
@@ -36,8 +36,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Branded color palette + Newsreader/Roboto fonts + dark mode tokens
-- [ ] 01-02-PLAN.md — Editorial typography scale + spacing/animation/z-index tokens
+- [x] 01-01-PLAN.md — Branded color palette + Oswald/Inter fonts + dark mode tokens
+- [x] 01-02-PLAN.md — Editorial typography scale + spacing/animation/z-index tokens
 
 ### Phase 2: Navigation & Site Chrome
 **Goal**: Visitors navigate the site through a modern, clean navbar with intuitive search and a well-organized footer
@@ -50,8 +50,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Restyle navbar and footer with Phase 1 design tokens, active state, skip-to-content, accessibility
-- [ ] 02-02-PLAN.md — Command palette search (Cmd+K) with instant autocomplete and navbar integration
+- [x] 02-01-PLAN.md — Restyle navbar and footer with Phase 1 design tokens, active state, skip-to-content, accessibility
+- [x] 02-02-PLAN.md — Command palette search (Cmd+K) with instant autocomplete and navbar integration
 
 ### Phase 3: Card System & Component Consolidation
 **Goal**: A single, composable card component system renders articles, leagues, and transfers consistently across the entire site
@@ -64,8 +64,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — Build ArticleCard + ArticleCardSkeleton with CVA variants (hero, standard, compact, mini) and wire into TransferGrid
-- [ ] 03-02-PLAN.md — Migrate all consumers (homepage hero/league sections, sidebar, latest/league/search pages) to ArticleCard
+- [x] 03-01-PLAN.md — Build ArticleCard + ArticleCardSkeleton with CVA variants (hero, standard, compact, mini) and wire into TransferGrid
+- [x] 03-02-PLAN.md — Migrate all consumers (homepage hero/league sections, sidebar, latest/league/search pages) to ArticleCard
 
 ### Phase 4: Ad System Overhaul
 **Goal**: A single configurable AdSlot component handles all ad placements across the site with no layout shift and intelligent display logic
@@ -79,8 +79,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Build AdSlot component with CLS reservation, lazy loading, and shouldShowAds() validation
-- [ ] 04-02-PLAN.md — Migrate all consumers to AdSlot and delete 12 old ad component files
+- [x] 04-01-PLAN.md — Build AdSlot component with CLS reservation, lazy loading, and shouldShowAds() validation
+- [x] 04-02-PLAN.md — Migrate all consumers to AdSlot and delete 12 old ad component files
 
 ### Phase 5: Homepage Redesign
 **Goal**: The homepage presents transfer news with strong visual hierarchy, category-based feeds, trending content, and fast server-rendered performance
@@ -95,8 +95,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — Decompose homepage into section components (HeroSection, LatestSection, LeagueSection) and switch to ISR
-- [ ] 05-02-PLAN.md — Add TrendingArticles sidebar widget and verify mobile layout
+- [x] 05-01-PLAN.md — Decompose homepage into section components (HeroSection, LatestSection, LeagueSection) and switch to ISR
+- [x] 05-02-PLAN.md — Add TrendingArticles sidebar widget and verify mobile layout
 
 ### Phase 6: Article Page Restructure
 **Goal**: The article reading experience feels premium with hero imagery, clear metadata, and a well-structured, maintainable codebase
@@ -110,8 +110,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Extract ArticleHero, ArticleMeta, ArticleBreadcrumb, ArticleBody components with hero gradient, reading time, and breadcrumbs
-- [ ] 06-02-PLAN.md — Recompose page.tsx as slim composer and migrate TransferCard to ArticleCard
+- [x] 06-01-PLAN.md — Extract ArticleHero, ArticleMeta, ArticleBreadcrumb, ArticleBody components with hero gradient, reading time, and breadcrumbs
+- [x] 06-02-PLAN.md — Recompose page.tsx as slim composer and migrate TransferCard to ArticleCard
 
 ### Phase 7: Article Engagement Features
 **Goal**: Readers engage longer with articles through sharing tools, related content, smooth loading, and visible reading progress
@@ -140,8 +140,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Install framer-motion and create MotionCard + PageTransition animation primitives
-- [ ] 08-02-PLAN.md — Wire animations into all card grids and locale layout with visual verification
+- [x] 08-01-PLAN.md — Install framer-motion and create MotionCard + PageTransition animation primitives
+- [x] 08-02-PLAN.md — Wire animations into all card grids and locale layout with visual verification
 
 ### Phase 9: Mobile Experience Optimization
 **Goal**: The 65-75% of visitors on mobile devices have a fast, touch-friendly, native-feeling browsing experience
@@ -156,9 +156,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Collapsing header hook and restyled bottom navigation with locale-aware links
-- [ ] 09-02-PLAN.md — CSS scroll-snap swipe carousel for homepage Latest and League sections
-- [ ] 09-03-PLAN.md — Touch target audit (48px minimum) and responsive layout safety
+- [x] 09-01-PLAN.md — Collapsing header hook and restyled bottom navigation with locale-aware links
+- [x] 09-02-PLAN.md — CSS scroll-snap swipe carousel for homepage Latest and League sections
+- [x] 09-03-PLAN.md — Touch target audit (48px minimum) and responsive layout safety
 
 ## Progress
 
@@ -168,16 +168,27 @@ Note: Phases 3 and 4 depend only on Phase 1 (not Phase 2) and could run in paral
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Design Tokens & Theming | 0/2 | Planning complete | - |
+| 1. Design Tokens & Theming | 2/2 | Complete | 2026-03-18 |
 | 2. Navigation & Site Chrome | 2/2 | Complete | 2026-03-18 |
 | 3. Card System & Component Consolidation | 2/2 | Complete | 2026-03-22 |
-| 4. Ad System Overhaul | 1/2 | In progress | - |
-| 5. Homepage Redesign | 0/2 | Planning complete | - |
+| 4. Ad System Overhaul | 2/2 | Complete (verified 8/8) | 2026-03-22 |
+| 5. Homepage Redesign | 2/2 | Complete (verified 8/8) | 2026-03-22 |
 | 6. Article Page Restructure | 2/2 | Complete | 2026-03-22 |
-| 7. Article Engagement Features | 0/2 | Planning complete | - |
+| 7. Article Engagement Features | 0/2 | Plans written, not executed | - |
 | 8. Animation System | 2/2 | Complete | 2026-03-22 |
-| 9. Mobile Experience Optimization | 0/3 | Planning complete | - |
+| 9. Mobile Experience Optimization | 3/3 | Complete | 2026-03-22 |
+
+## Non-Roadmap Work (2026-03-23 to 2026-03-24)
+
+Work completed outside the original 9-phase roadmap:
+
+- **About Page Redesign** — Spline 3D hero, editorial typography, framer-motion animations, 3-column story layout, stats with count-up animation, FAQ section
+- **Contact Page Redesign** — Editorial typography, dark theme form styling
+- **CommandSearch Improvements** — Enter key redirect, API client alignment with backend formats
+- **Color System Refinement** — Layered dark surfaces, content well with surface elevation
+- **Loading Skeletons** — Page-specific loading skeletons for latest, league, and transfer pages
+- **Misc Fixes** — Footer spacing, league grid columns, hero layout, image handling
 
 ---
 *Roadmap created: 2026-03-17*
-*Last updated: 2026-03-22*
+*Last updated: 2026-03-24*

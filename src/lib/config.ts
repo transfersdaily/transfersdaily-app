@@ -102,44 +102,21 @@ export const API_CONFIG = {
 // Helper function to get the correct API URL
 export function getApiUrl(endpoint: string): string {
 
-  // Always use local proxy for other admin endpoints
+  // Always use local proxy for admin endpoints
   if (endpoint.startsWith('/admin')) {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
   }
-
 
   // Always use local proxy for start-translation (consistency with admin endpoints)
   if (endpoint === '/start-translation') {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
   }
-  // For non-admin endpoints, use development logic
-  if (API_CONFIG.isDevelopment) {
+
+  // Client-side: always use local proxy to avoid CORS issues
+  if (typeof window !== 'undefined') {
     return `${API_CONFIG.localApiUrl}${endpoint}`;
   }
+
   return `${API_CONFIG.baseUrl}${endpoint}`;
 }
 
-// Auth Configuration - Updated with new backend deployment
-export const AUTH_CONFIG = {
-  userPoolId: process.env.NEXT_PUBLIC_USER_POOL_ID || 'us-east-1_R5AGrABLI',
-  userPoolClientId:
-    process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '7ka8dci4e4o9ua9ermiffdk0cq',
-  region: 'us-east-1',
-  // Cognito endpoints
-  cognitoUrl: `https://cognito-idp.us-east-1.amazonaws.com/`,
-  endpoints: {
-    signUp: 'https://cognito-idp.us-east-1.amazonaws.com/',
-    signIn: 'https://cognito-idp.us-east-1.amazonaws.com/',
-    confirmSignUp: 'https://cognito-idp.us-east-1.amazonaws.com/',
-    resendConfirmationCode: 'https://cognito-idp.us-east-1.amazonaws.com/',
-  },
-};
-
-// Storage keys
-export const STORAGE_KEYS = {
-  accessToken: 'transfersdaily_access_token',
-  idToken: 'transfersdaily_id_token',
-  refreshToken: 'transfersdaily_refresh_token',
-  user: 'transfersdaily_user',
-  preferences: 'transfersdaily_preferences',
-};

@@ -1,19 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { API_CONFIG } from '@/lib/config'
+import { validateAuth } from '@/lib/supabase/auth-guard'
 
 const API_BASE_URL = API_CONFIG.baseUrl
 
 export async function GET(request: NextRequest) {
   try {
-    // Get Authorization header from the incoming request
-    const authHeader = request.headers.get('Authorization')
-
-    if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Missing authorization header' },
-        { status: 401 }
-      )
-    }
+    const { user, error: authError } = await validateAuth()
+    if (authError) return authError
 
     // Forward request to AWS backend with auth header
     const response = await fetch(`${API_BASE_URL}/admin/pipeline/stats`, {
@@ -21,7 +15,7 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: authHeader,
+        'X-User-Id': user.id,
       },
     })
 

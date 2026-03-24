@@ -1,0 +1,24 @@
+# ads.txt file for transfersdaily.com
+# This file is required by Google AdSense and other ad networks to verify authorized sellers
+# Format: <Field #1>, <Field #2>, <Field #3>, <Field #4>
+# Field #1: Domain name of the advertising system
+# Field #2: Publisher's Account ID
+# Field #3: Type of Relationship (DIRECT or RESELLER)
+# Field #4: Certification Authority ID
+
+# Google AdSense - ACTIVE
+google.com, pub-6269937543968234, DIRECT, f08c47fec0942fa0
+
+# Additional networks (uncomment and add IDs if you use these services)
+# Google Ad Manager
+# google.com, pub-6269937543968234, DIRECT, f08c47fec0942fa0
+
+# Amazon Publisher Services
+# aps.amazon.com, XXXXXXXX, DIRECT
+
+# Media.net
+# media.net, XXXXXXXX, DIRECT
+
+# This file will be accessible at https://transfersdaily.com/ads.txt
+# It may take 24-48 hours for Google to crawl and verify this file
+# Check your AdSense account for verification status

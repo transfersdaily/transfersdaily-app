@@ -12,7 +12,7 @@ import { createTranslator } from '@/lib/dictionary-server';
 import { type Transfer } from '@/lib/api';
 import { API_CONFIG } from '@/lib/config';
 import { AdSlot } from '@/components/ads';
-import { SITE_URL } from '@/lib/constants';
+import { SITE_URL, generateSlug } from '@/lib/constants';
 
 export const revalidate = 300;
 
@@ -335,11 +335,4 @@ async function getInitialData(language = 'en') {
   }
 }
 
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-}
+// generateSlug imported from @/lib/constants

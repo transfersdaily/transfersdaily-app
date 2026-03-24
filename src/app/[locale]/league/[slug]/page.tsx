@@ -5,17 +5,7 @@ import { createTranslator } from '@/lib/dictionary-server'
 import { LeaguePageClient } from '@/components/LeaguePageClient'
 // Ad components
 import { API_CONFIG } from '@/lib/config';
-import { SITE_URL } from '@/lib/constants';
-
-// Helper function to generate slug from title
-function generateSlug(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/[^a-z0-9 -]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
-}
+import { SITE_URL, generateSlug } from '@/lib/constants';
 
 // Server-side data fetching for league articles
 async function getLeagueData(leagueSlug: string, language = 'en') {

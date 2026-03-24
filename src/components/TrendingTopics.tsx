@@ -156,7 +156,7 @@ export default function TrendingTopics({ locale = 'en', dict }: TrendingTopicsPr
 
   return (
     <div className="p-5">
-      <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">Most Searched</h3>
+      <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-4">{t('sidebar.trending')}</h3>
       <div className="space-y-1">
         {topics.map((topic, index) => (
           <Link

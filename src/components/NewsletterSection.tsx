@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { newsletterApi } from '@/lib/api';
 import { trackNewsletterSubscribe } from '@/lib/analytics';
-import { Loader2, CheckCircle, Mail, Users } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { type Locale, type Dictionary, getTranslation } from '@/lib/i18n';
 
 interface NewsletterSectionProps {
@@ -101,7 +101,6 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
           <CardContent className="p-12 md:p-16">
             {subscriptionStatus === 'success' ? (
               <div className="text-center">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
                 <h3 className="text-xl font-bold text-green-600 mb-2">
                   {t('newsletter.successTitle')}
                 </h3>
@@ -111,10 +110,7 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
               </div>
             ) : (
               <div className="text-center">
-                <div className="flex items-center justify-center gap-3 mb-3 md:mb-6">
-                  <div className="bg-primary p-3 rounded-full hidden md:block">
-                    <Mail className="h-7 w-7 text-primary-foreground" />
-                  </div>
+                <div className="mb-3 md:mb-6">
                   <h3 className="text-xl md:text-2xl font-bold">
                     {t('newsletter.title')}
                   </h3>
@@ -165,8 +161,7 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
                   )}
                 </form>
 
-                <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                  <Users className="h-4 w-4" />
+                <div className="text-center text-xs text-muted-foreground">
                   <span>
                     {t('newsletter.joinSubscribers')} • No spam • Unsubscribe
                     anytime
