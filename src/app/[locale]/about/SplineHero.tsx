@@ -11,7 +11,7 @@ export function SplineHero({ title, subtitle }: SplineHeroProps) {
       {/* Spline viewer background — full bleed */}
       <div className="absolute inset-0 z-0">
         <iframe
-          src="https://my.spline.design/animatedbackgroundgradientforweb-k27NUSqgluG16Vy2yVc8XfNq/"
+          src="https://my.spline.design/spiraldna-uxGjS8Q2SUpDHhWhcMy6yQN1/"
           className="w-full h-full border-0 scale-110"
           style={{ pointerEvents: 'none' }}
           loading="lazy"
