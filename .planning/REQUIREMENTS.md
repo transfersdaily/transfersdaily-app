@@ -5,8 +5,8 @@
 ### Dashboard Foundation (DASH)
 - [ ] **DASH-01**: Admin sees a modern dashboard shell with sidebar navigation, header with pipeline status indicator, and responsive grid layout
 - [x] **DASH-02**: Dashboard loads all KPIs via a single aggregated API call (not N+1 fetches) with server-side rendering and 5-minute cache
-- [ ] **DASH-03**: Admin sees content velocity KPIs — articles published today, this week, this month — with 7-day sparkline trends
-- [ ] **DASH-04**: Admin sees draft backlog count with visual indicator of processing rate
+- [x] **DASH-03**: Admin sees content velocity KPIs — articles published today, this week, this month — with 7-day sparkline trends
+- [x] **DASH-04**: Admin sees draft backlog count with visual indicator of processing rate
 - [ ] **DASH-05**: Admin sees unread contact message count as a badge in the sidebar navigation
 
 ### Traffic & Audience Analytics (TRAF)
@@ -36,7 +36,7 @@
 - [ ] **UXUI-01**: Admin dashboard uses UI/UX Pro Max design system — premium editorial aesthetic, not a basic template
 - [ ] **UXUI-02**: All charts use consistent design language with proper tooltips, legends, and responsive sizing
 - [ ] **UXUI-03**: All admin pages are mobile-responsive using CSS-first approach (no JS-based mobile detection)
-- [ ] **UXUI-04**: Loading states use skeleton screens instead of spinners
+- [x] **UXUI-04**: Loading states use skeleton screens instead of spinners
 - [ ] **UXUI-05**: Data tables support sorting, filtering, and pagination with consistent UX
 
 ## v2 Requirements (Deferred)
@@ -66,11 +66,11 @@
 |-------------|-------|--------|
 | DASH-01 | Phase 1: Dashboard Foundation | Pending |
 | DASH-02 | Phase 1: Dashboard Foundation | Complete |
-| DASH-03 | Phase 1: Dashboard Foundation | Pending |
-| DASH-04 | Phase 1: Dashboard Foundation | Pending |
+| DASH-03 | Phase 1: Dashboard Foundation | Complete |
+| DASH-04 | Phase 1: Dashboard Foundation | Complete |
 | DASH-05 | Phase 1: Dashboard Foundation | Pending |
 | UXUI-01 | Phase 1: Dashboard Foundation | Pending |
-| UXUI-04 | Phase 1: Dashboard Foundation | Pending |
+| UXUI-04 | Phase 1: Dashboard Foundation | Complete |
 | TRAF-01 | Phase 2: Traffic & Audience Analytics | Pending |
 | TRAF-02 | Phase 2: Traffic & Audience Analytics | Pending |
 | TRAF-03 | Phase 2: Traffic & Audience Analytics | Pending |
