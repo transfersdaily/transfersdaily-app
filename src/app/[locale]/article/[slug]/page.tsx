@@ -109,8 +109,9 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
       }
     }
 
-    // Fallback to local API route
-    const localApiUrl = `/api/article/${slug}?language=${locale}`;
+    // Fallback to local API route (must use absolute URL for server-side fetch)
+    const baseOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const localApiUrl = `${baseOrigin}/api/article/${slug}?language=${locale}`;
 
     const localResponse = await fetch(localApiUrl, {
       method: 'GET',
@@ -124,7 +125,7 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
     if (!localResponse.ok) {
       // Try English fallback for local API too
       if (locale !== 'en') {
-        const fallbackLocalUrl = `/api/article/${slug}?language=en`;
+        const fallbackLocalUrl = `${baseOrigin}/api/article/${slug}?language=en`;
         const fallbackLocalResponse = await fetch(fallbackLocalUrl, {
           method: 'GET',
           headers: {
