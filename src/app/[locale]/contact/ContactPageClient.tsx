@@ -406,8 +406,6 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
             </Accordion>
           </section>
         </div>
-
-        </div>
     </div>
   )
 }
