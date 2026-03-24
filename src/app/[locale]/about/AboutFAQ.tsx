@@ -39,7 +39,7 @@ export function AboutFAQ({ dict }: AboutFAQProps) {
   return (
     <Accordion type="single" collapsible className="w-full space-y-4">
       {faqs.map((faq, i) => (
-        <AccordionItem key={faq.key} value={`item-${i}`} className="border border-border/50 rounded-lg bg-card/50 px-0">
+        <AccordionItem key={faq.key} value={`item-${i}`} className="border border-border/50 rounded-lg bg-card/50">
           <AccordionTrigger className="text-left px-6 py-5 hover:no-underline">
             <span className="font-sans text-sm md:text-base font-medium text-foreground">
               {t(dict, `contact.faq.${faq.key}`, faq.q)}
