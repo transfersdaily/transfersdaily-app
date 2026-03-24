@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { Metadata } from "next"
 import { Globe, Clock, Shield, Newspaper, Users, Zap } from "lucide-react"
 import { AboutFAQ } from "./AboutFAQ"
+import { SplineHero } from "./SplineHero"
 
 interface AboutPageProps {
   params: Promise<{ locale: Locale }>
@@ -41,31 +42,11 @@ export default async function AboutPage({ params }: AboutPageProps) {
     <main className="min-h-screen bg-background">
       <div className="container mx-auto px-4 md:px-6">
 
-        {/* Hero — Mission statement with Spline animated background */}
-        <section className="relative py-10 md:py-16 overflow-hidden rounded-lg -mx-4 md:-mx-6 px-4 md:px-6">
-          {/* Spline background */}
-          <div className="absolute inset-0 z-0">
-            <iframe
-              src="https://my.spline.design/animatedbackgroundgradientforweb-k27NUSqgluG16Vy2yVc8XfNq/"
-              className="w-full h-full border-0"
-              style={{ pointerEvents: 'none' }}
-              loading="lazy"
-              title="Animated background"
-            />
-            {/* Overlay to ensure text readability */}
-            <div className="absolute inset-0 bg-background/60" />
-          </div>
-
-          {/* Content */}
-          <div className="relative z-10 max-w-4xl">
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-foreground leading-none">
-              {t('about.title', 'About Transfer Daily')}
-            </h1>
-            <p className="font-sans text-lg md:text-xl text-muted-foreground leading-relaxed mt-6 max-w-2xl">
-              {t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
-            </p>
-          </div>
-        </section>
+        {/* Hero — Spline animated background with title overlay */}
+        <SplineHero
+          title={t('about.title', 'About Transfer Daily')}
+          subtitle={t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
+        />
 
         {/* Stats — Social proof / credibility numbers */}
         <section className="py-8 border-t border-border">
