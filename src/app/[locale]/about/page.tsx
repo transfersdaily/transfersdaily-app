@@ -126,7 +126,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
             {t('about.whatWeCover', 'What We Cover')}
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {[
               { icon: Shield, title: t('about.feature1Title', 'Verified Transfers'), desc: t('about.feature1Desc', 'Every confirmed transfer is cross-referenced with official club announcements and trusted journalists before publication.') },
               { icon: Clock, title: t('about.feature2Title', 'Breaking Rumors'), desc: t('about.feature2Desc', 'Stay ahead with the latest transfer rumors as they develop, clearly labeled to distinguish from confirmed deals.') },
@@ -135,9 +135,11 @@ export default async function AboutPage({ params }: AboutPageProps) {
               { icon: Users, title: t('about.feature5Title', 'Multi-Language'), desc: t('about.feature5Desc', 'Available in English, Spanish, French, German, and Italian so fans worldwide can follow transfers in their language.') },
               { icon: Zap, title: t('about.feature6Title', 'Real-Time Updates'), desc: t('about.feature6Desc', 'Our automated pipeline delivers transfer news as it happens, with articles published within minutes of breaking developments.') },
             ].map((feature) => (
-              <div key={feature.title} className="p-5 rounded-lg bg-card border border-border/50">
-                <feature.icon className="h-5 w-5 text-primary mb-3" />
-                <h3 className="font-display text-sm font-bold uppercase tracking-tight text-foreground mb-2">{feature.title}</h3>
+              <div key={feature.title} className="p-6 md:p-8 rounded-lg bg-card border border-border/50">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-5">
+                  <feature.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-display text-sm font-bold uppercase tracking-tight text-foreground mb-3">{feature.title}</h3>
                 <p className="font-sans text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
               </div>
             ))}
