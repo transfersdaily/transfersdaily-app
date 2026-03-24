@@ -13,7 +13,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { useDictionary } from '@/lib/dictionary-provider';
 import { transfersApi, searchApi } from '@/lib/api';
-import { Search, Newspaper, TrendingUp, ArrowRight } from 'lucide-react';
+
 import { typography } from '@/lib/typography';
 import { cn } from '@/lib/theme';
 
@@ -130,6 +130,12 @@ export function CommandSearch({ locale, open, onOpenChange }: CommandSearchProps
         placeholder={t('search.placeholder', 'Search transfers, leagues, players...')}
         value={query}
         onValueChange={setQuery}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' && query.trim()) {
+            e.preventDefault();
+            handleSearchAll();
+          }
+        }}
       />
       <CommandList>
         {/* Loading state */}
@@ -178,7 +184,6 @@ export function CommandSearch({ locale, open, onOpenChange }: CommandSearchProps
                 onSelect={() => handleSelect(result.slug)}
                 className="cursor-pointer"
               >
-                <Newspaper className="mr-2 h-4 w-4 text-muted-foreground" />
                 <div className="flex flex-col">
                   <span className={typography.body.base}>{result.title}</span>
                   {result.league && (
@@ -191,7 +196,6 @@ export function CommandSearch({ locale, open, onOpenChange }: CommandSearchProps
             ))}
             <CommandSeparator />
             <CommandItem onSelect={handleSearchAll} className="cursor-pointer">
-              <ArrowRight className="mr-2 h-4 w-4" />
               <span>{t('search.viewAll', 'View all results')}</span>
               <kbd className="ml-auto text-xs text-muted-foreground">Enter</kbd>
             </CommandItem>
@@ -208,7 +212,6 @@ export function CommandSearch({ locale, open, onOpenChange }: CommandSearchProps
                 onSelect={() => handlePopularSelect(term)}
                 className="cursor-pointer"
               >
-                <TrendingUp className="mr-2 h-4 w-4 text-muted-foreground" />
                 <span>{term}</span>
               </CommandItem>
             ))}
@@ -221,7 +224,6 @@ export function CommandSearch({ locale, open, onOpenChange }: CommandSearchProps
             <CommandSeparator />
             <CommandGroup>
               <CommandItem onSelect={handleSearchAll} className="cursor-pointer">
-                <Search className="mr-2 h-4 w-4" />
                 <span>{t('search.openSearchPage', 'Open search page')}</span>
               </CommandItem>
             </CommandGroup>
