@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/Sidebar"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { notFound } from "next/navigation"
@@ -75,67 +74,56 @@ export default async function AboutPage({ params }: AboutPageProps) {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-          <div className="lg:col-span-7">
-            {/* Page Header */}
-            <section className="py-4 md:py-6">
-              <h1 className="font-display text-2xl md:text-3xl font-bold uppercase tracking-tight text-foreground">
-                {t('about.title', 'About Transfer Daily')}
-              </h1>
-              <p className="font-sans text-base text-muted-foreground leading-relaxed mt-3 max-w-2xl">
-                {t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
+      <div className="container mx-auto max-w-3xl px-4 md:px-6">
+        {/* Page Header */}
+        <section className="py-6 md:py-10">
+          <h1 className="font-display text-2xl md:text-3xl font-bold uppercase tracking-tight text-foreground">
+            {t('about.title', 'About Transfer Daily')}
+          </h1>
+          <p className="font-sans text-base md:text-lg text-muted-foreground leading-relaxed mt-4">
+            {t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
+          </p>
+        </section>
+
+        {/* Our Story Section */}
+        <section className="py-8 border-t border-border">
+          <h2 className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground mb-6">
+            {t('about.ourStory', 'Our Story')}
+          </h2>
+
+          <div className="space-y-8">
+            <div>
+              <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-3">The Problem</h3>
+              <p className="font-sans text-base text-muted-foreground leading-relaxed">
+                {t('about.storyParagraph1', 'Football fans were struggling to find reliable, up-to-date transfer information in one place. News was scattered across multiple sources, often unreliable, and difficult to verify.')}
               </p>
-            </section>
-
-            {/* Our Story Section */}
-            <section className="py-8 border-t border-border">
-              <h2 className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground mb-6">
-                {t('about.ourStory', 'Our Story')}
-              </h2>
-
-              <div className="space-y-8">
-                <div>
-                  <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-3">The Problem</h3>
-                  <p className="font-sans text-base text-muted-foreground leading-relaxed">
-                    {t('about.storyParagraph1', 'Football fans were struggling to find reliable, up-to-date transfer information in one place. News was scattered across multiple sources, often unreliable, and difficult to verify.')}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-3">The Solution</h3>
-                  <p className="font-sans text-base text-muted-foreground leading-relaxed">
-                    {t('about.storyParagraph2', 'We created Transfer Daily to be the definitive source for transfer news. Our platform aggregates, verifies, and presents transfer information in a clean, easy-to-navigate format.')}
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-3">Today</h3>
-                  <p className="font-sans text-base text-muted-foreground leading-relaxed">
-                    {t('about.storyParagraph3', 'Today, Transfer Daily serves thousands of football fans worldwide with the latest transfer news, rumors, and confirmed deals from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1.')}
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Mission Section */}
-            <section className="py-8 border-t border-border">
-              <h2 className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground mb-4">
-                {t('about.mission', 'Our Mission')}
-              </h2>
-              <p className="font-sans text-base text-muted-foreground leading-relaxed max-w-2xl">
-                {t('about.missionText', 'To provide football fans with accurate, timely, and comprehensive transfer information, helping them stay connected to the beautiful game they love.')}
-              </p>
-            </section>
-          </div>
-
-          {/* Sidebar */}
-          <aside className="hidden lg:block lg:col-span-3">
-            <div className="space-y-6 pt-6">
-              <Sidebar locale={locale} dict={dict} />
             </div>
-          </aside>
-        </div>
+
+            <div>
+              <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-3">The Solution</h3>
+              <p className="font-sans text-base text-muted-foreground leading-relaxed">
+                {t('about.storyParagraph2', 'We created Transfer Daily to be the definitive source for transfer news. Our platform aggregates, verifies, and presents transfer information in a clean, easy-to-navigate format.')}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="font-display text-base font-bold uppercase tracking-tight text-foreground mb-3">Today</h3>
+              <p className="font-sans text-base text-muted-foreground leading-relaxed">
+                {t('about.storyParagraph3', 'Today, Transfer Daily serves thousands of football fans worldwide with the latest transfer news, rumors, and confirmed deals from Premier League, La Liga, Serie A, Bundesliga, and Ligue 1.')}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Mission Section */}
+        <section className="py-8 border-t border-border">
+          <h2 className="font-display text-lg md:text-xl font-bold uppercase tracking-tight text-foreground mb-4">
+            {t('about.mission', 'Our Mission')}
+          </h2>
+          <p className="font-sans text-base md:text-lg text-muted-foreground leading-relaxed">
+            {t('about.missionText', 'To provide football fans with accurate, timely, and comprehensive transfer information, helping them stay connected to the beautiful game they love.')}
+          </p>
+        </section>
       </div>
     </main>
   )

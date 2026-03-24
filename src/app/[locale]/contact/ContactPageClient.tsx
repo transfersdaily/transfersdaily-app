@@ -14,7 +14,6 @@ import { Loader2 } from "lucide-react"
 import { contactApi } from "@/lib/api"
 import { trackContactSubmission } from "@/lib/analytics"
 import { type Locale } from "@/lib/i18n"
-import { Sidebar } from "@/components/Sidebar"
 
 interface ContactPageClientProps {
   locale: Locale
@@ -116,11 +115,10 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
   }
 
   return (
-    <div className="container mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 min-h-screen">
-        <div className="lg:col-span-7">
+    <div className="container mx-auto max-w-3xl px-4 md:px-6">
+        <div>
           {/* Page Header */}
-          <section className="py-4 md:py-6">
+          <section className="py-6 md:py-10">
             <h1 className="font-display text-2xl md:text-3xl font-bold uppercase tracking-tight text-foreground">
               {getTranslation(dict, 'contact.title', 'Get in Touch')}
             </h1>
@@ -409,13 +407,7 @@ export function ContactPageClient({ locale, dict }: ContactPageClientProps) {
           </section>
         </div>
 
-        {/* Sidebar */}
-        <aside className="hidden lg:block lg:col-span-3">
-          <div className="space-y-6 pt-6">
-            <Sidebar locale={locale} dict={dict} />
-          </div>
-        </aside>
-      </div>
+        </div>
     </div>
   )
 }
