@@ -60,13 +60,13 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
     // Validate email
     if (!email.trim()) {
       setSubscriptionStatus('error');
-      setErrorMessage('Please enter your email address.');
+      setErrorMessage(t('newsletter.enterEmail'));
       return;
     }
 
     if (!isValidEmail(email)) {
       setSubscriptionStatus('error');
-      setErrorMessage('Please enter a valid email address.');
+      setErrorMessage(t('newsletter.invalidEmail'));
       return;
     }
 
@@ -83,12 +83,12 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
         trackNewsletterSubscribe();
       } else {
         setSubscriptionStatus('error');
-        setErrorMessage('Subscription failed. Please try again.');
+        setErrorMessage(t('newsletter.subscriptionFailed'));
       }
     } catch (error) {
       console.error('Newsletter subscription error:', error);
       setSubscriptionStatus('error');
-      setErrorMessage('Something went wrong. Please try again later.');
+      setErrorMessage(t('newsletter.somethingWentWrong'));
     } finally {
       setIsSubscribing(false);
     }
@@ -156,15 +156,14 @@ export function NewsletterSection({ locale, dict }: NewsletterSectionProps) {
 
                   {subscriptionStatus === 'error' && (
                     <p className="text-sm text-destructive mt-3">
-                      {errorMessage || 'Please check your email and try again.'}
+                      {errorMessage || t('newsletter.checkEmail')}
                     </p>
                   )}
                 </form>
 
                 <div className="text-center text-xs text-muted-foreground">
                   <span>
-                    {t('newsletter.joinSubscribers')} • No spam • Unsubscribe
-                    anytime
+                    {t('newsletter.joinSubscribers')} • {t('newsletter.noSpam')}
                   </span>
                 </div>
               </div>

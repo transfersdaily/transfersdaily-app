@@ -191,7 +191,7 @@ function transformArticleToTransfer(article: any): Transfer {
     title: article.title,
     excerpt: article.content ? article.content.substring(0, 200) + '...' : '',
     content: article.content,
-    league: article.league || 'Unknown',
+    league: article.league || '',
     transferValue: article.transferFee || article.transfer_fee,
     playerName: article.playerName || article.player_name,
     fromClub: article.currentClub || article.current_club,

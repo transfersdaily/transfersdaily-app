@@ -172,11 +172,12 @@ export function TransferStatusPageClient({
           </PageHeader>
 
           {/* Results Info - Match Latest Page */}
-          <ResultsInfo 
+          <ResultsInfo
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
             totalItems={pagination.total}
             isLoading={isLoading}
+            dict={dict}
           />
 
           {/* Ad: Rectangle after header */}

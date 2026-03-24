@@ -78,28 +78,28 @@ export function Footer() {
                   <Link
                     href="https://twitter.com/transfersdaily"
                     className="bg-muted hover:bg-primary p-3 rounded-full cursor-pointer motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Follow us on Twitter"
+                    aria-label={t('footer.followOnTwitter', 'Follow us on Twitter')}
                   >
                     <FaXTwitter className="h-5 w-5 text-muted-foreground" />
                   </Link>
                   <Link
                     href="https://www.threads.net/@transfersdaily"
                     className="bg-muted hover:bg-primary p-3 rounded-full cursor-pointer motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Follow us on Threads"
+                    aria-label={t('footer.followOnThreads', 'Follow us on Threads')}
                   >
                     <FaThreads className="h-5 w-5 text-muted-foreground" />
                   </Link>
                   <Link
                     href="https://bsky.app/profile/transfersdaily"
                     className="bg-muted hover:bg-primary p-3 rounded-full cursor-pointer motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Follow us on Bluesky"
+                    aria-label={t('footer.followOnBluesky', 'Follow us on Bluesky')}
                   >
                     <FaBluesky className="h-5 w-5 text-muted-foreground" />
                   </Link>
                   <Link
                     href="https://facebook.com/transfersdaily"
                     className="bg-muted hover:bg-primary p-3 rounded-full cursor-pointer motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-                    aria-label="Follow us on Facebook"
+                    aria-label={t('footer.followOnFacebook', 'Follow us on Facebook')}
                   >
                     <FaFacebook className="h-5 w-5 text-muted-foreground" />
                   </Link>
@@ -132,19 +132,19 @@ export function Footer() {
 
             {/* Contact & Legal */}
             <div className="space-y-4">
-              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Contact</h4>
+              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.contact', 'Contact')}</h4>
               <div className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
-                <p>Get in touch with our team</p>
+                <p>{t('footer.getInTouch', 'Get in touch with our team')}</p>
                 <a href="mailto:info@transfersdaily.com" className="block font-medium min-h-[44px] md:min-h-[32px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">
                   info@transfersdaily.com
                 </a>
               </div>
 
               <div className="space-y-4 pt-4">
-                <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Legal</h4>
+                <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.legal', 'Legal')}</h4>
                 <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
-                  <li><Link href={getLocalizedPath("/privacy")} className="min-h-[44px] md:min-h-[32px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Privacy Policy</Link></li>
-                  <li><Link href={getLocalizedPath("/terms")} className="min-h-[44px] md:min-h-[32px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Terms of Service</Link></li>
+                  <li><Link href={getLocalizedPath("/privacy")} className="min-h-[44px] md:min-h-[32px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('footer.privacyPolicy', 'Privacy Policy')}</Link></li>
+                  <li><Link href={getLocalizedPath("/terms")} className="min-h-[44px] md:min-h-[32px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('footer.termsOfService', 'Terms of Service')}</Link></li>
                 </ul>
               </div>
             </div>
@@ -159,13 +159,13 @@ export function Footer() {
                 <span className="text-foreground">Daily</span>
               </div>
               <p className={cn(typography.body.small, 'text-muted-foreground')}>
-                Your trusted source for football transfer news
+                {t('footer.mobileDescription', 'Your trusted source for football transfer news')}
               </p>
             </div>
 
             {/* Social Media - Mobile */}
             <div className="text-center space-y-2 md:space-y-4">
-              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Follow Us</h4>
+              <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.followUs', 'Follow Us')}</h4>
               <div className="flex items-center justify-center gap-4">
                 <Link href="https://twitter.com/transfersdaily" className="bg-muted hover:bg-primary p-3 rounded-full cursor-pointer motion-safe:transition-colors duration-fast motion-reduce:transition-none">
                   <FaXTwitter className="h-5 w-5 text-muted-foreground" />
@@ -186,19 +186,19 @@ export function Footer() {
             {[
               {
                 key: 'links',
-                title: 'Quick Links',
+                title: t('footer.quickLinks', 'Quick Links'),
                 content: (
                   <ul className={cn(typography.body.small, 'space-y-1 md:space-y-3 text-muted-foreground')}>
-                    <li><Link href={getLocalizedPath("/latest")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Latest News</Link></li>
-                    <li><Link href={getLocalizedPath("/search")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Search</Link></li>
-                    <li><Link href={getLocalizedPath("/about")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">About</Link></li>
-                    <li><Link href={getLocalizedPath("/contact")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Contact</Link></li>
+                    <li><Link href={getLocalizedPath("/latest")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('navigation.latest', 'Latest News')}</Link></li>
+                    <li><Link href={getLocalizedPath("/search")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('common.search', 'Search')}</Link></li>
+                    <li><Link href={getLocalizedPath("/about")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('navigation.about', 'About')}</Link></li>
+                    <li><Link href={getLocalizedPath("/contact")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('navigation.contact', 'Contact')}</Link></li>
                   </ul>
                 )
               },
               {
                 key: 'leagues',
-                title: 'Leagues',
+                title: t('footer.leagues', 'Leagues'),
                 content: (
                   <div className="space-y-2 md:space-y-4">
                     <ul className={cn(typography.body.small, 'space-y-1 md:space-y-3 text-muted-foreground')}>
@@ -213,14 +213,14 @@ export function Footer() {
               },
               {
                 key: 'contact',
-                title: 'Contact & Legal',
+                title: t('footer.contactAndLegal', 'Contact & Legal'),
                 content: (
                   <div className={cn(typography.body.small, 'space-y-2 md:space-y-4 text-muted-foreground')}>
                     <a href="mailto:info@transfersdaily.com" className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer font-medium hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">
                       info@transfersdaily.com
                     </a>
-                    <Link href={getLocalizedPath("/privacy")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Privacy Policy</Link>
-                    <Link href={getLocalizedPath("/terms")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">Terms of Service</Link>
+                    <Link href={getLocalizedPath("/privacy")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('footer.privacyPolicy', 'Privacy Policy')}</Link>
+                    <Link href={getLocalizedPath("/terms")} className="block py-1 md:py-2 min-h-[48px] flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none">{t('footer.termsOfService', 'Terms of Service')}</Link>
                   </div>
                 )
               }

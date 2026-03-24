@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Sidebar } from "@/components/Sidebar"
 import { SidebarSkeleton } from "@/components/SidebarSkeleton"
-import { transfersApi, type Transfer } from "@/lib/api"
+import { type Transfer } from "@/lib/api"
 import { type Locale, getDictionary, locales } from "@/lib/i18n"
 import { typography } from "@/lib/typography"
 import { API_CONFIG } from '@/lib/config'
@@ -116,23 +116,47 @@ async function getArticleBySlug(slug: string, locale: string): Promise<Article |
 }
 
 // Server-side function to get related articles, filtered by league when available
-async function getRelatedArticles(league: string | undefined, currentSlug: string, limit: number = 3, locale: string = 'en'): Promise<Transfer[]> {
-
+async function getRelatedArticles(league: string | undefined, currentSlug: string, limit: number = 4, locale: string = 'en'): Promise<Transfer[]> {
   try {
-    // Fetch more than needed so we can filter by league and exclude current article
-    const articles = await transfersApi.getLatest(limit + 5, 0, locale)
+    // Direct fetch (same pattern as getArticleBySlug which works reliably)
+    const fetchLimit = limit + 8
+    const apiUrl = `${API_CONFIG.baseUrl}/public/articles?limit=${fetchLimit}&page=1&status=published&language=${locale}&sortBy=published_at&sortOrder=desc`
+    const response = await fetch(apiUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(10000),
+    })
+
+    if (!response.ok) {
+      console.error('[getRelatedArticles] API returned:', response.status)
+      return []
+    }
+
+    const data = await response.json()
+    const rawArticles = data.data?.articles || []
+
+    // Transform to Transfer type
+    const articles: Transfer[] = rawArticles.map((a: any) => ({
+      id: a.id || a.uuid,
+      title: a.title || '',
+      excerpt: a.meta_description || a.content?.substring(0, 150) || '',
+      league: a.league || '',
+      publishedAt: a.published_at || a.created_at,
+      imageUrl: a.image_url,
+      slug: a.slug || generateSlug(a.title || ''),
+      tags: [],
+    }))
 
     // Exclude current article
-    const withoutCurrent = articles.filter(a => (a.slug || a.id) !== currentSlug)
+    const withoutCurrent = articles.filter(a => a.slug !== currentSlug && a.id !== currentSlug)
 
     if (league) {
       const byLeague = withoutCurrent.filter(a => a.league === league)
       if (byLeague.length >= limit) {
         return byLeague.slice(0, limit)
       }
-      // Fall back to unfiltered if not enough league matches
       if (byLeague.length > 0) {
-        // Pad with non-league articles to reach limit
         const rest = withoutCurrent.filter(a => a.league !== league)
         return [...byLeague, ...rest].slice(0, limit)
       }
@@ -317,7 +341,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
 
   // Then fetch related articles with league context
   try {
-    relatedArticles = await getRelatedArticles(article.league, slug, 3, locale);
+    relatedArticles = await getRelatedArticles(article.league, slug, 4, locale);
   } catch (error) {
     console.error('[ArticlePage] Failed to fetch related articles:', error);
   }
@@ -404,13 +428,15 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
             {/* Main Article Content */}
             <article className="lg:col-span-7">
               {/* Breadcrumbs */}
-              <ArticleBreadcrumb locale={locale} league={article.league} articleTitle={article.title} />
+              <ArticleBreadcrumb locale={locale} league={article.league} articleTitle={article.title} dict={dict} />
 
               {/* Hero Image */}
               <div className="mt-4">
                 <ArticleHero title={article.title} imageUrl={article.image_url} league={article.league} />
               </div>
+
               {/* Meta: date + reading time + transfer details */}
+              <div className="mt-6 md:mt-8">
               <ArticleMeta
                 publishedAt={article.published_at}
                 updatedAt={article.updated_at}
@@ -425,12 +451,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
                 transferFee={article.transfer_fee}
                 dict={dict}
               />
+              </div>
 
-              <ShareButtons url={`${SITE_URL}/${locale}/article/${slug}`} title={article.title} />
+              <ShareButtons url={`${SITE_URL}/${locale}/article/${slug}`} title={article.title} dict={dict} />
 
               {/* Article Body */}
               <div className="mt-6 md:mt-8">
-                <ArticleBody content={article.content || ''} />
+                <ArticleBody content={article.content || ''} dict={dict} />
               </div>
 
               {/* Tags */}
@@ -471,8 +498,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               <h2 className="font-display text-lg md:text-xl uppercase tracking-tight font-bold mb-4 md:mb-6 text-foreground">
                 {getTranslation(dict, 'article.relatedArticles', 'Related Articles')}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {relatedArticles.slice(0, 3).map((transfer) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {relatedArticles.slice(0, 4).map((transfer) => (
                   <ArticleCard
                     key={transfer.id}
                     variant="standard"
@@ -496,8 +523,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     return (
       <main className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Article Loading Error</h1>
-          <p className="text-muted-foreground">There was an error loading this article.</p>
+          <h1 className="text-2xl font-bold mb-4">{getTranslation(dict, 'article.loadingError', 'Article Loading Error')}</h1>
+          <p className="text-muted-foreground">{getTranslation(dict, 'article.loadingErrorDescription', 'There was an error loading this article.')}</p>
           <p className="text-sm text-muted-foreground mt-2">Slug: {slug}</p>
         </div>
       </main>

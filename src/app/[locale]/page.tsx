@@ -259,7 +259,7 @@ async function getInitialData(language = 'en') {
               title: article.title,
               excerpt: article.content ? article.content.substring(0, 200) + '...' : article.meta_description || '',
               content: article.content,
-              league: article.league || 'Unknown',
+              league: article.league || '',
               transferValue: article.transfer_fee,
               playerName: article.player_name,
               fromClub: article.from_club,

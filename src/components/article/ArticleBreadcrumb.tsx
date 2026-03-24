@@ -1,9 +1,11 @@
 import Link from "next/link"
+import { type Dictionary, getTranslation } from "@/lib/i18n"
 
 interface ArticleBreadcrumbProps {
   locale: string
   league?: string
   articleTitle: string
+  dict?: Dictionary
 }
 
 /**
@@ -11,7 +13,15 @@ interface ArticleBreadcrumbProps {
  * Path: Home > League Name > Article Title (truncated to 50 chars).
  * Server component -- no 'use client'.
  */
-export function ArticleBreadcrumb({ locale, league, articleTitle }: ArticleBreadcrumbProps) {
+export function ArticleBreadcrumb({ locale, league, articleTitle, dict }: ArticleBreadcrumbProps) {
+  const t = (key: string, fallback: string) => {
+    if (dict) {
+      const val = getTranslation(dict, key)
+      if (val && val !== key) return val
+    }
+    return fallback
+  }
+
   const truncatedTitle =
     articleTitle.length > 50
       ? articleTitle.substring(0, 50) + "..."
@@ -30,7 +40,7 @@ export function ArticleBreadcrumb({ locale, league, articleTitle }: ArticleBread
             href={`/${locale}`}
             className="hover:text-foreground transition-colors"
           >
-            Home
+            {t('article.home', 'Home')}
           </Link>
         </li>
 

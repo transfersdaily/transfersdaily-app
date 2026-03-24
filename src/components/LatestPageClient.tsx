@@ -109,11 +109,12 @@ export function LatestPageClient({
 
           
           {/* Results Info */}
-          <ResultsInfo 
+          <ResultsInfo
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
             totalItems={pagination.total}
             isLoading={isLoading}
+            dict={dict}
           />
 
           {/* Content Section */}

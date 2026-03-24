@@ -1,7 +1,9 @@
 import { AdSlot } from "@/components/ads"
+import { type Dictionary, getTranslation } from "@/lib/i18n"
 
 interface ArticleBodyProps {
   content: string
+  dict?: Dictionary
 }
 
 /**
@@ -9,12 +11,20 @@ interface ArticleBodyProps {
  * interleaves AdSlot placements after paragraph indices 2 and 5.
  * Server component -- no 'use client'.
  */
-export function ArticleBody({ content }: ArticleBodyProps) {
+export function ArticleBody({ content, dict }: ArticleBodyProps) {
+  const t = (key: string, fallback: string) => {
+    if (dict) {
+      const val = getTranslation(dict, key)
+      if (val && val !== key) return val
+    }
+    return fallback
+  }
+
   if (!content) {
     return (
       <div className="max-w-[65ch]">
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Content not available.
+          {t('article.contentNotAvailable', 'Content not available.')}
         </p>
       </div>
     )

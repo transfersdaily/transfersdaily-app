@@ -39,7 +39,11 @@
     "clearFilters": "Clear all filters",
     "latestTransfersFrom": "Latest transfers from",
     "noTransfersFound": "No transfers found",
-    "checkBackLater": "Check back later for updates"
+    "checkBackLater": "Check back later for updates",
+    "showingResults": "Showing {{start}}-{{end}} of {{total}} articles",
+    "searchTransfers": "Search transfers...",
+    "filterBy": "Filter by:",
+    "showingResultsCount": "Showing {{count}} results"
   },
   "transfers": {
     "confirmed": "Confirmed Transfers",
@@ -61,7 +65,17 @@
     "search": "Search",
     "confirmed": "Confirmed",
     "completed": "Completed",
-    "loanMoves": "Loan Moves"
+    "loanMoves": "Loan Moves",
+    "rumors": "Rumors",
+    "admin": "Admin",
+    "profile": "Profile",
+    "login": "Login",
+    "logout": "Logout",
+    "menu": "Menu",
+    "toggleMenu": "Toggle menu",
+    "userMenu": "User menu",
+    "language": "Language",
+    "transferTypes": "Transfer Types"
   },
   "homepage": {
     "featuredArticle": "Featured Article",
@@ -111,7 +125,13 @@
     "subscribing": "Subscribing...",
     "successTitle": "Welcome to the Team!",
     "successMessage": "Check your email for confirmation and get ready for the latest transfer news.",
-    "joinSubscribers": "Join 50,000+ subscribers"
+    "joinSubscribers": "Join 50,000+ subscribers",
+    "enterEmail": "Please enter your email address.",
+    "invalidEmail": "Please enter a valid email address.",
+    "subscriptionFailed": "Subscription failed. Please try again.",
+    "somethingWentWrong": "Something went wrong. Please try again later.",
+    "checkEmail": "Please check your email and try again.",
+    "noSpam": "No spam - Unsubscribe anytime"
   },
   "article": {
     "backToEdit": "Back to Edit",
@@ -121,7 +141,17 @@
     "relatedArticles": "Related Articles",
     "shareOn": "Share on",
     "twitter": "Twitter",
-    "facebook": "Facebook"
+    "facebook": "Facebook",
+    "home": "Home",
+    "transferNews": "Transfer News",
+    "contentNotAvailable": "Content not available.",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "shareOnX": "Share on X",
+    "shareOnWhatsApp": "Share on WhatsApp",
+    "loadingError": "Article Loading Error",
+    "loadingErrorDescription": "There was an error loading this article.",
+    "recentlyPublished": "Recently published"
   },
   "sidebar": {
     "recommended": "Recommended Articles",
@@ -139,7 +169,18 @@
     "quickLinks": "Quick Links",
     "leagues": "Leagues",
     "followUs": "Follow Us",
-    "allRightsReserved": "All rights reserved."
+    "allRightsReserved": "All rights reserved.",
+    "contact": "Contact",
+    "getInTouch": "Get in touch with our team",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "contactAndLegal": "Contact & Legal",
+    "mobileDescription": "Your trusted source for football transfer news",
+    "followOnTwitter": "Follow us on Twitter",
+    "followOnThreads": "Follow us on Threads",
+    "followOnBluesky": "Follow us on Bluesky",
+    "followOnFacebook": "Follow us on Facebook"
   },
   "about": {
     "title": "About Us",

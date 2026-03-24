@@ -149,11 +149,12 @@ export function LeaguePageClient({
           {/* Ad: Rectangle after header */}
 
           {/* Results Info - Match Latest Page */}
-          <ResultsInfo 
+          <ResultsInfo
             currentPage={currentPage}
             itemsPerPage={itemsPerPage}
             totalItems={pagination.total}
             isLoading={isLoading}
+            dict={dict}
           />
 
           {/* Content Section - Match Latest Page Style */}

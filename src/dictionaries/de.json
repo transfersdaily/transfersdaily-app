@@ -39,7 +39,11 @@
     "clearFilters": "Alle Filter löschen",
     "latestTransfersFrom": "Neueste Transfers von",
     "noTransfersFound": "Keine Transfers gefunden",
-    "checkBackLater": "Schauen Sie später für Updates vorbei"
+    "checkBackLater": "Schauen Sie später für Updates vorbei",
+    "showingResults": "Zeige {{start}}-{{end}} von {{total}} Artikeln",
+    "searchTransfers": "Transfers suchen...",
+    "filterBy": "Filtern nach:",
+    "showingResultsCount": "{{count}} Ergebnisse angezeigt"
   },
   "transfers": {
     "confirmed": "Bestätigte Transfers",
@@ -61,7 +65,17 @@
     "search": "Suchen",
     "confirmed": "Bestätigt",
     "completed": "Abgeschlossen",
-    "loanMoves": "Leihgeschäfte"
+    "loanMoves": "Leihgeschäfte",
+    "rumors": "Gerüchte",
+    "admin": "Admin",
+    "profile": "Profil",
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "menu": "Menü",
+    "toggleMenu": "Menü umschalten",
+    "userMenu": "Benutzermenü",
+    "language": "Sprache",
+    "transferTypes": "Transfer-Arten"
   },
   "homepage": {
     "featuredArticle": "Hauptartikel",
@@ -111,7 +125,13 @@
     "subscribing": "Abonnieren...",
     "successTitle": "Willkommen im Team!",
     "successMessage": "Überprüfen Sie Ihre E-Mail zur Bestätigung und bereiten Sie sich auf die neuesten Transfer-Nachrichten vor.",
-    "joinSubscribers": "Schließen Sie sich über 50.000 Abonnenten an"
+    "joinSubscribers": "Schließen Sie sich über 50.000 Abonnenten an",
+    "enterEmail": "Bitte geben Sie Ihre E-Mail-Adresse ein.",
+    "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+    "subscriptionFailed": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "somethingWentWrong": "Etwas ist schiefgelaufen. Bitte versuchen Sie es später erneut.",
+    "checkEmail": "Bitte überprüfen Sie Ihre E-Mail und versuchen Sie es erneut.",
+    "noSpam": "Kein Spam - Jederzeit abmelden"
   },
   "article": {
     "backToEdit": "Zurück zum Bearbeiten",
@@ -121,7 +141,17 @@
     "relatedArticles": "Verwandte Artikel",
     "shareOn": "Teilen auf",
     "twitter": "Twitter",
-    "facebook": "Facebook"
+    "facebook": "Facebook",
+    "home": "Startseite",
+    "transferNews": "Transfer-Nachrichten",
+    "contentNotAvailable": "Inhalt nicht verfügbar.",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert!",
+    "shareOnX": "Auf X teilen",
+    "shareOnWhatsApp": "Auf WhatsApp teilen",
+    "loadingError": "Fehler beim Laden des Artikels",
+    "loadingErrorDescription": "Beim Laden dieses Artikels ist ein Fehler aufgetreten.",
+    "recentlyPublished": "Kürzlich veröffentlicht"
   },
   "sidebar": {
     "recommended": "Empfohlene Artikel",
@@ -139,7 +169,18 @@
     "quickLinks": "Schnelle Links",
     "leagues": "Ligen",
     "followUs": "Folgen Sie uns",
-    "allRightsReserved": "Alle Rechte vorbehalten."
+    "allRightsReserved": "Alle Rechte vorbehalten.",
+    "contact": "Kontakt",
+    "getInTouch": "Kontaktieren Sie unser Team",
+    "legal": "Rechtliches",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen",
+    "contactAndLegal": "Kontakt & Rechtliches",
+    "mobileDescription": "Ihre vertrauenswürdige Quelle für Fußball-Transfer-Nachrichten",
+    "followOnTwitter": "Folgen Sie uns auf Twitter",
+    "followOnThreads": "Folgen Sie uns auf Threads",
+    "followOnBluesky": "Folgen Sie uns auf Bluesky",
+    "followOnFacebook": "Folgen Sie uns auf Facebook"
   },
   "about": {
     "title": "Über Uns",

@@ -146,7 +146,7 @@ async function getConfirmedTransfersData(language = 'en', page = 1, league = 'al
     const transfers: Transfer[] = data.data.articles.map((article: any) => ({
       id: article.id || article.uuid, title: article.title || 'Untitled Article',
       excerpt: article.meta_description || article.content?.substring(0, 150) + '...' || '',
-      league: article.league || 'Unknown League', publishedAt: article.published_at || article.created_at,
+      league: article.league || '', publishedAt: article.published_at || article.created_at,
       imageUrl: article.image_url, slug: article.slug || article.title?.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-') || '',
       category: article.category, transferStatus: 'confirmed', playerName: article.player_name,
       fromClub: article.from_club, toClub: article.to_club, transferFee: article.transfer_fee,

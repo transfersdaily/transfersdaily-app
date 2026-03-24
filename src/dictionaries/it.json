@@ -39,7 +39,11 @@
     "clearFilters": "Cancella tutti i filtri",
     "latestTransfersFrom": "Ultimi trasferimenti da",
     "noTransfersFound": "Nessun trasferimento trovato",
-    "checkBackLater": "Torna più tardi per gli aggiornamenti"
+    "checkBackLater": "Torna più tardi per gli aggiornamenti",
+    "showingResults": "Mostrando {{start}}-{{end}} di {{total}} articoli",
+    "searchTransfers": "Cerca trasferimenti...",
+    "filterBy": "Filtra per:",
+    "showingResultsCount": "Mostrando {{count}} risultati"
   },
   "transfers": {
     "confirmed": "Trasferimenti Confermati",
@@ -61,7 +65,17 @@
     "search": "Cerca",
     "confirmed": "Confermati",
     "completed": "Completati",
-    "loanMoves": "Prestiti"
+    "loanMoves": "Prestiti",
+    "rumors": "Voci",
+    "admin": "Admin",
+    "profile": "Profilo",
+    "login": "Accedi",
+    "logout": "Esci",
+    "menu": "Menu",
+    "toggleMenu": "Attiva/disattiva menu",
+    "userMenu": "Menu utente",
+    "language": "Lingua",
+    "transferTypes": "Tipi di Trasferimento"
   },
   "homepage": {
     "featuredArticle": "Articolo in Evidenza",
@@ -111,7 +125,13 @@
     "subscribing": "Iscrizione in corso...",
     "successTitle": "Benvenuto nella Squadra!",
     "successMessage": "Controlla la tua email per la conferma e preparati alle ultime notizie di calciomercato.",
-    "joinSubscribers": "Unisciti a oltre 50.000 iscritti"
+    "joinSubscribers": "Unisciti a oltre 50.000 iscritti",
+    "enterEmail": "Inserisci il tuo indirizzo email.",
+    "invalidEmail": "Inserisci un indirizzo email valido.",
+    "subscriptionFailed": "Iscrizione fallita. Riprova.",
+    "somethingWentWrong": "Qualcosa è andato storto. Riprova più tardi.",
+    "checkEmail": "Controlla la tua email e riprova.",
+    "noSpam": "Niente spam - Cancellati quando vuoi"
   },
   "article": {
     "backToEdit": "Torna alla Modifica",
@@ -121,7 +141,17 @@
     "relatedArticles": "Articoli Correlati",
     "shareOn": "Condividi su",
     "twitter": "Twitter",
-    "facebook": "Facebook"
+    "facebook": "Facebook",
+    "home": "Home",
+    "transferNews": "Notizie di Calciomercato",
+    "contentNotAvailable": "Contenuto non disponibile.",
+    "copyLink": "Copia link",
+    "copied": "Copiato!",
+    "shareOnX": "Condividi su X",
+    "shareOnWhatsApp": "Condividi su WhatsApp",
+    "loadingError": "Errore nel Caricamento dell'Articolo",
+    "loadingErrorDescription": "Si è verificato un errore nel caricamento di questo articolo.",
+    "recentlyPublished": "Pubblicato di recente"
   },
   "sidebar": {
     "recommended": "Articoli Consigliati",
@@ -139,7 +169,18 @@
     "quickLinks": "Link Rapidi",
     "leagues": "Campionati",
     "followUs": "Seguici",
-    "allRightsReserved": "Tutti i diritti riservati."
+    "allRightsReserved": "Tutti i diritti riservati.",
+    "contact": "Contatti",
+    "getInTouch": "Mettiti in contatto con il nostro team",
+    "legal": "Legale",
+    "privacyPolicy": "Informativa sulla Privacy",
+    "termsOfService": "Termini di Servizio",
+    "contactAndLegal": "Contatti e Legale",
+    "mobileDescription": "La tua fonte affidabile per le notizie di calciomercato",
+    "followOnTwitter": "Seguici su Twitter",
+    "followOnThreads": "Seguici su Threads",
+    "followOnBluesky": "Seguici su Bluesky",
+    "followOnFacebook": "Seguici su Facebook"
   },
   "about": {
     "title": "Chi Siamo",

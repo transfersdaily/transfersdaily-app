@@ -230,7 +230,7 @@ async function getLatestData(language = 'en', page = 1, league = 'all') {
       id: article.id || article.uuid,
       title: article.title || 'Untitled Article',
       excerpt: article.meta_description || article.content?.substring(0, 150) + '...' || '',
-      league: article.league || 'Unknown League',
+      league: article.league || '',
       publishedAt: article.published_at || article.created_at,
       imageUrl: article.image_url,
       slug: article.slug || generateSlug(article.title || ''),

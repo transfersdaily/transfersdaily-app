@@ -2,14 +2,24 @@
 
 import { useState } from 'react'
 import { Link, Twitter, MessageCircle, Check } from 'lucide-react'
+import { type Dictionary, getTranslation } from '@/lib/i18n'
 
 interface ShareButtonsProps {
   url: string
   title: string
+  dict?: Dictionary
 }
 
-export function ShareButtons({ url, title }: ShareButtonsProps) {
+export function ShareButtons({ url, title, dict }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false)
+
+  const t = (key: string, fallback: string) => {
+    if (dict) {
+      const val = getTranslation(dict, key)
+      if (val && val !== key) return val
+    }
+    return fallback
+  }
 
   const handleCopyLink = async () => {
     try {
@@ -48,7 +58,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
         type="button"
         onClick={handleCopyLink}
         className={buttonClasses}
-        aria-label={copied ? 'Copied!' : 'Copy link'}
+        aria-label={copied ? t('article.copied', 'Copied!') : t('article.copyLink', 'Copy link')}
       >
         {copied ? <Check className="h-5 w-5" /> : <Link className="h-5 w-5" />}
       </button>
@@ -57,7 +67,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
         type="button"
         onClick={handleShareTwitter}
         className={buttonClasses}
-        aria-label="Share on X"
+        aria-label={t('article.shareOnX', 'Share on X')}
       >
         <Twitter className="h-5 w-5" />
       </button>
@@ -66,7 +76,7 @@ export function ShareButtons({ url, title }: ShareButtonsProps) {
         type="button"
         onClick={handleShareWhatsApp}
         className={buttonClasses}
-        aria-label="Share on WhatsApp"
+        aria-label={t('article.shareOnWhatsApp', 'Share on WhatsApp')}
       >
         <MessageCircle className="h-5 w-5" />
       </button>
