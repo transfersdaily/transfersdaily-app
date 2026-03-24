@@ -1,4 +1,4 @@
-import { API_CONFIG, STORAGE_KEYS } from './config'
+import { API_CONFIG } from './config'
 import { processImageUrl } from './image-utils'
 
 // Types
@@ -58,135 +58,12 @@ export interface ClubImageMapping {
   updated_at: string
 }
 
-// Helper function to decode JWT token (basic decode, no verification)
-function decodeJWT(token: string) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-  } catch (error) {
-    console.error('Failed to decode JWT:', error);
-    return null;
-  }
-}
-
-// Helper function to refresh access token using refresh token
-async function refreshAccessToken(): Promise<string | null> {
-  try {
-    const refreshToken = localStorage.getItem(STORAGE_KEYS.refreshToken);
-    if (!refreshToken) {
-      console.log('No refresh token available');
-      return null;
-    }
-
-    console.log('🔄 Attempting to refresh access token...');
-    
-    const response = await fetch('https://cognito-idp.us-east-1.amazonaws.com/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-amz-json-1.1',
-        'X-Amz-Target': 'AWSCognitoIdentityProviderService.InitiateAuth'
-      },
-      body: JSON.stringify({
-        ClientId: process.env.NEXT_PUBLIC_USER_POOL_CLIENT_ID || '7tap3rig4oim99d0btf24l0rih',
-        AuthFlow: 'REFRESH_TOKEN_AUTH',
-        AuthParameters: {
-          REFRESH_TOKEN: refreshToken
-        }
-      })
-    });
-
-    if (!response.ok) {
-      console.error('Token refresh failed:', response.status);
-      return null;
-    }
-
-    const result = await response.json();
-    
-    if (result.AuthenticationResult?.AccessToken) {
-      const newAccessToken = result.AuthenticationResult.AccessToken;
-      const newIdToken = result.AuthenticationResult.IdToken;
-      
-      localStorage.setItem(STORAGE_KEYS.accessToken, newAccessToken);
-      if (newIdToken) localStorage.setItem(STORAGE_KEYS.idToken, newIdToken);
-      
-      console.log('✅ Tokens refreshed successfully');
-      return newIdToken || newAccessToken; // Return ID token for auth headers
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error refreshing token:', error);
-    return null;
-  }
-}
-
-// Helper function to get auth headers with automatic token refresh
+// Auth headers — Supabase cookies are sent automatically by the browser.
+// This function is kept for backward compatibility with existing callers.
 export async function getAuthHeaders(): Promise<HeadersInit> {
-  // Use ID token for Cognito User Pool Authorizer (not access token)
-  let token = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.idToken) : null;
-  
-  if (token) {
-    // Check token expiration
-    const decoded = decodeJWT(token);
-    if (decoded && decoded.exp) {
-      const expirationTime = decoded.exp * 1000; // Convert to milliseconds
-      const currentTime = Date.now();
-      const isExpired = currentTime >= expirationTime;
-      const timeUntilExpiry = expirationTime - currentTime;
-      
-      console.log('  - Token expiration:', new Date(expirationTime).toISOString());
-      console.log('  - Current time:', new Date(currentTime).toISOString());
-      console.log('  - Token expired:', isExpired);
-      console.log('  - Time until expiry:', Math.round(timeUntilExpiry / 1000 / 60), 'minutes');
-      console.log('  - Token claims:', decoded);
-      console.log('  - Token type (typ):', decoded.typ);
-      console.log('  - Token audience (aud):', decoded.aud);
-      console.log('  - Token issuer (iss):', decoded.iss);
-      console.log('  - Token use (token_use):', decoded.token_use);
-      
-      // If token is expired or expires in less than 5 minutes, try to refresh
-      if (isExpired || timeUntilExpiry < 5 * 60 * 1000) {
-        console.log('🔄 Token expired or expiring soon, attempting refresh...');
-        const newToken = await refreshAccessToken();
-        if (newToken) {
-          token = newToken;
-          console.log('✅ Using refreshed token');
-        } else {
-          console.warn('⚠️ Token refresh failed, clearing auth data');
-          localStorage.removeItem(STORAGE_KEYS.accessToken);
-          localStorage.removeItem(STORAGE_KEYS.idToken);
-          localStorage.removeItem(STORAGE_KEYS.refreshToken);
-          localStorage.removeItem(STORAGE_KEYS.user);
-          token = null;
-        }
-      }
-    } else {
-      console.warn('⚠️ Could not decode token or missing expiration');
-    }
-  } else {
-    console.log('  - No token found in localStorage');
-  }
-  
-  const headers: HeadersInit = {
+  return {
     'Content-Type': 'application/json',
-    // Add origin header for CORS when available
-    ...(typeof window !== 'undefined' && window.location.origin && {
-      'Origin': window.location.origin
-    })
   }
-  
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`
-    console.log('  - Authorization header set with Bearer token');
-  } else {
-    console.log('  - No token, Authorization header not set');
-  }
-  
-  return headers
 }
 
 // Generic fetch wrapper - no fallback data
@@ -1352,10 +1229,7 @@ export const contactApi = {
     type?: string
   }): Promise<{ success: boolean; submissionId?: string }> {
     try {
-      const response = await apiRequest<{ 
-        success: boolean
-        data: { submissionId: string; status: string }
-      }>(
+      const response = await apiRequest<any>(
         API_CONFIG.endpoints.contact.submit,
         {
           method: 'POST',
@@ -1363,8 +1237,8 @@ export const contactApi = {
         }
       )
       return {
-        success: response.success || true,
-        submissionId: response.data?.submissionId
+        success: response.submitted === true || response.success === true,
+        submissionId: response.id?.toString()
       }
     } catch (error) {
       console.error('Error submitting contact form:', error)
@@ -1457,14 +1331,11 @@ export const searchApi = {
         {
           method: 'POST',
           body: JSON.stringify({
-            query: query.trim(),
-            filters,
-            userAgent: typeof window !== 'undefined' ? navigator.userAgent : null,
-            // Note: IP address will be determined by the server
+            term: query.trim()
           })
         }
       )
-      return (response as any).success || true
+      return (response as any).tracked || true
     } catch (error) {
       console.error('Error tracking search:', error)
       return false // Don't let tracking failures affect search functionality
@@ -1489,21 +1360,16 @@ export const searchApi = {
 
       const endpoint = `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
 
-      const response = await apiRequest<{
-        success: boolean
-        data: {
-          mostSearched: Array<{
-            term: string
-            query: string
-            count: number
-            displayCount: string
-            lastSearched: string
-          }>
-          total: number
-        }
-      }>(endpoint)
-      
-      return response.data?.mostSearched || []
+      const response = await apiRequest<{ items: Array<{ term: string; count: number }> }>(endpoint)
+
+      const items = response.items || []
+      return items.map(item => ({
+        term: item.term,
+        query: item.term,
+        count: item.count,
+        displayCount: `${item.count} searches`,
+        lastSearched: ''
+      }))
     } catch (error) {
       console.error('❌ Error getting most searched terms:', error)
       console.error('❌ Error details:', {
@@ -1576,19 +1442,15 @@ export const newsletterApi = {
     preferences?: Record<string, unknown>
   }): Promise<{ success: boolean; subscriptionId?: string }> {
     try {
-      const response = await apiRequest<{ 
-        success: boolean
-        data: { subscriptionId: string; status: string }
-      }>(
+      const response = await apiRequest<any>(
         API_CONFIG.endpoints.newsletter.subscribe,
         {
           method: 'POST',
-          body: JSON.stringify({ email, ...preferences })
+          body: JSON.stringify({ email })
         }
       )
       return {
-        success: response.success || true,
-        subscriptionId: response.data?.subscriptionId
+        success: response.subscribed === true || response.success === true,
       }
     } catch (error) {
       console.error('Error subscribing to newsletter:', error)
