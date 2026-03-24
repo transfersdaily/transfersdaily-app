@@ -3,9 +3,11 @@
 import { useAuth } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 import { useEffect } from "react"
-import { AdminSidebarMobile } from "@/components/AdminSidebarMobile"
-import { SidebarProvider } from "@/components/ui/sidebar"
-import { useIsMobile } from "@/lib/mobile-utils"
+import { QueryClientProvider } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+import { getQueryClient } from "@/lib/query-client"
+import { AdminShell } from "@/components/admin/AdminShell"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function AdminLayout({
   children,
@@ -14,7 +16,6 @@ export default function AdminLayout({
 }) {
   const { user, isLoading } = useAuth()
   const router = useRouter()
-  const isMobile = useIsMobile()
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -24,8 +25,18 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+      <div className="flex min-h-screen bg-white">
+        <div className="hidden lg:block lg:w-64 border-r border-gray-200">
+          <Skeleton className="h-full" />
+        </div>
+        <div className="flex-1 lg:pl-64 p-8">
+          <Skeleton className="h-8 w-48 mb-6" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-[140px]" />
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
@@ -34,14 +45,16 @@ export default function AdminLayout({
     return null
   }
 
+  const queryClient = getQueryClient()
+
   return (
-    <SidebarProvider>
-      <div className="flex min-h-screen w-full">
-        <AdminSidebarMobile />
-        <main className={`flex-1 ${isMobile ? 'pt-0' : ''}`}>
-          {children}
-        </main>
-      </div>
-    </SidebarProvider>
+    <QueryClientProvider client={queryClient}>
+      <AdminShell>
+        {children}
+      </AdminShell>
+      {process.env.NODE_ENV === 'development' && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
+    </QueryClientProvider>
   )
 }
