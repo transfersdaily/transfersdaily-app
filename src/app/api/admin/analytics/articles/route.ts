@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getGA4Client, GA4_PROPERTY_ID } from '@/lib/ga4-client'
+import { validateAuth } from '@/lib/supabase/auth-guard'
 
 export async function GET(request: NextRequest) {
   try {
-    // Auth check
-    const authHeader = request.headers.get('Authorization')
-    if (!authHeader) {
-      return NextResponse.json(
-        { success: false, error: 'Missing authorization header' },
-        { status: 401 }
-      )
+    const { user, error: authError } = await validateAuth()
+    if (authError) return authError
+
+    // Check if GA4 credentials are configured before attempting to load client
+    const hasEnvCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS
+    if (!hasEnvCredentials) {
+      return NextResponse.json({
+        success: false,
+        error: 'ga4_not_configured',
+        message: 'GA4 analytics requires Google Service Account credentials.',
+      })
     }
+
+    const { getGA4Client, GA4_PROPERTY_ID } = await import('@/lib/ga4-client')
 
     const { searchParams } = new URL(request.url)
     const days = searchParams.get('days') || '30'
@@ -81,10 +87,22 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Article analytics route error:', error)
+
+    // Check if this is a credentials error from ga4-client
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    if (errorMessage.includes('not configured') || errorMessage.includes('credentials')) {
+      return NextResponse.json({
+        success: false,
+        error: 'ga4_not_configured',
+        message: 'GA4 analytics requires Google Service Account credentials.',
+      })
+    }
+
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch article analytics',
+        details: errorMessage,
       },
       { status: 500 }
     )
