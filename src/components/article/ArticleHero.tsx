@@ -27,7 +27,7 @@ export function ArticleHero({ title, imageUrl, league }: ArticleHeroProps) {
 
   // D-01 through D-04: Full hero with gradient overlay
   return (
-    <div className="relative w-full aspect-[21/9] md:aspect-[3/1] overflow-hidden rounded-lg">
+    <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg">
       {/* Hero image */}
       <Image
         src={imageUrl}
