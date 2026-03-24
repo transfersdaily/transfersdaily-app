@@ -1,13 +1,6 @@
 import Image from "next/image"
 import { typography } from "@/lib/typography"
-
-const leagueColorMap: Record<string, string> = {
-  "Premier League": "bg-league-premier-league",
-  "La Liga": "bg-league-la-liga",
-  "Serie A": "bg-league-serie-a",
-  Bundesliga: "bg-league-bundesliga",
-  "Ligue 1": "bg-league-ligue-1",
-}
+import { LEAGUE_BG_CLASSES } from "@/lib/constants"
 
 interface ArticleHeroProps {
   title: string
@@ -54,7 +47,7 @@ export function ArticleHero({ title, imageUrl, league }: ArticleHeroProps) {
         {league && (
           <span
             className={`inline-block text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm text-white mb-3 ${
-              leagueColorMap[league] ?? "bg-primary"
+              LEAGUE_BG_CLASSES[league] ?? "bg-primary"
             }`}
           >
             {league}

@@ -20,14 +20,7 @@ import {
 } from "@/components/ui/dialog"
 import { Plus, Search, Image, CheckCircle, XCircle, Pencil } from "lucide-react"
 import { adminApi, ClubImageMapping } from "@/lib/api"
-
-const LEAGUES = [
-  "Premier League",
-  "La Liga",
-  "Serie A",
-  "Bundesliga",
-  "Ligue 1",
-]
+import { LEAGUE_NAMES } from "@/lib/constants"
 
 interface MappingFormData {
   club_name: string
@@ -242,7 +235,7 @@ export default function AdminImageMappingsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Leagues</SelectItem>
-              {LEAGUES.map((league) => (
+              {LEAGUE_NAMES.map((league) => (
                 <SelectItem key={league} value={league}>
                   {league}
                 </SelectItem>
@@ -402,7 +395,7 @@ export default function AdminImageMappingsPage() {
                       <SelectValue placeholder="Select league" />
                     </SelectTrigger>
                     <SelectContent>
-                      {LEAGUES.map((league) => (
+                      {LEAGUE_NAMES.map((league) => (
                         <SelectItem key={league} value={league}>
                           {league}
                         </SelectItem>

@@ -1,5 +1,6 @@
 "use client"
 
+import { LEAGUES } from "@/lib/constants"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -89,13 +90,7 @@ export function MobileArticleEditor({
     { value: "Official", label: "Official" }
   ]
 
-  const leagueOptions = [
-    { value: "Premier League", label: "Premier League" },
-    { value: "La Liga", label: "La Liga" },
-    { value: "Serie A", label: "Serie A" },
-    { value: "Bundesliga", label: "Bundesliga" },
-    { value: "Ligue 1", label: "Ligue 1" }
-  ]
+  const leagueOptions = LEAGUES.map(l => ({ value: l.name, label: l.name }))
 
   const transferTypeOptions = [
     { value: "permanent", label: "Permanent" },

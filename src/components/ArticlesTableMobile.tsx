@@ -1,5 +1,6 @@
 "use client"
 
+import { LEAGUES } from "@/lib/constants"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -525,11 +526,9 @@ export function ArticlesTableMobile({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Leagues</SelectItem>
-                <SelectItem value="Premier League">Premier League</SelectItem>
-                <SelectItem value="La Liga">La Liga</SelectItem>
-                <SelectItem value="Serie A">Serie A</SelectItem>
-                <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                <SelectItem value="Ligue 1">Ligue 1</SelectItem>
+                {LEAGUES.map(league => (
+                  <SelectItem key={league.slug} value={league.name}>{league.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={onStatusChange}>

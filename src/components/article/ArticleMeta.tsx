@@ -1,13 +1,6 @@
 import { Clock } from "lucide-react"
 import { getBestDate, formatDisplayDate } from "@/lib/date-utils"
-
-const leagueColorMap: Record<string, string> = {
-  "Premier League": "bg-league-premier-league",
-  "La Liga": "bg-league-la-liga",
-  "Serie A": "bg-league-serie-a",
-  Bundesliga: "bg-league-bundesliga",
-  "Ligue 1": "bg-league-ligue-1",
-}
+import { LEAGUE_BG_CLASSES } from "@/lib/constants"
 
 // Helper to traverse dict object with dot-separated key
 function getTranslation(dict: Record<string, unknown>, key: string, fallback?: string): string {
@@ -78,7 +71,7 @@ export function ArticleMeta({
         {league && (
           <span
             className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-sm text-white ${
-              leagueColorMap[league] ?? "bg-primary"
+              LEAGUE_BG_CLASSES[league] ?? "bg-primary"
             }`}
           >
             {league}

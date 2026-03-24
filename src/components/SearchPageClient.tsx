@@ -1,5 +1,6 @@
 "use client"
 
+import { LEAGUES } from "@/lib/constants"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
@@ -211,11 +212,9 @@ export function SearchPageClient({
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">{t('common.all')} {t('navigation.leagues')}</SelectItem>
-                    <SelectItem value="Premier League">Premier League</SelectItem>
-                    <SelectItem value="La Liga">La Liga</SelectItem>
-                    <SelectItem value="Serie A">Serie A</SelectItem>
-                    <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                    <SelectItem value="Ligue 1">Ligue 1</SelectItem>
+                    {LEAGUES.map(league => (
+                      <SelectItem key={league.slug} value={league.name}>{league.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 

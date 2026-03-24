@@ -1,7 +1,7 @@
 "use client"
 
+import { LEAGUES } from "@/lib/constants"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {
   Pagination
@@ -49,7 +49,6 @@ export function TransferStatusPageClient({
   pageTitle,
   pageDescription
 }: TransferStatusPageClientProps) {
-  const router = useRouter()
   const t = createTranslator(dict)
   
   const [currentPage, setCurrentPage] = useState(initialPage)
@@ -68,7 +67,7 @@ export function TransferStatusPageClient({
     if (league !== 'all') params.set('league', league)
     
     const newURL = `/${locale}/transfers/${transferType}${params.toString() ? `?${params.toString()}` : ''}`
-    router.push(newURL, { scroll: false })
+    window.history.pushState(null, '', newURL)
   }
 
   // Load transfers when filters change
@@ -165,11 +164,9 @@ export function TransferStatusPageClient({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t('common.all')} {t('navigation.leagues')}</SelectItem>
-                <SelectItem value="Premier League">Premier League</SelectItem>
-                <SelectItem value="La Liga">La Liga</SelectItem>
-                <SelectItem value="Serie A">Serie A</SelectItem>
-                <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                <SelectItem value="Ligue 1">Ligue 1</SelectItem>
+                {LEAGUES.map(league => (
+                  <SelectItem key={league.slug} value={league.name}>{league.name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </PageHeader>

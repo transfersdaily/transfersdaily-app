@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { LEAGUES } from "@/lib/constants"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -150,33 +151,9 @@ export const TRANSFER_STATUS_CONFIG = {
   },
 } as const
 
-export const LEAGUE_CONFIG = {
-  "premier-league": {
-    name: "Premier League",
-    color: "#37003c",
-    short: "EPL",
-  },
-  "la-liga": {
-    name: "La Liga", 
-    color: "#ee2737",
-    short: "ESP",
-  },
-  "bundesliga": {
-    name: "Bundesliga",
-    color: "#000000",
-    short: "GER", 
-  },
-  "serie-a": {
-    name: "Serie A",
-    color: "#005499",
-    short: "ITA",
-  },
-  "ligue-1": {
-    name: "Ligue 1",
-    color: "#003399",
-    short: "FRA",
-  },
-} as const
+export const LEAGUE_CONFIG = Object.fromEntries(
+  LEAGUES.map(l => [l.slug, { name: l.name, color: l.color, short: l.short }])
+) as Record<string, { name: string; color: string; short: string }>
 
 // Spacing tokens (4pt/8dp grid) — reference for component authors
 export const spacingScale = {

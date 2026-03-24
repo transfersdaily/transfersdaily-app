@@ -1,5 +1,6 @@
 import { API_CONFIG, getApiUrl } from './config'
 import { processImageUrl } from './image-utils'
+import { LEAGUE_BY_NAME, LEAGUE_BY_SLUG } from '@/lib/constants'
 
 // Types
 export interface Transfer {
@@ -79,14 +80,18 @@ async function apiRequest<T>(
     }
   }
 
-  // Try primary API Gateway URL, then fallback if available
-  const urls = [API_CONFIG.baseUrl, API_CONFIG.fallbackUrl].filter(Boolean);
-  
+  // Client-side: use local proxy to avoid CORS; Server-side: use direct API URLs
+  const primaryUrl = getApiUrl(endpoint);
+  const urls = [primaryUrl];
+  // Only add fallback for server-side requests
+  if (typeof window === 'undefined' && API_CONFIG.fallbackUrl) {
+    urls.push(`${API_CONFIG.fallbackUrl}${endpoint}`);
+  }
+
   for (let i = 0; i < urls.length; i++) {
-    const baseUrl = urls[i];
-    const url = `${baseUrl}${endpoint}`;
+    const url = urls[i];
     const isLastAttempt = i === urls.length - 1;
-    const urlType = i === 0 ? 'API Gateway primary' : 'fallback URL';
+    const urlType = i === 0 ? 'primary' : 'fallback URL';
     
     try {
       const response = await fetch(url, {
@@ -303,16 +308,8 @@ export const transfersApi = {
     }
   }> {
     try {
-      const leagueNames: Record<string, string> = {
-        'premier-league': 'Premier League',
-        'la-liga': 'La Liga', 
-        'serie-a': 'Serie A',
-        'bundesliga': 'Bundesliga',
-        'ligue-1': 'Ligue 1'
-      }
-      
-      const leagueName = leagueNames[leagueSlug] || leagueSlug
-      
+      const leagueName = LEAGUE_BY_SLUG[leagueSlug]?.name || leagueSlug
+
       const params = new URLSearchParams({
         limit: limit.toString(),
         page: Math.floor(offset / limit + 1).toString(),
@@ -320,14 +317,14 @@ export const transfersApi = {
         league: leagueName,
         language: language
       })
-      
+
       const response = await apiRequest<{ success: boolean; data: { articles: any[], pagination: any } }>(
         `${API_CONFIG.endpoints.transfers.byLeague}?${params}`
       )
-      
+
       const articles = response.data?.articles || []
       const pagination = response.data?.pagination
-      
+
       return {
         transfers: articles.map(transformArticleToTransfer),
         pagination
@@ -342,17 +339,9 @@ export const transfersApi = {
   async getByLeague(leagueSlug: string, limit = 10, offset = 0, language?: string): Promise<Transfer[]> {
     try {
       const currentLang = language || getCurrentLanguage()
-      
+
       // Convert slug to proper league name
-      const leagueNames: Record<string, string> = {
-        'premier-league': 'Premier League',
-        'la-liga': 'La Liga', 
-        'serie-a': 'Serie A',
-        'bundesliga': 'Bundesliga',
-        'ligue-1': 'Ligue 1'
-      }
-      
-      const leagueName = leagueNames[leagueSlug] || leagueSlug
+      const leagueName = LEAGUE_BY_SLUG[leagueSlug]?.name || leagueSlug
       
       const params = new URLSearchParams({
         limit: limit.toString(),
@@ -585,13 +574,13 @@ export const articlesApi = {
     }
   },
 
-  // Get trending articles (redirects to latest for now)
+  // Get trending articles (offset from latest to show different content)
   async getTrending(limit = 5, language = 'en'): Promise<Article[]> {
     try {
-      // Redirect trending to latest articles for now
-      return await this.getLatest(limit, 0, language)
+      // Offset by `limit` to avoid overlapping with recommended articles
+      return await this.getLatest(limit, limit, language)
     } catch (error) {
-      console.error('Error fetching trending articles (redirected to latest):', error)
+      console.error('Error fetching trending articles:', error)
       throw error
     }
   }
@@ -611,19 +600,11 @@ export const leaguesApi = {
       const leagues: League[] = []
       const articles = response.data?.articles || (response as any).articles || []
       
-      // League mapping for logos and countries
-      const leagueMapping: Record<string, { country: string; logoUrl: string }> = {
-        'Premier League': { country: 'England', logoUrl: '/logos/leagues/premier-league.png' },
-        'La Liga': { country: 'Spain', logoUrl: '/logos/leagues/la-liga.png' },
-        'Bundesliga': { country: 'Germany', logoUrl: '/logos/leagues/bundesliga.png' },
-        'Serie A': { country: 'Italy', logoUrl: '/logos/leagues/serie-a.png' },
-        'Ligue 1': { country: 'France', logoUrl: '/logos/leagues/ligue-1.png' }
-      }
-      
       articles.forEach(article => {
         if (article.league && !leaguesSet.has(article.league)) {
           leaguesSet.add(article.league)
-          const mapping = leagueMapping[article.league] || { country: 'Unknown', logoUrl: undefined }
+          const leagueData = LEAGUE_BY_NAME[article.league]
+          const mapping = leagueData ? { country: leagueData.country, logoUrl: leagueData.logoUrl } : { country: 'Unknown', logoUrl: undefined }
           leagues.push({
             id: article.league.toLowerCase().replace(/\s+/g, '-'),
             name: article.league,
@@ -1378,9 +1359,14 @@ export const searchApi = {
 
       const endpoint = `${API_CONFIG.endpoints.mostSearched}?${queryParams}`
 
-      const response = await apiRequest<{ items: Array<{ term: string; count: number }> }>(endpoint)
+      const response = await apiRequest<any>(endpoint)
 
-      const items = response.items || []
+      // Handle multiple possible response formats from the backend
+      const items: Array<{ term: string; count: number }> =
+        response.items ||
+        response.data?.items ||
+        (response.success && response.data) ||
+        (Array.isArray(response) ? response : [])
       return items.map(item => ({
         term: item.term,
         query: item.term,

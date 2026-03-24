@@ -3,6 +3,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
+import { LEAGUE_BG_CLASSES } from "@/lib/constants"
 
 // ---------------------------------------------------------------------------
 // CVA variant definitions
@@ -45,16 +46,8 @@ export interface ArticleCardProps extends VariantProps<typeof cardVariants> {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-const leagueColorMap: Record<string, string> = {
-  "Premier League": "bg-league-premier-league",
-  "La Liga": "bg-league-la-liga",
-  "Serie A": "bg-league-serie-a",
-  Bundesliga: "bg-league-bundesliga",
-  "Ligue 1": "bg-league-ligue-1",
-}
-
 function LeagueBadge({ league }: { league: string }) {
-  const bg = leagueColorMap[league] ?? "bg-primary"
+  const bg = LEAGUE_BG_CLASSES[league] ?? "bg-primary"
   return (
     <span
       className={cn(
@@ -248,14 +241,13 @@ function MiniLayout({
 >) {
   return (
     <>
-      <div className="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden relative">
+      <div className="w-24 h-16 flex-shrink-0 rounded-lg overflow-hidden relative">
         <CardImage
           imageUrl={imageUrl}
           alt={title}
           league={league}
-          width={64}
-          height={64}
-          sizes="64px"
+          fill
+          sizes="96px"
         />
       </div>
       <div className="flex-1 min-w-0 space-y-1">
@@ -349,7 +341,7 @@ export function ArticleCardSkeleton({
   // mini
   return (
     <div className="flex gap-3 p-3">
-      <Skeleton className="w-16 h-16 flex-shrink-0 rounded-lg" />
+      <Skeleton className="w-24 h-16 flex-shrink-0 rounded-lg" />
       <div className="flex-1 space-y-2">
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-2/3" />

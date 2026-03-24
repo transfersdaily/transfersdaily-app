@@ -1,5 +1,6 @@
 "use client"
 
+import { LEAGUES } from "@/lib/constants"
 import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -594,11 +595,9 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                         <SelectValue placeholder="Select league" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Premier League">Premier League</SelectItem>
-                        <SelectItem value="La Liga">La Liga</SelectItem>
-                        <SelectItem value="Serie A">Serie A</SelectItem>
-                        <SelectItem value="Bundesliga">Bundesliga</SelectItem>
-                        <SelectItem value="Ligue 1">Ligue 1</SelectItem>
+                        {LEAGUES.map(league => (
+                          <SelectItem key={league.slug} value={league.name}>{league.name}</SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>
