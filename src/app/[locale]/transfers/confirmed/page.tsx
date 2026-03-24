@@ -6,6 +6,7 @@ import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 // Ad components
 import { API_CONFIG } from '@/lib/config';
+import { SITE_URL } from '@/lib/constants';
 
 // Generate comprehensive metadata for SEO optimization
 export async function generateMetadata({ 
@@ -87,11 +88,11 @@ export async function generateMetadata({
     title: currentSeo.title,
     description: currentSeo.description,
     keywords: currentSeo.keywords,
-    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }],
+    authors: [{ name: 'Transfer Daily', url: SITE_URL }],
     creator: 'Transfer Daily',
     publisher: 'Transfer Daily',
     formatDetection: { email: false, address: false, telephone: false },
-    metadataBase: new URL('https://transferdaily.com'),
+    metadataBase: new URL(SITE_URL),
     alternates: {
       canonical: locale === 'en' ? '/transfers/confirmed' : `/${locale}/transfers/confirmed`,
       languages: {
@@ -101,7 +102,7 @@ export async function generateMetadata({
     },
     openGraph: {
       title: currentSeo.title, description: currentSeo.description,
-      url: locale === 'en' ? 'https://transferdaily.com/transfers/confirmed' : `https://transferdaily.com/${locale}/transfers/confirmed`,
+      url: locale === 'en' ? `${SITE_URL}/transfers/confirmed` : `${SITE_URL}/${locale}/transfers/confirmed`,
       siteName: 'Transfer Daily', locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
       type: 'website', images: [{ url: '/og-confirmed-transfers.jpg', width: 1200, height: 630, alt: 'Confirmed Football Transfers - Transfer Daily' }],
     },
@@ -181,13 +182,13 @@ export default async function ConfirmedTransfersPage({ params, searchParams }: {
   const webPageStructuredData = {
     "@context": "https://schema.org", "@type": "WebPage", "name": "Confirmed Football Transfers",
     "description": "Browse confirmed football transfers and completed deals from all major leagues",
-    "url": locale === 'en' ? 'https://transferdaily.com/transfers/confirmed' : `https://transferdaily.com/${locale}/transfers/confirmed`,
-    "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" },
+    "url": locale === 'en' ? `${SITE_URL}/transfers/confirmed` : `${SITE_URL}/${locale}/transfers/confirmed`,
+    "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": SITE_URL },
     "breadcrumb": {
       "@type": "BreadcrumbList", "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` },
-        { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` },
-        { "@type": "ListItem", "position": 3, "name": t('transfers.confirmed') || "Confirmed", "item": locale === 'en' ? 'https://transferdaily.com/transfers/confirmed' : `https://transferdaily.com/${locale}/transfers/confirmed` }
+        { "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? SITE_URL : `${SITE_URL}/${locale}` },
+        { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? `${SITE_URL}/transfers` : `${SITE_URL}/${locale}/transfers` },
+        { "@type": "ListItem", "position": 3, "name": t('transfers.confirmed') || "Confirmed", "item": locale === 'en' ? `${SITE_URL}/transfers/confirmed` : `${SITE_URL}/${locale}/transfers/confirmed` }
       ]
     }
   }

@@ -14,6 +14,7 @@ import { AdSlot } from "@/components/ads"
 import { ArticleBreadcrumb, ArticleHero, ArticleMeta, ArticleBody, ShareButtons, ReadingProgressBar } from '@/components/article'
 import { ArticleCard } from '@/components/ArticleCard'
 import { calculateReadingTime } from '@/lib/reading-time'
+import { SITE_URL } from '@/lib/constants'
 
 // Helper function to get translation
 function getTranslation(dict: any, key: string, fallback?: string): string {
@@ -266,7 +267,7 @@ export async function generateMetadata({
       title,
       description,
       keywords: `${article.player_name || ''}, ${article.from_club || ''}, ${article.to_club || ''}, ${article.league || ''}, football transfer, soccer news, transfer news`,
-      authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }],
+      authors: [{ name: 'Transfer Daily', url: SITE_URL }],
       creator: 'Transfer Daily',
       publisher: 'Transfer Daily',
       robots: isPreview ? { index: false, follow: false } : { index: true, follow: true },
@@ -289,7 +290,7 @@ export async function generateMetadata({
       openGraph: {
         title,
         description,
-        url: `https://transferdaily.com/${locale}/article/${slug}`,
+        url: `${SITE_URL}/${locale}/article/${slug}`,
         siteName: 'Transfer Daily',
         locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
         type: 'article',
@@ -383,27 +384,27 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
     "@type": "NewsArticle",
     "headline": article.title,
     "description": article.meta_description || article.content?.substring(0, 160),
-    "image": article.image_url ? [article.image_url] : ["https://transferdaily.com/og-image.jpg"],
+    "image": article.image_url ? [article.image_url] : [`${SITE_URL}/og-image.jpg`],
     "datePublished": article.published_at,
     "dateModified": article.published_at,
     "author": {
       "@type": "Organization",
       "name": "Transfer Daily",
-      "url": "https://transferdaily.com"
+      "url": SITE_URL
     },
     "publisher": {
       "@type": "Organization",
       "name": "Transfer Daily",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://transferdaily.com/logo.png",
+        "url": `${SITE_URL}/logo.png`,
         "width": 200,
         "height": 60
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://transferdaily.com/${locale}/article/${slug}`
+      "@id": `${SITE_URL}/${locale}/article/${slug}`
     },
     "articleSection": article.league || "Football Transfer News",
     "keywords": [article.league, "Football Transfer", "Soccer News", article.player_name, article.from_club, article.to_club].filter(Boolean).join(", "),
@@ -419,19 +420,19 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
         "@type": "ListItem",
         "position": 1,
         "name": getTranslation(dict, 'navigation.home', 'Home'),
-        "item": `https://transferdaily.com/${locale}`
+        "item": `${SITE_URL}/${locale}`
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": article.league || "Transfer News",
-        "item": `https://transferdaily.com/${locale}/league/${(article.league || '').toLowerCase().replace(/\s+/g, '-')}`
+        "item": `${SITE_URL}/${locale}/league/${(article.league || '').toLowerCase().replace(/\s+/g, '-')}`
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": article.title,
-        "item": `https://transferdaily.com/${locale}/article/${slug}`
+        "item": `${SITE_URL}/${locale}/article/${slug}`
       }
     ]
   }
@@ -479,7 +480,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
                 dict={dict}
               />
 
-              <ShareButtons url={`https://transferdaily.com/${locale}/article/${slug}`} title={article.title} />
+              <ShareButtons url={`${SITE_URL}/${locale}/article/${slug}`} title={article.title} />
 
               {/* Article Body */}
               <div className="mt-6 md:mt-8">

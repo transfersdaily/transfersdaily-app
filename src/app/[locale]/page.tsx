@@ -12,6 +12,7 @@ import { createTranslator } from '@/lib/dictionary-server';
 import { type Transfer } from '@/lib/api';
 import { API_CONFIG } from '@/lib/config';
 import { AdSlot } from '@/components/ads';
+import { SITE_URL } from '@/lib/constants';
 
 export const revalidate = 300;
 
@@ -72,12 +73,12 @@ export async function generateMetadata({
     title: currentSeo.title,
     description: fallbackDescription,
     keywords: currentSeo.keywords,
-    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }],
+    authors: [{ name: 'Transfer Daily', url: SITE_URL }],
     creator: 'Transfer Daily',
     publisher: 'Transfer Daily',
     applicationName: 'Transfer Daily',
     formatDetection: { email: false, address: false, telephone: false },
-    metadataBase: new URL('https://transferdaily.com'),
+    metadataBase: new URL(SITE_URL),
     alternates: {
       canonical: locale === 'en' ? '/' : `/${locale}`,
       languages: { en: '/', es: '/es', it: '/it', fr: '/fr', de: '/de', 'x-default': '/' },
@@ -85,7 +86,7 @@ export async function generateMetadata({
     openGraph: {
       title: currentSeo.title,
       description: fallbackDescription,
-      url: locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`,
+      url: locale === 'en' ? SITE_URL : `${SITE_URL}/${locale}`,
       siteName: 'Transfer Daily',
       locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE',
       type: 'website',
@@ -136,12 +137,12 @@ export default async function HomePage({
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Transfer Daily',
-    url: locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}`,
+    url: locale === 'en' ? SITE_URL : `${SITE_URL}/${locale}`,
     description: t('footer.description') || 'Latest football transfer news',
     inLanguage: locale,
     potentialAction: {
       '@type': 'SearchAction',
-      target: { '@type': 'EntryPoint', urlTemplate: `https://transferdaily.com/${locale}/search?q={search_term_string}` },
+      target: { '@type': 'EntryPoint', urlTemplate: `${SITE_URL}/${locale}/search?q={search_term_string}` },
       'query-input': 'required name=search_term_string',
     },
   };

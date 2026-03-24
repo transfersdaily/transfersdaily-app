@@ -6,6 +6,7 @@ import { type Transfer } from "@/lib/api"
 import { TransferStatusPageClient } from '@/components/TransferStatusPageClient'
 // Ad components
 import { API_CONFIG } from '@/lib/config';
+import { SITE_URL } from '@/lib/constants';
 
 export async function generateMetadata({ params, searchParams }: { 
   params: Promise<{ locale: Locale }>
@@ -31,10 +32,10 @@ export async function generateMetadata({ params, searchParams }: {
   const currentSeo = seoData[locale]
   return {
     title: currentSeo.title, description: currentSeo.description, keywords: currentSeo.keywords,
-    authors: [{ name: 'Transfer Daily', url: 'https://transferdaily.com' }], creator: 'Transfer Daily', publisher: 'Transfer Daily',
-    formatDetection: { email: false, address: false, telephone: false }, metadataBase: new URL('https://transferdaily.com'),
+    authors: [{ name: 'Transfer Daily', url: SITE_URL }], creator: 'Transfer Daily', publisher: 'Transfer Daily',
+    formatDetection: { email: false, address: false, telephone: false }, metadataBase: new URL(SITE_URL),
     alternates: { canonical: locale === 'en' ? '/transfers/rumors' : `/${locale}/transfers/rumors`, languages: { 'en': '/transfers/rumors', 'es': '/es/transfers/rumors', 'it': '/it/transfers/rumors', 'fr': '/fr/transfers/rumors', 'de': '/de/transfers/rumors', 'x-default': '/transfers/rumors' } },
-    openGraph: { title: currentSeo.title, description: currentSeo.description, url: locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors`, siteName: 'Transfer Daily', locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE', type: 'website', images: [{ url: '/og-transfer-rumors.jpg', width: 1200, height: 630, alt: 'Football Transfer Rumors - Transfer Daily' }] },
+    openGraph: { title: currentSeo.title, description: currentSeo.description, url: locale === 'en' ? `${SITE_URL}/transfers/rumors` : `${SITE_URL}/${locale}/transfers/rumors`, siteName: 'Transfer Daily', locale: locale === 'en' ? 'en_US' : locale === 'es' ? 'es_ES' : locale === 'it' ? 'it_IT' : locale === 'fr' ? 'fr_FR' : 'de_DE', type: 'website', images: [{ url: '/og-transfer-rumors.jpg', width: 1200, height: 630, alt: 'Football Transfer Rumors - Transfer Daily' }] },
     twitter: { card: 'summary_large_image', site: '@transferdaily', creator: '@transferdaily', title: currentSeo.title, description: currentSeo.description, images: { url: '/og-transfer-rumors.jpg', alt: 'Football Transfer Rumors - Transfer Daily' } },
     robots: { index: true, follow: true, nocache: false, googleBot: { index: true, follow: true, noimageindex: false, 'max-video-preview': -1, 'max-image-preview': 'large', 'max-snippet': -1 } },
     category: 'Sports', classification: 'Football Transfer Rumors'
@@ -72,7 +73,7 @@ export default async function TransferRumorsPage({ params, searchParams }: { par
   const dict = await getDictionary(locale)
   const t = createTranslator(dict)
   const initialData = await getTransferRumorsData(locale, currentPage, selectedLeague)
-  const webPageStructuredData = { "@context": "https://schema.org", "@type": "WebPage", "name": "Football Transfer Rumors", "description": "Latest football transfer rumors, breaking news, and speculation from all major leagues", "url": locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors`, "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": "https://transferdaily.com" }, "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? 'https://transferdaily.com' : `https://transferdaily.com/${locale}` }, { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? 'https://transferdaily.com/transfers' : `https://transferdaily.com/${locale}/transfers` }, { "@type": "ListItem", "position": 3, "name": t('transfers.rumors') || "Rumors", "item": locale === 'en' ? 'https://transferdaily.com/transfers/rumors' : `https://transferdaily.com/${locale}/transfers/rumors` }] } }
+  const webPageStructuredData = { "@context": "https://schema.org", "@type": "WebPage", "name": "Football Transfer Rumors", "description": "Latest football transfer rumors, breaking news, and speculation from all major leagues", "url": locale === 'en' ? `${SITE_URL}/transfers/rumors` : `${SITE_URL}/${locale}/transfers/rumors`, "inLanguage": locale, "isPartOf": { "@type": "WebSite", "name": "Transfer Daily", "url": SITE_URL }, "breadcrumb": { "@type": "BreadcrumbList", "itemListElement": [{ "@type": "ListItem", "position": 1, "name": t('navigation.home') || "Home", "item": locale === 'en' ? SITE_URL : `${SITE_URL}/${locale}` }, { "@type": "ListItem", "position": 2, "name": t('navigation.transfers') || "Transfers", "item": locale === 'en' ? `${SITE_URL}/transfers` : `${SITE_URL}/${locale}/transfers` }, { "@type": "ListItem", "position": 3, "name": t('transfers.rumors') || "Rumors", "item": locale === 'en' ? `${SITE_URL}/transfers/rumors` : `${SITE_URL}/${locale}/transfers/rumors` }] } }
   return (
     <main className="min-h-screen bg-background">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }} />
