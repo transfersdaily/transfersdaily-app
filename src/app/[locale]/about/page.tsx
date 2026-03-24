@@ -48,19 +48,22 @@ export default async function AboutPage({ params }: AboutPageProps) {
           subtitle={t('about.subtitle', 'Your trusted source for the latest football transfer news, rumors, and confirmed deals from around the world.')}
         />
 
-        {/* Stats — Social proof / credibility numbers */}
-        <section className="py-8 border-t border-border">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+        {/* Stats — Pure typographic social proof (UX Pro Max: metric-font-size 3rem, no icons) */}
+        <section className="py-10 md:py-12 border-t border-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {[
-              { value: '5', label: t('about.stats.leagues', 'Major Leagues'), icon: Globe },
-              { value: '24/7', label: t('about.stats.coverage', 'News Coverage'), icon: Clock },
-              { value: '5', label: t('about.stats.languages', 'Languages'), icon: Newspaper },
-              { value: '1000+', label: t('about.stats.articles', 'Articles Published'), icon: Zap },
+              { value: '5', label: t('about.stats.leagues', 'Major Leagues') },
+              { value: '24/7', label: t('about.stats.coverage', 'News Coverage') },
+              { value: '5', label: t('about.stats.languages', 'Languages') },
+              { value: '1000+', label: t('about.stats.articles', 'Articles Published') },
             ].map((stat) => (
-              <div key={stat.label} className="text-center md:text-left">
-                <stat.icon className="h-5 w-5 text-primary mx-auto md:mx-0 mb-3" />
-                <div className="font-display text-2xl md:text-3xl font-bold text-foreground">{stat.value}</div>
-                <div className="font-sans text-sm text-muted-foreground mt-1">{stat.label}</div>
+              <div key={stat.label}>
+                <div className="font-display text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-none tracking-tight">
+                  {stat.value}
+                </div>
+                <div className="font-sans text-sm md:text-base text-muted-foreground mt-3 uppercase tracking-wide">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>
