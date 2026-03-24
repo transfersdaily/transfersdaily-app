@@ -62,54 +62,8 @@ interface ArticlePageProps {
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
 
   try {
-
-    // Try direct API call first with language parameter
-    if (API_CONFIG.baseUrl && API_CONFIG.baseUrl !== '') {
-      try {
-        const apiUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=${locale}`;
-
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          signal: AbortSignal.timeout(10000)
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          if (data.success && data.data?.article) {
-            return data.data.article;
-          }
-        }
-
-        // If specific language fails, try English as fallback
-        if (locale !== 'en') {
-          const fallbackUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=en`;
-          const fallbackResponse = await fetch(fallbackUrl, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
-            },
-            signal: AbortSignal.timeout(10000)
-          });
-
-          if (fallbackResponse.ok) {
-            const fallbackData = await fallbackResponse.json();
-            if (fallbackData.success && fallbackData.data?.article) {
-              return fallbackData.data.article;
-            }
-          }
-        }
-      } catch (directApiError) {
-        console.error('Direct API call failed:', directApiError);
-      }
-    }
-
-    // Fallback to local API route (must use absolute URL for server-side fetch)
+    // Use local API proxy which handles slug matching (DB slugs are null,
+    // so direct API /public/articles/:slug always returns 404/timeout)
     const baseOrigin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const localApiUrl = `${baseOrigin}/api/article/${slug}?language=${locale}`;
 

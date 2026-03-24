@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { API_CONFIG } from '@/lib/config';
 import { generateSlug } from '@/lib/constants';
 
+// Generate slug WITHOUT diacritics normalization (old format for backward compat)
+function generateSlugLegacy(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -18,37 +28,27 @@ export async function GET(
       );
     }
 
-    // Try direct slug/UUID lookup first
-    const directUrl = `${API_CONFIG.baseUrl}/public/articles/${slug}?language=${language}`;
-    const directResponse = await fetch(directUrl, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(10000),
-    });
+    // Skip direct slug lookup — all articles have slug=null in DB currently.
+    // Go straight to list-based matching.
 
-    if (directResponse.ok) {
-      const data = await directResponse.json();
-      if (data.success && data.data?.article) {
-        return NextResponse.json(data);
-      }
-    }
-
-    // Fallback: fetch recent articles and match by generated slug
-    // This handles articles where slug is null in the DB
-    const listUrl = `${API_CONFIG.baseUrl}/public/articles?limit=50&status=published&language=${language}&sortBy=published_at&sortOrder=desc`;
+    // Fetch recent articles and match by generated slug
+    const listUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=${language}&sortBy=published_at&sortOrder=desc`;
     const listResponse = await fetch(listUrl, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(15000),
     });
 
     if (listResponse.ok) {
       const listData = await listResponse.json();
       const articles = listData.data?.articles || [];
 
+      // Try matching with both new (NFD-normalized) and legacy (no normalization) slugs
       const match = articles.find((a: any) => {
-        const articleSlug = generateSlug(a.title || '');
-        return articleSlug === slug;
+        const title = a.title || '';
+        const newSlug = generateSlug(title);
+        const oldSlug = generateSlugLegacy(title);
+        return newSlug === slug || oldSlug === slug;
       });
 
       if (match) {
