@@ -60,9 +60,9 @@ export function Footer() {
 
         <div className="container mx-auto px-4 md:px-6 py-8 md:py-16 pb-20 md:pb-8 relative z-10">
           {/* Desktop Layout */}
-          <div className="hidden md:grid md:grid-cols-4 gap-12 lg:gap-16">
+          <div className="hidden md:grid md:grid-cols-4 gap-8 lg:gap-12">
             {/* Brand & Links */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div className={typography.logo.navbar}>
                 <span className="text-primary">Transfers</span>
                 <span className="text-foreground">Daily</span>
@@ -108,34 +108,34 @@ export function Footer() {
             </div>
 
             {/* Quick Links */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.quickLinks', 'Quick Links')}</h4>
               <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
-                <li><Link href={getLocalizedPath("/latest")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.latest', 'Latest News')}</Link></li>
-                <li><Link href={getLocalizedPath("/search")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('common.search', 'Search')}</Link></li>
-                <li><Link href={getLocalizedPath("/about")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.about', 'About')}</Link></li>
-                <li><Link href={getLocalizedPath("/contact")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.contact', 'Contact Us')}</Link></li>
+                <li><Link href={getLocalizedPath("/latest")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.latest', 'Latest News')}</Link></li>
+                <li><Link href={getLocalizedPath("/search")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('common.search', 'Search')}</Link></li>
+                <li><Link href={getLocalizedPath("/about")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.about', 'About')}</Link></li>
+                <li><Link href={getLocalizedPath("/contact")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">{t('navigation.contact', 'Contact Us')}</Link></li>
               </ul>
             </div>
 
             {/* Leagues */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">{t('footer.leagues', 'Leagues')}</h4>
               <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
-                <li><Link href={getLocalizedPath("/league/premier-league")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Premier League</Link></li>
-                <li><Link href={getLocalizedPath("/league/la-liga")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">La Liga</Link></li>
-                <li><Link href={getLocalizedPath("/league/serie-a")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Serie A</Link></li>
-                <li><Link href={getLocalizedPath("/league/bundesliga")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Bundesliga</Link></li>
-                <li><Link href={getLocalizedPath("/league/ligue-1")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Ligue 1</Link></li>
+                <li><Link href={getLocalizedPath("/league/premier-league")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Premier League</Link></li>
+                <li><Link href={getLocalizedPath("/league/la-liga")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">La Liga</Link></li>
+                <li><Link href={getLocalizedPath("/league/serie-a")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Serie A</Link></li>
+                <li><Link href={getLocalizedPath("/league/bundesliga")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Bundesliga</Link></li>
+                <li><Link href={getLocalizedPath("/league/ligue-1")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Ligue 1</Link></li>
               </ul>
             </div>
 
             {/* Contact & Legal */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Contact</h4>
               <div className={cn(typography.body.small, 'space-y-3 text-muted-foreground')}>
                 <p>Get in touch with our team</p>
-                <a href="mailto:info@transfersdaily.com" className="block font-medium min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">
+                <a href="mailto:info@transfersdaily.com" className="block font-medium min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">
                   info@transfersdaily.com
                 </a>
               </div>
@@ -143,8 +143,8 @@ export function Footer() {
               <div className="space-y-4 pt-4">
                 <h4 className="font-display text-sm font-bold text-primary uppercase tracking-wide">Legal</h4>
                 <ul className={cn(typography.body.small, 'space-y-1 text-muted-foreground')}>
-                  <li><Link href={getLocalizedPath("/privacy")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Privacy Policy</Link></li>
-                  <li><Link href={getLocalizedPath("/terms")} className="min-h-[48px] inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Terms of Service</Link></li>
+                  <li><Link href={getLocalizedPath("/privacy")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Privacy Policy</Link></li>
+                  <li><Link href={getLocalizedPath("/terms")} className="min-h-[48px] md:min-h-0 inline-flex items-center cursor-pointer hover:text-foreground motion-safe:transition-colors duration-fast motion-reduce:transition-none focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background rounded">Terms of Service</Link></li>
                 </ul>
               </div>
             </div>
