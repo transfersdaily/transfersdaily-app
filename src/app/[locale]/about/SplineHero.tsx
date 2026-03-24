@@ -12,23 +12,20 @@ export function SplineHero({ title, subtitle }: SplineHeroProps) {
 
   return (
     <section className="relative w-full min-h-[400px] md:min-h-[500px] lg:min-h-[560px] -mx-4 md:-mx-6 overflow-hidden bg-background">
-      {/* Spline viewer background */}
-      <div className="absolute inset-0 z-0 opacity-60">
+      {/* Spline viewer — CSS filtered to red/maroon on black */}
+      <div className="absolute inset-0 z-0 opacity-50 mix-blend-screen">
         <iframe
           src="https://my.spline.design/spiraldna-uxGjS8Q2SUpDHhWhcMy6yQN1/"
           className="w-full h-full border-0 scale-125"
-          style={{ pointerEvents: 'none', filter: 'saturate(0.6) hue-rotate(-10deg)' }}
+          style={{ pointerEvents: 'none', filter: 'hue-rotate(320deg) saturate(2) brightness(0.7)' }}
           loading="lazy"
           title="Animated background"
         />
       </div>
 
-      {/* Dark overlays — fully dark edges, maroon tint */}
-      <div className="absolute inset-0 z-[1] bg-background/40" />
-      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-background/80 to-background/30" />
-      <div className="absolute inset-0 z-[1] bg-gradient-to-r from-background via-transparent to-background/60" />
-      {/* Subtle red/maroon tint */}
-      <div className="absolute inset-0 z-[1] bg-primary/[0.06]" />
+      {/* Dark edges — keep background black, DNA visible in center */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-t from-background via-transparent to-background/80" />
+      <div className="absolute inset-0 z-[1] bg-gradient-to-r from-background/90 via-transparent to-background/90" />
 
       {/* Content */}
       <div className="absolute inset-0 z-[2] flex items-end">
