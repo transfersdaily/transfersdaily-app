@@ -37,7 +37,7 @@ export function LeagueSection({
       {transfers.length > 0 ? (
         <>
           <SwipeCarousel>
-            {transfers.slice(0, 4).map((transfer) => (
+            {transfers.slice(0, 6).map((transfer) => (
               <ArticleCard
                 key={transfer.id}
                 variant="standard"
@@ -53,7 +53,7 @@ export function LeagueSection({
 
           <div className="hidden md:block">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              {transfers.slice(0, 4).map((transfer, index) => (
+              {transfers.slice(0, 6).map((transfer, index) => (
                 <MotionCard key={transfer.id} index={index}>
                   <ArticleCard
                     variant="standard"

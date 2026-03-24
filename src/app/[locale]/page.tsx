@@ -284,7 +284,7 @@ async function getInitialData(language = 'en') {
       try {
         const apiUrl = `${API_CONFIG.baseUrl}/public/articles`;
         const params = new URLSearchParams({
-          limit: '4',
+          limit: '6',
           page: '1',
           status: 'published',
           language: language,
