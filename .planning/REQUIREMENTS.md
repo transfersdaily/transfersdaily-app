@@ -34,10 +34,10 @@
 
 ### UI/UX Premium Redesign (UXUI)
 - [ ] **UXUI-01**: Admin dashboard uses UI/UX Pro Max design system — premium editorial aesthetic, not a basic template
-- [ ] **UXUI-02**: All charts use consistent design language with proper tooltips, legends, and responsive sizing
-- [ ] **UXUI-03**: All admin pages are mobile-responsive using CSS-first approach (no JS-based mobile detection)
+- [x] **UXUI-02**: All charts use consistent design language with proper tooltips, legends, and responsive sizing
+- [x] **UXUI-03**: All admin pages are mobile-responsive using CSS-first approach (no JS-based mobile detection)
 - [x] **UXUI-04**: Loading states use skeleton screens instead of spinners
-- [ ] **UXUI-05**: Data tables support sorting, filtering, and pagination with consistent UX
+- [x] **UXUI-05**: Data tables support sorting, filtering, and pagination with consistent UX
 
 ## v2 Requirements (Deferred)
 - Audience geography map (GA4 country data)
@@ -86,6 +86,6 @@
 | PIPE-04 | Phase 4: Pipeline & Error Monitoring | Pending |
 | SOCL-01 | Phase 5: Social Media Results | Complete |
 | SOCL-02 | Phase 5: Social Media Results | Complete |
-| UXUI-02 | Phase 6: UI Polish & Responsive | Pending |
-| UXUI-03 | Phase 6: UI Polish & Responsive | Pending |
-| UXUI-05 | Phase 6: UI Polish & Responsive | Pending |
+| UXUI-02 | Phase 6: UI Polish & Responsive | Complete |
+| UXUI-03 | Phase 6: UI Polish & Responsive | Complete |
+| UXUI-05 | Phase 6: UI Polish & Responsive | Complete |

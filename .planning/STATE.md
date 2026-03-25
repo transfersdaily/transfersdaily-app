@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Give the site administrator complete visibility and control over their news platform
-**Current focus:** Phase 5 - Social Media Results (complete)
+**Current focus:** Phase 6 - UI Polish & Responsive (complete)
 
 ## Current Position
 
-Phase: 5 of 6 (Social Media Results)
+Phase: 6 of 6 (UI Polish & Responsive)
 Plan: 1 of 1 in current phase
 Status: Complete
-Last activity: 2026-03-25 — Completed 05-01 (Social Media Results)
+Last activity: 2026-03-25 — Completed 06-01 (UI Polish & Responsive)
 
-Progress: [████████████████░░░░] 80%
+Progress: [████████████████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 4 min
-- Total execution time: 26 min
+- Total plans completed: 8
+- Average duration: 4.1 min
+- Total execution time: 33 min
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [████████████████░░░░] 80%
 | Phase 3 | 2 | 7 min | 3.5 min |
 | Phase 4 | 1 | 4 min | 4 min |
 | Phase 5 | 1 | 5 min | 5 min |
+| Phase 6 | 1 | 7 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 3.5, 3.5, 4, 5, 7 min
+- Trend: Slightly increasing (polish phase touches more files)
 
 *Updated after each plan completion*
 
@@ -70,19 +71,23 @@ Recent decisions affecting current work:
 - [05-01]: Flexible JSONB lookup supports both nested socialResults and flat structure
 - [05-01]: Period toggle (7d/30d) on social card with separate cache keys
 - [05-01]: Per-article social badges shown only for published articles
+- [06-01]: CSS-first responsive: replaced useIsMobile with Tailwind breakpoint classes in core layouts
+- [06-01]: Consistent table pattern: useMemo sort/filter, local state, shadcn Table with ghost button headers
+- [06-01]: Card styling standardized: bg-white border border-gray-200 shadow-sm across all admin
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
 - GA4 Data API quota limits need verification against actual usage (free tier ~10K requests/day)
 - Social media Lambda must be modified to write results to DB (backend pipeline change)
 - pipeline_runs table must be created in Supabase before Phase 4 dashboard work
+- useIsMobile still used in 12 non-core mobile components (out of scope for this phase)
 
 ## Session Continuity
 
 Last session: 2026-03-25
-Stopped at: Completed Phase 5 (Social Media Results)
+Stopped at: Completed Phase 6 (UI Polish & Responsive) -- all phases complete
 Resume file: None
