@@ -38,7 +38,7 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
         {/* Skeleton summary cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, index) => (
-            <Card key={index}>
+            <Card key={index} className="bg-white border border-gray-200 shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
                   <Skeleton className="h-4 w-24" />
@@ -51,7 +51,7 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
         </div>
 
         {/* Skeleton table */}
-        <Card>
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardHeader>
             <Skeleton className="h-6 w-48" />
           </CardHeader>
@@ -70,7 +70,7 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
   if (!stats || stats.sources.length === 0) {
     return (
       <div className="space-y-6">
-        <Card>
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardContent className="py-12">
             <div className="text-center text-muted-foreground">
               <Activity className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -117,7 +117,7 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
         {summaryCards.map((card) => {
           const Icon = card.icon
           return (
-            <Card key={card.title}>
+            <Card key={card.title} className="bg-white border border-gray-200 shadow-sm">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-muted-foreground">
@@ -133,7 +133,7 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
       </div>
 
       {/* Per-Source Stats Table */}
-      <Card>
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <FileText className="h-5 w-5" />

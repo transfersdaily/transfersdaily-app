@@ -50,7 +50,7 @@ export function PipelineErrorLog({ errors, isLoading }: PipelineErrorLogProps) {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
@@ -77,7 +77,7 @@ export function PipelineErrorLog({ errors, isLoading }: PipelineErrorLogProps) {
     : []
 
   return (
-    <Card>
+    <Card className="bg-white border border-gray-200 shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5" />

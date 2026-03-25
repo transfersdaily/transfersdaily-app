@@ -2,7 +2,7 @@
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell } from 'recharts'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart'
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, type ChartConfig } from '@/components/ui/chart'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { LeagueDistribution } from '@/types/content-analytics'
 
@@ -51,6 +51,7 @@ export function LeagueDistributionChart({ data, isLoading }: LeagueDistributionC
                 className="text-xs"
               />
               <ChartTooltip content={<ChartTooltipContent />} />
+              <ChartLegend content={<ChartLegendContent />} />
               <Bar dataKey="count" radius={[0, 4, 4, 0]} isAnimationActive={false}>
                 {data.map((item, i) => (
                   <Cell key={i} fill={item.color} />
