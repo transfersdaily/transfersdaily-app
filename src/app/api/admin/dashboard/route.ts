@@ -3,6 +3,11 @@ import { validateAuth } from '@/lib/supabase/auth-guard'
 import { createClient } from '@/lib/supabase/server'
 import { unstable_cache } from 'next/cache'
 import type { DashboardResponse } from '@/types/dashboard'
+import type { PipelineHealthSummary } from '@/types/pipeline'
+
+function hoursAgo(h: number): string {
+  return new Date(Date.now() - h * 60 * 60 * 1000).toISOString()
+}
 
 function daysAgo(n: number): string {
   const d = new Date()
@@ -71,6 +76,10 @@ const getCachedDashboardData = unstable_cache(
       publishedTrendResult,
       draftsTrendResult,
       contactResult,
+      pipeProcessedResult,
+      pipePublishedResult,
+      pipeStaleDraftsResult,
+      pipeLastRunResult,
     ] = await Promise.all([
       // Published today
       supabase
@@ -124,6 +133,40 @@ const getCachedDashboardData = unstable_cache(
         .from('contact_submissions')
         .select('id', { count: 'exact', head: true })
         .catch(() => ({ count: null, error: null })),
+
+      // Pipeline: total articles created in last 24h
+      supabase
+        .from('articles')
+        .select('id', { count: 'exact', head: true })
+        .in('status', ['draft', 'published'])
+        .gte('created_at', hoursAgo(24))
+        .catch(() => ({ count: null, error: null })),
+
+      // Pipeline: articles published in last 24h
+      supabase
+        .from('articles')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'published')
+        .gte('published_at', hoursAgo(24))
+        .catch(() => ({ count: null, error: null })),
+
+      // Pipeline: stale drafts (failure proxy) — draft for >2h in last 24h
+      supabase
+        .from('articles')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'draft')
+        .gte('created_at', hoursAgo(24))
+        .lte('created_at', hoursAgo(2))
+        .catch(() => ({ count: null, error: null })),
+
+      // Pipeline: most recent published article
+      supabase
+        .from('articles')
+        .select('published_at')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(1)
+        .catch(() => ({ data: null, error: null })),
     ])
 
     const publishedToday = todayResult.count ?? 0
@@ -152,6 +195,30 @@ const getCachedDashboardData = unstable_cache(
     // Unread messages — default to 0 if table missing or error
     const unreadMessages = contactResult.count ?? 0
 
+    // Pipeline health summary
+    let pipelineHealth: PipelineHealthSummary | null = null
+    try {
+      const totalProcessed24h = pipeProcessedResult.count ?? 0
+      const totalPublished24h = pipePublishedResult.count ?? 0
+      const failureCount24h = pipeStaleDraftsResult.count ?? 0
+      const lastRunData = (pipeLastRunResult as { data: Array<{ published_at: string }> | null }).data
+      const lastRunTime = lastRunData?.[0]?.published_at ?? null
+      const successRate24h = totalProcessed24h > 0
+        ? Math.round((totalPublished24h / totalProcessed24h) * 1000) / 10
+        : 100
+
+      pipelineHealth = {
+        lastRunTime,
+        successRate24h,
+        failureCount24h,
+        totalProcessed24h,
+        totalPublished24h,
+      }
+    } catch {
+      // Pipeline health queries failed -- degrade gracefully
+      pipelineHealth = null
+    }
+
     return {
       publishedToday,
       publishedThisWeek,
@@ -163,6 +230,7 @@ const getCachedDashboardData = unstable_cache(
         draftsDaily,
       },
       unreadMessages,
+      pipelineHealth,
       cachedAt: new Date().toISOString(),
     }
   },

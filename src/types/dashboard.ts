@@ -1,3 +1,5 @@
+import type { PipelineHealthSummary } from './pipeline'
+
 export interface DashboardResponse {
   publishedToday: number
   publishedThisWeek: number
@@ -6,5 +8,6 @@ export interface DashboardResponse {
   processingRate: number
   trends: { publishedDaily: number[]; draftsDaily: number[] }
   unreadMessages: number
+  pipelineHealth: PipelineHealthSummary | null
   cachedAt: string
 }
