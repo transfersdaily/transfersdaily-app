@@ -5,29 +5,30 @@
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Give the site administrator complete visibility and control over their news platform
-**Current focus:** Phase 1 - Dashboard Foundation
+**Current focus:** Phase 3 - Content Analytics
 
 ## Current Position
 
-Phase: 1 of 6 (Dashboard Foundation)
-Plan: 3 of 3 in current phase (complete)
-Status: Phase 1 Complete
-Last activity: 2026-03-25 — Completed 01-03-PLAN.md
+Phase: 3 of 6 (Content Analytics)
+Plan: 1 of 2 in current phase
+Status: Executing Phase 3
+Last activity: 2026-03-25 — Completed 03-01-PLAN.md
 
 Progress: [██████████] 100%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
+- Total plans completed: 4
 - Average duration: 3 min
-- Total execution time: 10 min
+- Total execution time: 13 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | Phase 1 | 3 | 10 min | 3.3 min |
+| Phase 3 | 1 | 3 min | 3.0 min |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -55,6 +56,9 @@ Recent decisions affecting current work:
 - [01-02]: AdminShell uses 'use client' since it composes client components
 - [01-03]: Trend detection uses 3-day vs 4-day average with 10% threshold
 - [01-03]: isAnimationActive=false on all sparklines to avoid recharts overhead
+- [03-01]: Separate content-analytics.ts types file (different domain from traffic analytics)
+- [03-01]: Article-views route caches all GA4 slug data then filters per request
+- [03-01]: English treated as source language (100% coverage by definition)
 
 ### Pending Todos
 
@@ -69,5 +73,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-25
-Stopped at: Completed 01-03-PLAN.md (Phase 1 complete)
+Stopped at: Completed 03-01-PLAN.md
 Resume file: None
