@@ -26,9 +26,9 @@ export function DashboardCard({
   const getTrendColor = () => {
     switch (trend) {
       case "up":
-        return "text-green-600"
+        return "text-green-400"
       case "down":
-        return "text-red-600"
+        return "text-red-400"
       default:
         return "text-muted-foreground"
     }

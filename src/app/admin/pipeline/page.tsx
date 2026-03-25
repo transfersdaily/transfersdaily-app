@@ -28,7 +28,7 @@ export default function PipelinePage() {
         <button
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-md border border-[#2a2a2a] px-3 py-2 text-sm font-medium text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50"
         >
           <RefreshCw
             className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
