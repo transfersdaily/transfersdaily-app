@@ -131,11 +131,11 @@ export default function ContactMessagesPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'new': return 'bg-blue-100 text-blue-800 border-blue-200'
-      case 'read': return 'bg-green-100 text-green-800 border-green-200'
-      case 'replied': return 'bg-purple-100 text-purple-800 border-purple-200'
-      case 'archived': return 'bg-gray-100 text-gray-800 border-gray-200'
-      default: return 'bg-gray-100 text-gray-800 border-gray-200'
+      case 'new': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+      case 'read': return 'bg-green-500/20 text-green-400 border-green-500/30'
+      case 'replied': return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+      case 'archived': return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
     }
   }
 
@@ -147,10 +147,10 @@ export default function ContactMessagesPage() {
 
   return (
     <AdminPageLayout title="Contact Messages">
-      <div className="flex h-[800px] border rounded-lg overflow-hidden">
+      <div className="flex h-[800px] border border-[#2a2a2a] rounded-lg overflow-hidden">
         {/* Messages List */}
-        <div className="w-1/3 border-r bg-muted/10">
-          <div className="p-4 border-b bg-background">
+        <div className="w-1/3 border-r border-[#2a2a2a] bg-[#1a1a1a]">
+          <div className="p-4 border-b border-[#2a2a2a] bg-[#0a0a0a]">
             <div className="flex items-center gap-2 mb-4">
               <Mail className="h-5 w-5" />
               <h2 className="font-semibold">Messages</h2>
@@ -206,8 +206,8 @@ export default function ContactMessagesPage() {
                   <div
                     key={message.id}
                     className={cn(
-                      "p-3 mb-2 border rounded-lg cursor-pointer transition-colors hover:bg-muted/50",
-                      selectedMessage?.id === message.id && "bg-muted border-primary"
+                      "p-3 mb-2 border border-[#2a2a2a] rounded-lg cursor-pointer transition-colors hover:bg-white/5",
+                      selectedMessage?.id === message.id && "bg-white/5 border-red-500"
                     )}
                     onClick={() => {
                       setSelectedMessage(message)
@@ -263,7 +263,7 @@ export default function ContactMessagesPage() {
           {selectedMessage ? (
             <>
               {/* Message Header */}
-              <div className="p-6 border-b bg-background">
+              <div className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a]">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h1 className="text-xl font-semibold mb-1">
@@ -314,7 +314,7 @@ export default function ContactMessagesPage() {
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-medium mb-2">Message</h3>
-                    <div className="bg-muted/50 p-4 rounded-lg">
+                    <div className="bg-[#222222] p-4 rounded-lg">
                       <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
                     </div>
                   </div>

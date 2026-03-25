@@ -385,7 +385,7 @@ export function ArticlesTableMobile({
               <TableCell className="font-medium">
                 <Link
                   href={`/admin/articles/edit/${article.id}`}
-                  className="max-w-[300px] truncate block text-blue-600 hover:text-blue-800 hover:underline"
+                  className="max-w-[300px] truncate block text-blue-400 hover:text-blue-300 hover:underline"
                 >
                   {article.title}
                 </Link>
@@ -522,7 +522,7 @@ export function ArticlesTableMobile({
                 className="pl-8 focus-visible:ring-0 focus-visible:ring-offset-0 min-h-[44px]"
               />
             </div>
-            <Button onClick={onSearch} variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700 min-h-[44px]">
+            <Button onClick={onSearch} variant="default" size="sm" className="bg-red-600 hover:bg-red-700 min-h-[44px]">
               Search
             </Button>
           </div>
@@ -564,7 +564,7 @@ export function ArticlesTableMobile({
                 <SelectItem value="failed">Failed</SelectItem>
               </SelectContent>
             </Select>
-            <Button onClick={onResetFilters} variant="outline" size="sm" className="border-red-500 text-red-600 hover:bg-red-50 min-h-[44px]">
+            <Button onClick={onResetFilters} variant="outline" size="sm" className="border-red-500 text-red-400 hover:bg-red-500/10 min-h-[44px]">
               Reset
             </Button>
           </div>
