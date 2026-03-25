@@ -20,7 +20,7 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
   const hasData = data && data.length > 0
 
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
         <CardTitle>Articles Per Day</CardTitle>
         <CardDescription>Last 30 days</CardDescription>

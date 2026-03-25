@@ -25,8 +25,8 @@ export default function AdminLayout({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen bg-[#0a0a0a]">
-        <div className="hidden lg:block lg:w-64 border-r border-[#2a2a2a]">
+      <div className="flex min-h-screen bg-background">
+        <div className="hidden lg:block lg:w-64 border-r border-border">
           <Skeleton className="h-full" />
         </div>
         <div className="flex-1 lg:pl-64 p-8">

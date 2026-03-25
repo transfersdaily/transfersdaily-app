@@ -124,7 +124,7 @@ export default function ContactMessagesPage() {
       case 'new': return <AlertCircle className="h-4 w-4 text-blue-500" />
       case 'read': return <CheckCircle className="h-4 w-4 text-green-500" />
       case 'replied': return <Reply className="h-4 w-4 text-purple-500" />
-      case 'archived': return <Archive className="h-4 w-4 text-gray-500" />
+      case 'archived': return <Archive className="h-4 w-4 text-muted-foreground" />
       default: return <MessageSquare className="h-4 w-4" />
     }
   }
@@ -134,8 +134,8 @@ export default function ContactMessagesPage() {
       case 'new': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
       case 'read': return 'bg-green-500/20 text-green-400 border-green-500/30'
       case 'replied': return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
-      case 'archived': return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      case 'archived': return 'bg-gray-500/20 text-muted-foreground border-gray-500/30'
+      default: return 'bg-gray-500/20 text-muted-foreground border-gray-500/30'
     }
   }
 
@@ -147,10 +147,10 @@ export default function ContactMessagesPage() {
 
   return (
     <AdminPageLayout title="Contact Messages">
-      <div className="flex h-[800px] border border-[#2a2a2a] rounded-lg overflow-hidden">
+      <div className="flex h-[800px] border border-border rounded-lg overflow-hidden">
         {/* Messages List */}
-        <div className="w-1/3 border-r border-[#2a2a2a] bg-[#1a1a1a]">
-          <div className="p-4 border-b border-[#2a2a2a] bg-[#0a0a0a]">
+        <div className="w-1/3 border-r border-border bg-card">
+          <div className="p-4 border-b border-border bg-background">
             <div className="flex items-center gap-2 mb-4">
               <Mail className="h-5 w-5" />
               <h2 className="font-semibold">Messages</h2>
@@ -206,8 +206,8 @@ export default function ContactMessagesPage() {
                   <div
                     key={message.id}
                     className={cn(
-                      "p-3 mb-2 border border-[#2a2a2a] rounded-lg cursor-pointer transition-colors hover:bg-white/5",
-                      selectedMessage?.id === message.id && "bg-white/5 border-red-500"
+                      "p-3 mb-2 border border-border rounded-lg cursor-pointer transition-colors hover:bg-secondary",
+                      selectedMessage?.id === message.id && "bg-secondary border-red-500"
                     )}
                     onClick={() => {
                       setSelectedMessage(message)
@@ -263,7 +263,7 @@ export default function ContactMessagesPage() {
           {selectedMessage ? (
             <>
               {/* Message Header */}
-              <div className="p-6 border-b border-[#2a2a2a] bg-[#0a0a0a]">
+              <div className="p-6 border-b border-border bg-background">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h1 className="text-xl font-semibold mb-1">
@@ -314,7 +314,7 @@ export default function ContactMessagesPage() {
                 <div className="space-y-6">
                   <div>
                     <h3 className="font-medium mb-2">Message</h3>
-                    <div className="bg-[#222222] p-4 rounded-lg">
+                    <div className="bg-secondary p-4 rounded-lg">
                       <p className="whitespace-pre-wrap">{selectedMessage.message}</p>
                     </div>
                   </div>

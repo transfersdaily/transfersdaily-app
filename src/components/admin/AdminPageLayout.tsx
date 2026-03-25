@@ -20,7 +20,7 @@ export function AdminPageLayout({
   return (
     <div className={`px-4 md:px-6 lg:px-8 ${className}`}>
       {/* Header */}
-      <div className="py-4 md:py-6 border-b border-[#2a2a2a]">
+      <div className="py-4 md:py-6 border-b border-border">
         {/* Breadcrumbs */}
         {breadcrumbs && breadcrumbs.length > 0 && (
           <nav className="mb-3">

@@ -17,7 +17,7 @@ function getCoverageTier(percent: number) {
 
 export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverageGridProps) {
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
         <CardTitle>Translation Coverage</CardTitle>
         <CardDescription>
@@ -42,7 +42,7 @@ export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverage
               return (
                 <div
                   key={lang.language}
-                  className="rounded-lg border border-[#2a2a2a] bg-[#222222] p-4 space-y-2"
+                  className="rounded-lg border border-border bg-secondary p-4 space-y-2"
                 >
                   <p className="font-semibold text-sm">{lang.label}</p>
                   <p className="text-xs text-muted-foreground">
@@ -51,7 +51,7 @@ export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverage
                   <p className={`text-lg font-bold tabular-nums ${tier.text}`}>
                     {lang.coveragePercent}%
                   </p>
-                  <div className="h-1.5 w-full rounded-full bg-[#2a2a2a]">
+                  <div className="h-1.5 w-full rounded-full bg-border">
                     <div
                       className={`h-full rounded-full transition-all ${tier.bg}`}
                       style={{ width: `${Math.min(lang.coveragePercent, 100)}%` }}

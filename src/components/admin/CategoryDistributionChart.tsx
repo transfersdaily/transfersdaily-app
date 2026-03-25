@@ -21,7 +21,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
   const chartHeight = hasData ? Math.max(150, data.length * 40) : 150
 
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
         <CardTitle>Category Distribution</CardTitle>
         <CardDescription>Articles by type</CardDescription>

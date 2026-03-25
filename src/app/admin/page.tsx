@@ -16,7 +16,7 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-white">Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground mt-1">Content overview and key metrics</p>
       </div>
 
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
           <>
-            <Card className="h-[140px] bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+            <Card className="h-[140px] bg-card border border-border shadow-sm">
               <CardContent className="p-5 h-full flex flex-col">
                 <div className="flex items-center justify-between">
                   <Skeleton className="h-4 w-28" />
@@ -91,7 +91,7 @@ export default function AdminDashboard() {
       </div>
 
       {data?.cachedAt && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-muted-foreground">
           Last updated: {new Date(data.cachedAt).toLocaleTimeString()}
         </p>
       )}

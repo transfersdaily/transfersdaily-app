@@ -22,19 +22,19 @@ function PlatformRow({ stat }: { stat: PlatformAggregateStats }) {
       : 0
 
   return (
-    <div className="flex items-center justify-between py-2 border-b border-[#2a2a2a] last:border-0">
+    <div className="flex items-center justify-between py-2 border-b border-border last:border-0">
       <div className="flex items-center gap-3">
-        <span className="text-xs font-mono font-medium text-gray-500 w-6 text-center">
+        <span className="text-xs font-mono font-medium text-muted-foreground w-6 text-center">
           {PLATFORM_ICONS[stat.platform] ?? stat.platform}
         </span>
-        <span className="text-sm font-medium text-gray-100">{stat.label}</span>
+        <span className="text-sm font-medium text-foreground">{stat.label}</span>
       </div>
       <div className="flex items-center gap-2">
         {stat.attempted === 0 ? (
-          <span className="text-xs text-gray-500">No posts</span>
+          <span className="text-xs text-muted-foreground">No posts</span>
         ) : (
           <>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-muted-foreground">
               {stat.succeeded}/{stat.attempted}
             </span>
             <Badge
@@ -61,12 +61,12 @@ export function SocialStatsCard() {
   const { data, isLoading, isError } = useSocialStats(period)
 
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Share2 className="h-4 w-4 text-gray-400" />
-            <CardTitle className="text-sm font-medium text-gray-400">
+            <Share2 className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Social Media
             </CardTitle>
           </div>
@@ -75,8 +75,8 @@ export function SocialStatsCard() {
               onClick={() => setPeriod("7d")}
               className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                 period === "7d"
-                  ? "bg-white text-[#0a0a0a]"
-                  : "bg-[#222222] text-gray-400 hover:bg-[#2a2a2a]"
+                  ? "bg-foreground text-background"
+                  : "bg-secondary text-muted-foreground hover:bg-secondary"
               }`}
             >
               7d
@@ -85,8 +85,8 @@ export function SocialStatsCard() {
               onClick={() => setPeriod("30d")}
               className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                 period === "30d"
-                  ? "bg-white text-[#0a0a0a]"
-                  : "bg-[#222222] text-gray-400 hover:bg-[#2a2a2a]"
+                  ? "bg-foreground text-background"
+                  : "bg-secondary text-muted-foreground hover:bg-secondary"
               }`}
             >
               30d
@@ -108,7 +108,7 @@ export function SocialStatsCard() {
             ))}
           </div>
         ) : isError ? (
-          <p className="text-sm text-gray-400 py-4 text-center">
+          <p className="text-sm text-muted-foreground py-4 text-center">
             Failed to load social stats
           </p>
         ) : data ? (
@@ -119,7 +119,7 @@ export function SocialStatsCard() {
               ))}
             </div>
             {data.totals.attempted > 0 && (
-              <div className="mt-3 pt-3 border-t border-[#2a2a2a] flex items-center justify-between text-xs text-gray-500">
+              <div className="mt-3 pt-3 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
                 <span>
                   Total: {data.totals.succeeded}/{data.totals.attempted} posts
                 </span>
@@ -139,7 +139,7 @@ export function SocialStatsCard() {
 
 export function SocialStatsCardSkeleton() {
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-4" />

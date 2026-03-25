@@ -33,7 +33,7 @@ interface PipelineHealthCardProps {
 export function PipelineHealthCard({ health }: PipelineHealthCardProps) {
   if (!health) {
     return (
-      <Card className="h-[140px] bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+      <Card className="h-[140px] bg-card border border-border shadow-sm">
         <CardContent className="p-5 h-full flex flex-col">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Pipeline Health</span>
@@ -50,7 +50,7 @@ export function PipelineHealthCard({ health }: PipelineHealthCardProps) {
   const rateColor = getSuccessRateColor(health.successRate24h)
 
   return (
-    <Card className="h-[140px] bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="h-[140px] bg-card border border-border shadow-sm">
       <CardContent className="p-5 h-full flex flex-col">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Pipeline Health</span>

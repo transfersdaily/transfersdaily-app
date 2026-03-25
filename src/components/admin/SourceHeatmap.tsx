@@ -27,7 +27,7 @@ interface SourceHeatmapProps {
 export function SourceHeatmap({ heatmap, isLoading }: SourceHeatmapProps) {
   if (isLoading) {
     return (
-      <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+      <Card className="bg-card border border-border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LayoutGrid className="h-5 w-5" />
@@ -52,7 +52,7 @@ export function SourceHeatmap({ heatmap, isLoading }: SourceHeatmapProps) {
 
   if (!heatmap || heatmap.rows.length === 0) {
     return (
-      <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+      <Card className="bg-card border border-border shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LayoutGrid className="h-5 w-5" />
@@ -70,7 +70,7 @@ export function SourceHeatmap({ heatmap, isLoading }: SourceHeatmapProps) {
   }
 
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <LayoutGrid className="h-5 w-5" />
@@ -119,7 +119,7 @@ export function SourceHeatmap({ heatmap, isLoading }: SourceHeatmapProps) {
         </div>
 
         {/* Legend */}
-        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-[#2a2a2a]">
+        <div className="flex items-center gap-4 mt-4 pt-3 border-t border-border">
           {LEGEND_ITEMS.map((item) => (
             <div key={item.status} className="flex items-center gap-1.5">
               <div

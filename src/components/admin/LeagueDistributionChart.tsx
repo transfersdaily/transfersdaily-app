@@ -21,7 +21,7 @@ export function LeagueDistributionChart({ data, isLoading }: LeagueDistributionC
   const chartHeight = hasData ? Math.max(200, data.length * 40) : 200
 
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardHeader>
         <CardTitle>League Distribution</CardTitle>
         <CardDescription>Articles by league</CardDescription>

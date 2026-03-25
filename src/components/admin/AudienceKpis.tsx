@@ -70,7 +70,7 @@ function ChangeIndicator({ change, invertChange }: { change: number; invertChang
 
 function AudienceKpiSkeleton() {
   return (
-    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+    <Card className="bg-card border border-border shadow-sm">
       <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <Skeleton className="h-4 w-20" />
@@ -107,7 +107,7 @@ export function AudienceKpis({ kpis, isLoading }: AudienceKpisProps) {
         const isBounceRate = def.key === 'bounceRate'
 
         return (
-          <Card key={def.key} className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
+          <Card key={def.key} className="bg-card border border-border shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{def.label}</span>
