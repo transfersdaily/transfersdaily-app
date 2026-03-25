@@ -64,7 +64,7 @@ export function SocialPostStatus({ socialMediaData }: SocialPostStatusProps) {
             <Badge
               key={platform.key}
               variant="outline"
-              className="text-[10px] px-1.5 py-0 bg-gray-50 text-gray-400 border-gray-200"
+              className="text-[10px] px-1.5 py-0 bg-gray-500/20 text-gray-400 border-gray-500/30"
             >
               {platform.label}
             </Badge>
@@ -76,7 +76,7 @@ export function SocialPostStatus({ socialMediaData }: SocialPostStatusProps) {
             <Badge
               key={platform.key}
               variant="outline"
-              className="text-[10px] px-1.5 py-0 bg-gray-50 text-gray-500 border-gray-200"
+              className="text-[10px] px-1.5 py-0 bg-gray-500/20 text-gray-500 border-gray-500/30"
               title={result.reason ?? "Skipped"}
             >
               {platform.label} -- skipped
@@ -89,7 +89,7 @@ export function SocialPostStatus({ socialMediaData }: SocialPostStatusProps) {
             <Badge
               key={platform.key}
               variant="outline"
-              className="text-[10px] px-1.5 py-0 bg-green-50 text-green-700 border-green-200"
+              className="text-[10px] px-1.5 py-0 bg-green-500/20 text-green-400 border-green-500/30"
               title={result.uri ?? "Posted successfully"}
             >
               {platform.label} -- posted
@@ -101,7 +101,7 @@ export function SocialPostStatus({ socialMediaData }: SocialPostStatusProps) {
           <Badge
             key={platform.key}
             variant="outline"
-            className="text-[10px] px-1.5 py-0 bg-red-50 text-red-700 border-red-200"
+            className="text-[10px] px-1.5 py-0 bg-red-500/20 text-red-400 border-red-500/30"
             title={result.error ?? "Failed"}
           >
             {platform.label} -- failed
