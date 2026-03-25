@@ -1,68 +1,89 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { AdminPageLayout } from "@/components/admin/AdminPageLayout"
 import { PipelineMonitor } from "@/components/admin/PipelineMonitor"
-import type { PipelineStats } from "@/components/admin/PipelineMonitor"
-import { adminApi } from "@/lib/api"
+import { PipelineErrorLog } from "@/components/admin/PipelineErrorLog"
+import { SourceHeatmap } from "@/components/admin/SourceHeatmap"
+import { usePipelineStats, usePipelineErrors, usePipelineHeatmap } from "@/hooks/use-pipeline"
 import { Activity, RefreshCw } from "lucide-react"
 
 export default function PipelinePage() {
-  const [stats, setStats] = useState<PipelineStats | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const queryClient = useQueryClient()
+  const statsQuery = usePipelineStats()
+  const errorsQuery = usePipelineErrors()
+  const heatmapQuery = usePipelineHeatmap()
 
-  const fetchPipelineStats = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      const data = await adminApi.getPipelineStats()
-      setStats(data)
-    } catch (err) {
-      console.error("Failed to fetch pipeline stats:", err)
-      setError("Failed to load pipeline statistics")
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
+  const isRefreshing =
+    statsQuery.isFetching || errorsQuery.isFetching || heatmapQuery.isFetching
 
-  useEffect(() => {
-    fetchPipelineStats()
-  }, [fetchPipelineStats])
+  function handleRefresh() {
+    queryClient.invalidateQueries({ queryKey: ["admin", "pipeline"] })
+  }
 
   return (
     <AdminPageLayout
       title="Pipeline Monitor"
       actions={
         <button
-          onClick={fetchPipelineStats}
-          disabled={isLoading}
+          onClick={handleRefresh}
+          disabled={isRefreshing}
           className="inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted transition-colors disabled:opacity-50"
         >
           <RefreshCw
-            className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+            className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
           />
           Refresh
         </button>
       }
     >
-      {error && (
-        <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-          <div className="flex items-center gap-2 text-destructive">
-            <Activity className="h-4 w-4" />
-            <span className="font-medium">Connection Error</span>
+      <div className="space-y-6">
+        {/* Per-query error banners */}
+        {statsQuery.isError && (
+          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className="flex items-center gap-2 text-destructive">
+              <Activity className="h-4 w-4" />
+              <span className="font-medium">Failed to load pipeline stats</span>
+            </div>
           </div>
-          <p className="text-red-700 text-sm mt-1">{error}</p>
-          <button
-            onClick={fetchPipelineStats}
-            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
-          >
-            Retry Connection
-          </button>
-        </div>
-      )}
+        )}
 
-      <PipelineMonitor stats={stats} isLoading={isLoading} />
+        {errorsQuery.isError && (
+          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className="flex items-center gap-2 text-destructive">
+              <Activity className="h-4 w-4" />
+              <span className="font-medium">Failed to load error log</span>
+            </div>
+          </div>
+        )}
+
+        {heatmapQuery.isError && (
+          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className="flex items-center gap-2 text-destructive">
+              <Activity className="h-4 w-4" />
+              <span className="font-medium">Failed to load heatmap data</span>
+            </div>
+          </div>
+        )}
+
+        {/* Heatmap - visual overview at top */}
+        <SourceHeatmap
+          heatmap={heatmapQuery.data ?? null}
+          isLoading={heatmapQuery.isLoading}
+        />
+
+        {/* Per-source stats */}
+        <PipelineMonitor
+          stats={statsQuery.data ?? null}
+          isLoading={statsQuery.isLoading}
+        />
+
+        {/* Error log at bottom */}
+        <PipelineErrorLog
+          errors={errorsQuery.data ?? null}
+          isLoading={errorsQuery.isLoading}
+        />
+      </div>
     </AdminPageLayout>
   )
 }
