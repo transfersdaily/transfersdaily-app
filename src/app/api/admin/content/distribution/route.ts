@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { unstable_cache } from 'next/cache'
 import { validateAuth } from '@/lib/supabase/auth-guard'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { LEAGUE_BY_NAME } from '@/lib/constants'
 import type { ContentDistributionResponse, DailyArticleCount } from '@/types/content-analytics'
 
@@ -12,7 +12,7 @@ function formatDayLabel(dateStr: string): string {
 
 const getCachedDistribution = unstable_cache(
   async (): Promise<ContentDistributionResponse> => {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { unstable_cache } from 'next/cache'
 import { validateAuth } from '@/lib/supabase/auth-guard'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { SUPPORTED_LANGUAGES } from '@/types/content-analytics'
 import type { TranslationCoverageResponse } from '@/types/content-analytics'
 
@@ -15,7 +15,7 @@ const LANGUAGE_LABELS: Record<string, string> = {
 
 const getCachedTranslations = unstable_cache(
   async (): Promise<TranslationCoverageResponse> => {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const [totalResult, translationsResult] = await Promise.all([
       supabase

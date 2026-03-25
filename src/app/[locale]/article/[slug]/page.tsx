@@ -63,49 +63,55 @@ function generateSlugLegacy(title: string): string {
   return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').trim();
 }
 
-// Server-side function to fetch article data by matching slug against recent articles
+// Server-side function to fetch article data — tries direct slug lookup first, then list fallback
 async function getArticleBySlug(slug: string, locale: string): Promise<Article | null> {
   try {
-    // Fetch recent articles directly from API Gateway and match by generated slug
-    // (DB slug column is null for all articles, so direct /articles/:slug always 404s)
-    const apiUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=${locale}&sortBy=published_at&sortOrder=desc`;
-    const response = await fetch(apiUrl, {
+    // Direct slug lookup (slugs are populated in DB)
+    const directUrl = `${API_CONFIG.baseUrl}/public/articles/${encodeURIComponent(slug)}?language=${locale}`;
+    const directResponse = await fetch(directUrl, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(10000),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      const articles = data.data?.articles || [];
-
-      // Match with both new (NFD-normalized) and legacy slug formats
-      const match = articles.find((a: any) => {
-        const title = a.title || '';
-        return generateSlug(title) === slug || generateSlugLegacy(title) === slug;
-      });
-
-      if (match) return match;
+    if (directResponse.ok) {
+      const directData = await directResponse.json();
+      const article = directData.data?.article || directData.article;
+      if (article) return article;
     }
 
-    // If not found in current locale, try English
+    // If not found in current locale, try English via direct lookup
     if (locale !== 'en') {
-      const enUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=en&sortBy=published_at&sortOrder=desc`;
-      const enResponse = await fetch(enUrl, {
+      const enDirectUrl = `${API_CONFIG.baseUrl}/public/articles/${encodeURIComponent(slug)}?language=en`;
+      const enResponse = await fetch(enDirectUrl, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(10000),
       });
 
       if (enResponse.ok) {
         const enData = await enResponse.json();
-        const enArticles = enData.data?.articles || [];
-        const match = enArticles.find((a: any) => {
-          const title = a.title || '';
-          return generateSlug(title) === slug || generateSlugLegacy(title) === slug;
-        });
-        if (match) return match;
+        const article = enData.data?.article || enData.article;
+        if (article) return article;
       }
+    }
+
+    // Fallback: list-based matching for legacy links without DB slugs
+    const listUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=${locale}&sortBy=published_at&sortOrder=desc`;
+    const listResponse = await fetch(listUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (listResponse.ok) {
+      const data = await listResponse.json();
+      const articles = data.data?.articles || [];
+      const match = articles.find((a: any) => {
+        const title = a.title || '';
+        return generateSlug(title) === slug || generateSlugLegacy(title) === slug;
+      });
+      if (match) return match;
     }
 
     return null;

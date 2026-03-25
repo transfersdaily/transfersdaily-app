@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { validateAuth } from '@/lib/supabase/auth-guard'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { unstable_cache } from 'next/cache'
 import type {
   PipelineHeatmapResponse,
@@ -31,7 +31,7 @@ interface PipelineEventRow {
 
 const getCachedPipelineHeatmap = unstable_cache(
   async (): Promise<PipelineHeatmapResponse> => {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const now7d = daysAgo(7)
 
     // Build date labels (7 days, oldest first)

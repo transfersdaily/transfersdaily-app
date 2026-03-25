@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { validateAuth } from '@/lib/supabase/auth-guard'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { unstable_cache } from 'next/cache'
 import type { PipelineErrorsResponse, PipelineError } from '@/types/pipeline'
 
@@ -31,7 +31,7 @@ interface StaleArticleRow {
 
 const getCachedPipelineErrors = unstable_cache(
   async (): Promise<PipelineErrorsResponse> => {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const errors: PipelineError[] = []
 
     const now7d = daysAgo(7)

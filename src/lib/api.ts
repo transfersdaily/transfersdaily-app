@@ -490,55 +490,14 @@ export const articlesApi = {
   // Get article by slug
   async getBySlug(slug: string, locale: string = 'en'): Promise<Article | null> {
     try {
-      // Call backend API directly with language parameter
-      const response = await apiRequest<any>(`/public/articles/${slug}?language=${locale}`)
-      
-      if (response && response.article) {
-        return response.article
-      }
-      
-      const article = response.data?.article || response.article || response
+      // Direct slug lookup (slugs are populated in DB)
+      const response = await apiRequest<any>(`/public/articles/${encodeURIComponent(slug)}?language=${locale}`)
+
+      const article = response.data?.article || response.article
       return article ? transformArticleToArticle(article) : null
     } catch (error) {
       console.error('Error fetching article by slug:', error)
-      
-      // Fallback: try to find the article by searching through latest articles
-      try {
-        const articles = await this.getLatest(100, 0, locale) // Get more articles to search through
-        
-        // Try to find an article that matches the slug exactly
-        let matchingArticle = articles.find(article => {
-          const articleSlug = generateSlug(article.title)
-          return articleSlug === slug
-        })
-        
-        // If no exact match, try partial matching
-        if (!matchingArticle) {
-          matchingArticle = articles.find(article => {
-            const articleSlug = generateSlug(article.title)
-            const slugWords = slug.split('-')
-            const articleWords = articleSlug.split('-')
-            
-            // Check if most words match
-            const matchingWords = slugWords.filter(word => 
-              articleWords.some(articleWord => 
-                articleWord.includes(word) || word.includes(articleWord)
-              )
-            )
-            
-            return matchingWords.length >= Math.min(3, slugWords.length * 0.6)
-          })
-        }
-        
-        if (matchingArticle) {
-          return matchingArticle
-        }
-        
-        return null
-      } catch (fallbackError) {
-        console.error('Fallback search also failed:', fallbackError)
-        return null
-      }
+      return null
     }
   },
 

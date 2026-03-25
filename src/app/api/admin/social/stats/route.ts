@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { validateAuth } from '@/lib/supabase/auth-guard'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { unstable_cache } from 'next/cache'
 import type {
   SocialAggregateStats,
@@ -93,7 +93,7 @@ function aggregateFromRows(
 
 const getCachedSocialStats = unstable_cache(
   async (period: '7d' | '30d'): Promise<SocialAggregateStats> => {
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const since = period === '7d' ? daysAgo(7) : daysAgo(30)
 
     const { data: rows, error } = await supabase

@@ -28,27 +28,40 @@ export async function GET(
       );
     }
 
-    // Skip direct slug lookup — all articles have slug=null in DB currently.
-    // Go straight to list-based matching.
+    // Try direct slug lookup first (slugs are populated in DB)
+    const directUrl = `${API_CONFIG.baseUrl}/public/articles/${encodeURIComponent(slug)}?language=${language}`;
+    const directResponse = await fetch(directUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(10000),
+    });
 
-    // Fetch recent articles and match by generated slug
+    if (directResponse.ok) {
+      const directData = await directResponse.json();
+      const article = directData.data?.article || directData.article;
+      if (article) {
+        return NextResponse.json({
+          success: true,
+          data: { article },
+        });
+      }
+    }
+
+    // Fallback: fetch recent articles and match by generated slug (for legacy links)
     const listUrl = `${API_CONFIG.baseUrl}/public/articles?limit=100&status=published&language=${language}&sortBy=published_at&sortOrder=desc`;
     const listResponse = await fetch(listUrl, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(10000),
     });
 
     if (listResponse.ok) {
       const listData = await listResponse.json();
       const articles = listData.data?.articles || [];
 
-      // Try matching with both new (NFD-normalized) and legacy (no normalization) slugs
       const match = articles.find((a: any) => {
         const title = a.title || '';
-        const newSlug = generateSlug(title);
-        const oldSlug = generateSlugLegacy(title);
-        return newSlug === slug || oldSlug === slug;
+        return generateSlug(title) === slug || generateSlugLegacy(title) === slug;
       });
 
       if (match) {
