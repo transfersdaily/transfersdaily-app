@@ -78,7 +78,10 @@ Plans:
   2. Admin can view a failure log with actual error messages, source name, and timestamps
   3. Admin sees per-source stats -- articles fetched, analyzed, saved, published per source
   4. Admin sees a 10-source x 7-day heatmap color-coded by pipeline status (green/yellow/red/gray)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 04-01-PLAN.md — Data layer: pipeline types, Supabase-powered API routes (stats/errors/heatmap), dashboard endpoint extension, TanStack Query hooks
+- [ ] 04-02-PLAN.md — UI: PipelineHealthCard on dashboard, PipelineMonitor rewrite, PipelineErrorLog, SourceHeatmap, pipeline page rewrite
 **UI hint**: yes
 
 ### Phase 5: Social Media Results
@@ -113,6 +116,6 @@ Note: Phases 4 and 5 depend only on Phase 1 (not on 2/3), so they could theoreti
 | 1. Dashboard Foundation | 0/3 | Planning complete | - |
 | 2. Traffic & Audience Analytics | 0/2 | Planning complete | - |
 | 3. Content Analytics | 0/2 | Planning complete | - |
-| 4. Pipeline & Error Monitoring | 0/0 | Not started | - |
+| 4. Pipeline & Error Monitoring | 0/2 | Planning complete | - |
 | 5. Social Media Results | 0/0 | Not started | - |
 | 6. UI Polish & Responsive | 0/0 | Not started | - |
