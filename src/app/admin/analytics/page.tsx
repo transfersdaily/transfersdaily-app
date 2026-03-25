@@ -16,10 +16,10 @@ function AnalyticsContent() {
   return (
     <div className="space-y-6">
       {/* Header with date range selector */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground">Site traffic and audience insights</p>
+          <h1 className="text-xl md:text-2xl font-bold tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground">Site traffic and audience insights</p>
         </div>
         <DateRangeSelector days={daysParam} onDaysChange={setDays} />
       </div>

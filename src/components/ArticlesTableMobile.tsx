@@ -43,7 +43,6 @@ import {
   Languages,
 } from "lucide-react"
 import { MobileDataCard } from "@/components/admin/MobileDataCard"
-import { useIsMobile, adminMobileClasses, formatForMobile } from "@/lib/mobile-utils"
 
 interface Article {
   id: string
@@ -129,7 +128,6 @@ export function ArticlesTableMobile({
   onItemsPerPageChange,
   articleViews,
 }: ArticlesTableMobileProps) {
-  const isMobile = useIsMobile()
   const totalPages = Math.ceil(totalArticles / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage + 1
   const endIndex = Math.min(startIndex + articles.length - 1, totalArticles)
@@ -153,25 +151,22 @@ export function ArticlesTableMobile({
 
   const getTranslationCount = (article: Article) => {
     if (!article.translations) return 1
-    
+
     let completed = 0
     const languages = ['en', 'es', 'fr', 'de', 'it']
-    
-    // Always count English if title exists
+
     if (article.title) {
       completed = 1
     }
-    
-    // Count other languages
+
     languages.forEach(langCode => {
       if (langCode === 'en') return
-      
       const translation = article.translations?.[langCode]
       if (translation && translation.title && translation.content) {
         completed++
       }
     })
-    
+
     return completed
   }
 
@@ -193,6 +188,23 @@ export function ArticlesTableMobile({
   const handleBulkPublish = () => {
     onBulkPublish?.(selectedArticles)
     onSelectArticles([])
+  }
+
+  const formatMobileDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60))
+
+    if (diffInHours < 1) return 'Just now'
+    if (diffInHours < 24) return `${diffInHours}h ago`
+    const diffInDays = Math.floor(diffInHours / 24)
+    if (diffInDays === 1) return '1d ago'
+    if (diffInDays < 7) return `${diffInDays}d ago`
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  const truncateTitle = (text: string, maxLength: number = 60) => {
+    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text
   }
 
   const getArticleActions = (article: Article) => {
@@ -226,13 +238,13 @@ export function ArticlesTableMobile({
         return [
           {
             label: "View",
-            onClick: () => {}, // Add view logic
+            onClick: () => {},
             variant: "outline" as const,
             icon: <Eye className="w-4 h-4" />
           },
           {
             label: "Archive",
-            onClick: () => {}, // Add archive logic
+            onClick: () => {},
             variant: "outline" as const,
             icon: <Archive className="w-4 h-4" />
           },
@@ -252,20 +264,20 @@ export function ArticlesTableMobile({
   const MobileArticlesList = () => (
     <div className="space-y-3">
       {articles.map((article) => {
-        const dateToShow = pageType === 'published' 
+        const dateToShow = pageType === 'published'
           ? (article.published_at || article.created_at)
           : article.created_at
 
         return (
           <MobileDataCard
             key={article.id}
-            title={formatForMobile.truncateTitle(article.title, 60)}
-            subtitle={`${article.category} • ${article.league}`}
+            title={truncateTitle(article.title, 60)}
+            subtitle={`${article.category} - ${article.league}`}
             metadata={[
               { label: "Player", value: article.player_name },
               { label: "Fee", value: formatTransferFee(article.transfer_fee) },
               { label: "Translations", value: `${getTranslationCount(article)}/5` },
-              { label: "Date", value: formatForMobile.formatMobileDate(dateToShow) },
+              { label: "Date", value: formatMobileDate(dateToShow) },
             ]}
             actions={getArticleActions(article)}
             badge={{
@@ -280,7 +292,7 @@ export function ArticlesTableMobile({
     </div>
   )
 
-  // Desktop Table View (original)
+  // Desktop Table View
   const DesktopArticlesTable = () => (
     <div className="rounded-md border">
       <Table>
@@ -299,9 +311,9 @@ export function ArticlesTableMobile({
               />
             </TableHead>
             <TableHead>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 p-0"
                 onClick={() => onSort?.('title')}
               >
@@ -311,9 +323,9 @@ export function ArticlesTableMobile({
             </TableHead>
             <TableHead>Category</TableHead>
             <TableHead>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 p-0"
                 onClick={() => onSort?.('league')}
               >
@@ -322,9 +334,9 @@ export function ArticlesTableMobile({
               </Button>
             </TableHead>
             <TableHead>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 p-0"
                 onClick={() => onSort?.('player_name')}
               >
@@ -333,9 +345,9 @@ export function ArticlesTableMobile({
               </Button>
             </TableHead>
             <TableHead>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 p-0"
                 onClick={() => onSort?.('transfer_fee')}
               >
@@ -371,7 +383,7 @@ export function ArticlesTableMobile({
                 />
               </TableCell>
               <TableCell className="font-medium">
-                <Link 
+                <Link
                   href={`/admin/articles/edit/${article.id}`}
                   className="max-w-[300px] truncate block text-blue-600 hover:text-blue-800 hover:underline"
                 >
@@ -404,12 +416,12 @@ export function ArticlesTableMobile({
                 {(() => {
                   const createdAt = article.created_at
                   const publishedAt = article.published_at
-                  
-                  const dateToShow = pageType === 'published' 
+
+                  const dateToShow = pageType === 'published'
                     ? (publishedAt || createdAt)
                     : createdAt
-                  
-                  return dateToShow 
+
+                  return dateToShow
                     ? new Date(dateToShow).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'short',
@@ -442,7 +454,7 @@ export function ArticlesTableMobile({
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       className="text-destructive"
                       onClick={() => onDeleteArticle?.(article.id)}
                     >
@@ -462,7 +474,7 @@ export function ArticlesTableMobile({
   return (
     <Card className="focus-within:ring-0 focus-within:ring-offset-0">
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <CardDescription>
             Showing {startIndex}-{endIndex} of {totalArticles} articles
           </CardDescription>
@@ -497,9 +509,9 @@ export function ArticlesTableMobile({
         </div>
       </CardHeader>
       <CardContent>
-        {/* Search and Filters */}
-        <div className={`flex items-center space-x-2 mb-4 ${isMobile ? 'flex-col space-x-0 space-y-3' : ''}`}>
-          <div className={`relative flex-1 flex gap-2 ${isMobile ? 'w-full' : ''}`}>
+        {/* Search and Filters - CSS responsive */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 md:gap-2 mb-4">
+          <div className="relative flex-1 flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
@@ -514,11 +526,11 @@ export function ArticlesTableMobile({
               Search
             </Button>
           </div>
-          
-          {/* Filters - Stack on mobile */}
-          <div className={`flex gap-2 ${isMobile ? 'w-full flex-wrap' : ''}`}>
+
+          {/* Filters - Wrap on small screens */}
+          <div className="flex flex-wrap gap-2">
             <Select value={categoryFilter} onValueChange={onCategoryChange}>
-              <SelectTrigger className={`${isMobile ? 'flex-1 min-w-[120px]' : 'w-[140px]'} focus:ring-0 focus:ring-offset-0 min-h-[44px]`}>
+              <SelectTrigger className="w-full sm:w-[140px] focus:ring-0 focus:ring-offset-0 min-h-[44px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
@@ -530,7 +542,7 @@ export function ArticlesTableMobile({
               </SelectContent>
             </Select>
             <Select value={leagueFilter} onValueChange={onLeagueChange}>
-              <SelectTrigger className={`${isMobile ? 'flex-1 min-w-[120px]' : 'w-[140px]'} focus:ring-0 focus:ring-offset-0 min-h-[44px]`}>
+              <SelectTrigger className="w-full sm:w-[140px] focus:ring-0 focus:ring-offset-0 min-h-[44px]">
                 <SelectValue placeholder="League" />
               </SelectTrigger>
               <SelectContent>
@@ -541,7 +553,7 @@ export function ArticlesTableMobile({
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={onStatusChange}>
-              <SelectTrigger className={`${isMobile ? 'flex-1 min-w-[120px]' : 'w-[140px]'} focus:ring-0 focus:ring-offset-0 min-h-[44px]`}>
+              <SelectTrigger className="w-full sm:w-[140px] focus:ring-0 focus:ring-offset-0 min-h-[44px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -558,26 +570,24 @@ export function ArticlesTableMobile({
           </div>
         </div>
 
-        {/* Responsive Data Display */}
-        <>
-          {/* Mobile: Card-based layout */}
-          <div className={adminMobileClasses.mobileOnly}>
-            <MobileArticlesList />
-          </div>
-          
-          {/* Desktop: Traditional table */}
-          <div className={adminMobileClasses.desktopOnly}>
-            <DesktopArticlesTable />
-          </div>
-        </>
+        {/* Responsive Data Display - CSS only */}
+        {/* Mobile: Card-based layout */}
+        <div className="md:hidden">
+          <MobileArticlesList />
+        </div>
 
-        {/* Pagination */}
-        <div className={`flex items-center justify-between space-x-2 py-4 ${isMobile ? 'flex-col space-x-0 space-y-4' : ''}`}>
+        {/* Desktop: Traditional table */}
+        <div className="hidden md:block">
+          <DesktopArticlesTable />
+        </div>
+
+        {/* Pagination - CSS responsive */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-4">
           <div className="text-sm text-muted-foreground">
             {selectedArticles.length} of {articles.length} row(s) selected.
           </div>
-          <div className={`flex items-center space-x-2 ${isMobile ? 'w-full justify-between' : ''}`}>
-            <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex items-center gap-2">
               <p className="text-sm font-medium">Rows per page</p>
               <Select value={itemsPerPage.toString()} onValueChange={(value) => onItemsPerPageChange?.(parseInt(value))}>
                 <SelectTrigger className="h-8 w-[70px] focus:ring-0 focus:ring-offset-0">
@@ -593,7 +603,7 @@ export function ArticlesTableMobile({
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">
               Page {currentPage} of {totalPages}
             </div>
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center gap-1">
               <Button
                 variant="outline"
                 size="sm"

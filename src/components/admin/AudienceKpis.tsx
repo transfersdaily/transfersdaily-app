@@ -91,7 +91,7 @@ interface AudienceKpisProps {
 export function AudienceKpis({ kpis, isLoading }: AudienceKpisProps) {
   if (isLoading || !kpis) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-4">
         {Array.from({ length: 5 }).map((_, i) => (
           <AudienceKpiSkeleton key={i} />
         ))}
@@ -100,7 +100,7 @@ export function AudienceKpis({ kpis, isLoading }: AudienceKpisProps) {
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-4">
       {KPI_DEFINITIONS.map((def) => {
         const metric = kpis[def.key]
         const Icon = def.icon
