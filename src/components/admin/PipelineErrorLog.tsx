@@ -124,7 +124,7 @@ export function PipelineErrorLog({ errors, isLoading }: PipelineErrorLogProps) {
 
   if (isLoading) {
     return (
-      <Card className="bg-white border border-gray-200 shadow-sm">
+      <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
@@ -143,7 +143,7 @@ export function PipelineErrorLog({ errors, isLoading }: PipelineErrorLogProps) {
   }
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <AlertCircle className="h-5 w-5" />
@@ -255,14 +255,14 @@ export function PipelineErrorLog({ errors, isLoading }: PipelineErrorLogProps) {
                                 : truncateMessage(error.errorMessage, 80)}
                             </div>
                             {isExpanded && (
-                              <pre className="mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-xs whitespace-pre-wrap break-words max-w-lg">
+                              <pre className="mt-1 p-2 bg-[#222222] border border-[#2a2a2a] rounded text-xs whitespace-pre-wrap break-words max-w-lg text-gray-300">
                                 {error.errorMessage}
                               </pre>
                             )}
                           </TableCell>
                           <TableCell>
                             {error.resolved ? (
-                              <Badge className="bg-green-100 text-green-700 border-green-200 hover:bg-green-100">
+                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20">
                                 Resolved
                               </Badge>
                             ) : (
