@@ -3,111 +3,6 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { adminApi } from '@/lib/api'
 import { useArticleViews } from '@/hooks/use-content-analytics'
 
-// Generate real stats from articles data
-function generateStatsFromArticles(articles: any[], status: string = 'draft') {
-  console.log('Generating stats for articles:', articles.length, 'status:', status)
-  
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-  const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
-  
-  console.log('Date ranges:', { today, weekAgo, monthAgo })
-  
-  // Use published_at for published articles, created_at for others
-  const dateField = status === 'published' ? 'published_at' : 'created_at'
-  console.log('Using date field:', dateField)
-  
-  // Count articles by time periods with better date parsing
-  const createdToday = articles.filter(a => {
-    const dateValue = a[dateField]
-    if (!dateValue) return false
-    const created = new Date(dateValue)
-    const isToday = created >= today && created < new Date(today.getTime() + 24 * 60 * 60 * 1000)
-    if (isToday) console.log(`Article ${dateField} today:`, a.title, created)
-    return isToday
-  }).length
-  
-  const createdThisWeek = articles.filter(a => {
-    const dateValue = a[dateField]
-    if (!dateValue) return false
-    const created = new Date(dateValue)
-    const isThisWeek = created >= weekAgo
-    return isThisWeek
-  }).length
-  
-  const createdThisMonth = articles.filter(a => {
-    const dateValue = a[dateField]
-    if (!dateValue) return false
-    const created = new Date(dateValue)
-    const isThisMonth = created >= monthAgo
-    return isThisMonth
-  }).length
-  
-  console.log('Stats calculated:', { createdToday, createdThisWeek, createdThisMonth })
-  
-  // Count by category
-  const categoryCount: Record<string, number> = {}
-  articles.forEach(a => {
-    const category = a.category || 'Other'
-    categoryCount[category] = (categoryCount[category] || 0) + 1
-  })
-  
-  const byCategory = Object.entries(categoryCount).map(([name, value], index) => ({
-    name,
-    value,
-    color: ['hsl(330 81% 60%)', 'hsl(346 77% 49%)', 'hsl(351 83% 74%)'][index % 3]
-  }))
-  
-  // Count by league
-  const leagueCount: Record<string, number> = {}
-  articles.forEach(a => {
-    if (a.league) {
-      leagueCount[a.league] = (leagueCount[a.league] || 0) + 1
-    }
-  })
-  
-  const byLeague = Object.entries(leagueCount).map(([name, value]) => ({ name, value }))
-  
-  // Count by transfer status
-  const statusCount: Record<string, number> = {}
-  articles.forEach(a => {
-    const status = a.transfer_status || 'Unknown'
-    statusCount[status] = (statusCount[status] || 0) + 1
-  })
-  
-  const byStatus = Object.entries(statusCount).map(([name, value], index) => ({
-    name: name.charAt(0).toUpperCase() + name.slice(1),
-    value,
-    color: ['hsl(330 81% 60%)', 'hsl(346 77% 49%)', 'hsl(351 83% 74%)', 'hsl(338 71% 37%)'][index % 4]
-  }))
-  
-  // Generate daily creation data for last 7 days
-  const dailyCreation = Array.from({ length: 7 }, (_, i) => {
-    const date = new Date(today.getTime() - (6 - i) * 24 * 60 * 60 * 1000)
-    const dayArticles = articles.filter(a => {
-      const created = new Date(a.created_at)
-      return created.toDateString() === date.toDateString()
-    })
-    
-    return {
-      date: date.toLocaleDateString('en-US', { weekday: 'short' }),
-      count: dayArticles.length
-    }
-  })
-  
-  return {
-    totalArticles: articles.length,
-    createdToday,
-    createdThisWeek,
-    createdThisMonth,
-    byCategory,
-    byLeague,
-    dailyCreation,
-    byStatus
-  }
-}
-
 export interface UseArticlesParams {
   status: 'draft' | 'published' | 'scheduled'
   initialSortBy?: string
@@ -166,58 +61,58 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
   const loadArticles = async () => {
     try {
       setIsLoading(true)
-      const response = await adminApi.getArticles({
-        page: currentPage,
-        limit: itemsPerPage,
-        search: searchTerm || undefined,
-        category: categoryFilter !== 'all' ? categoryFilter : undefined,
-        league: leagueFilter !== 'all' ? leagueFilter : undefined,
-        status: status, // This will be 'draft', 'published', or 'scheduled'
-        transfer_status: statusFilter !== 'all' ? statusFilter : undefined,
-        sortBy: sortBy,
-        sortOrder: sortOrder
-      })
-      
-      console.log('API Response:', response)
-      console.log('Articles received:', response.articles?.length || 0)
-      if (response.articles?.length > 0) {
-        console.log('Sample article:', response.articles[0])
-        console.log('Sample article date fields:', {
-          created_at: response.articles[0].created_at,
-          published_at: response.articles[0].published_at,
-          published_date: response.articles[0].published_date,
-          createdAt: response.articles[0].createdAt,
-          publishedAt: response.articles[0].publishedAt
-        })
-      }
-      
+
+      // Fetch articles (paginated) and full stats in parallel
+      const [response, fullStats] = await Promise.all([
+        adminApi.getArticles({
+          page: currentPage,
+          limit: itemsPerPage,
+          search: searchTerm || undefined,
+          category: categoryFilter !== 'all' ? categoryFilter : undefined,
+          league: leagueFilter !== 'all' ? leagueFilter : undefined,
+          status: status,
+          transfer_status: statusFilter !== 'all' ? statusFilter : undefined,
+          sortBy: sortBy,
+          sortOrder: sortOrder
+        }),
+        adminApi.getDashboardStats().catch(() => null),
+      ])
+
       setArticles(response.articles)
       setTotalArticles(response.pagination.total)
-      
-      // Use stats from API response if available, otherwise generate from articles
-      if (response.stats) {
-        console.log('Using API stats:', response.stats)
-        // Map API stats to expected format
-        const mappedStats = {
-          totalArticles: response.stats.totalArticles || response.articles.length,
-          createdToday: response.stats.createdToday || 0,
-          createdThisWeek: response.stats.createdThisWeek || 0,
-          createdThisMonth: response.stats.createdThisMonth || 0,
-          byCategory: response.stats.byCategory || [],
-          byLeague: response.stats.byLeague || [],
-          dailyCreation: response.stats.dailyCreation || [],
-          byStatus: response.stats.byStatus || []
-        }
-        console.log('Mapped stats:', mappedStats)
-        setStatsData(mappedStats)
+
+      // Use full stats from the dashboard endpoint (covers ALL articles, not just current page)
+      if (fullStats) {
+        const total = status === 'published'
+          ? fullStats.publishedArticles
+          : status === 'draft'
+            ? fullStats.draftArticles
+            : fullStats.totalArticles
+
+        setStatsData({
+          totalArticles: total || response.pagination.total,
+          createdToday: fullStats.createdToday || 0,
+          createdThisWeek: fullStats.createdThisWeek || 0,
+          createdThisMonth: fullStats.createdThisMonth || 0,
+          byCategory: fullStats.byCategory || [],
+          byLeague: fullStats.byLeague || [],
+          dailyCreation: fullStats.dailyActivity || [],
+          byStatus: []
+        })
       } else {
-        console.log('Generating stats from articles')
-        const realStats = generateStatsFromArticles(response.articles, status)
-        console.log('Generated stats:', realStats)
-        setStatsData(realStats)
+        // Fallback: use pagination total as the main stat
+        setStatsData({
+          totalArticles: response.pagination.total,
+          createdToday: 0,
+          createdThisWeek: 0,
+          createdThisMonth: 0,
+          byCategory: [],
+          byLeague: [],
+          dailyCreation: [],
+          byStatus: []
+        })
       }
     } catch (error) {
-      console.error('Error loading articles:', error)
       setArticles([])
       setTotalArticles(0)
       setStatsData({
