@@ -22,16 +22,16 @@ function PlatformRow({ stat }: { stat: PlatformAggregateStats }) {
       : 0
 
   return (
-    <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+    <div className="flex items-center justify-between py-2 border-b border-[#2a2a2a] last:border-0">
       <div className="flex items-center gap-3">
         <span className="text-xs font-mono font-medium text-gray-500 w-6 text-center">
           {PLATFORM_ICONS[stat.platform] ?? stat.platform}
         </span>
-        <span className="text-sm font-medium text-gray-900">{stat.label}</span>
+        <span className="text-sm font-medium text-gray-100">{stat.label}</span>
       </div>
       <div className="flex items-center gap-2">
         {stat.attempted === 0 ? (
-          <span className="text-xs text-gray-400">No posts</span>
+          <span className="text-xs text-gray-500">No posts</span>
         ) : (
           <>
             <span className="text-xs text-gray-500">
@@ -41,10 +41,10 @@ function PlatformRow({ stat }: { stat: PlatformAggregateStats }) {
               variant="outline"
               className={
                 successRate >= 90
-                  ? "text-[10px] px-1.5 py-0 bg-green-50 text-green-700 border-green-200"
+                  ? "text-[10px] px-1.5 py-0 bg-green-500/20 text-green-400 border-green-500/30"
                   : successRate >= 50
-                    ? "text-[10px] px-1.5 py-0 bg-amber-50 text-amber-700 border-amber-200"
-                    : "text-[10px] px-1.5 py-0 bg-red-50 text-red-700 border-red-200"
+                    ? "text-[10px] px-1.5 py-0 bg-amber-500/20 text-amber-400 border-amber-500/30"
+                    : "text-[10px] px-1.5 py-0 bg-red-500/20 text-red-400 border-red-500/30"
               }
             >
               {successRate}%
@@ -61,12 +61,12 @@ export function SocialStatsCard() {
   const { data, isLoading, isError } = useSocialStats(period)
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Share2 className="h-4 w-4 text-muted-foreground" />
-            <CardTitle className="text-sm font-medium text-muted-foreground">
+            <Share2 className="h-4 w-4 text-gray-400" />
+            <CardTitle className="text-sm font-medium text-gray-400">
               Social Media
             </CardTitle>
           </div>
@@ -75,8 +75,8 @@ export function SocialStatsCard() {
               onClick={() => setPeriod("7d")}
               className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                 period === "7d"
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  ? "bg-white text-[#0a0a0a]"
+                  : "bg-[#222222] text-gray-400 hover:bg-[#2a2a2a]"
               }`}
             >
               7d
@@ -85,8 +85,8 @@ export function SocialStatsCard() {
               onClick={() => setPeriod("30d")}
               className={`text-[10px] px-2 py-0.5 rounded-full transition-colors ${
                 period === "30d"
-                  ? "bg-gray-900 text-white"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  ? "bg-white text-[#0a0a0a]"
+                  : "bg-[#222222] text-gray-400 hover:bg-[#2a2a2a]"
               }`}
             >
               30d
@@ -108,7 +108,7 @@ export function SocialStatsCard() {
             ))}
           </div>
         ) : isError ? (
-          <p className="text-sm text-muted-foreground py-4 text-center">
+          <p className="text-sm text-gray-400 py-4 text-center">
             Failed to load social stats
           </p>
         ) : data ? (
@@ -119,7 +119,7 @@ export function SocialStatsCard() {
               ))}
             </div>
             {data.totals.attempted > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500">
+              <div className="mt-3 pt-3 border-t border-[#2a2a2a] flex items-center justify-between text-xs text-gray-500">
                 <span>
                   Total: {data.totals.succeeded}/{data.totals.attempted} posts
                 </span>
@@ -139,7 +139,7 @@ export function SocialStatsCard() {
 
 export function SocialStatsCardSkeleton() {
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <Skeleton className="h-4 w-4" />

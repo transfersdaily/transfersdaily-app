@@ -21,9 +21,9 @@ function formatRelativeTime(dateString: string): string {
 }
 
 function getSuccessRateColor(rate: number): string {
-  if (rate >= 90) return "text-green-600"
-  if (rate >= 70) return "text-amber-600"
-  return "text-red-600"
+  if (rate >= 90) return "text-green-400"
+  if (rate >= 70) return "text-amber-400"
+  return "text-red-400"
 }
 
 interface PipelineHealthCardProps {
@@ -33,7 +33,7 @@ interface PipelineHealthCardProps {
 export function PipelineHealthCard({ health }: PipelineHealthCardProps) {
   if (!health) {
     return (
-      <Card className="h-[140px] bg-white border border-gray-200 shadow-sm">
+      <Card className="h-[140px] bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
         <CardContent className="p-5 h-full flex flex-col">
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Pipeline Health</span>
@@ -50,7 +50,7 @@ export function PipelineHealthCard({ health }: PipelineHealthCardProps) {
   const rateColor = getSuccessRateColor(health.successRate24h)
 
   return (
-    <Card className="h-[140px] bg-white border border-gray-200 shadow-sm">
+    <Card className="h-[140px] bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardContent className="p-5 h-full flex flex-col">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Pipeline Health</span>
@@ -68,7 +68,7 @@ export function PipelineHealthCard({ health }: PipelineHealthCardProps) {
               {health.failureCount24h} failure{health.failureCount24h !== 1 ? "s" : ""}
             </Badge>
           ) : (
-            <Badge className="text-[10px] px-1.5 py-0 bg-green-100 text-green-700 border-green-200 hover:bg-green-100">
+            <Badge className="text-[10px] px-1.5 py-0 bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20">
               0 failures
             </Badge>
           )}

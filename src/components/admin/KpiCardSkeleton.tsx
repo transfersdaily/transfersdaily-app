@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 
 export function KpiCardSkeleton() {
   return (
-    <Card className="h-[140px] bg-white border border-gray-200 shadow-sm">
+    <Card className="h-[140px] bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardContent className="p-5 h-full flex flex-col">
         <div className="flex items-center justify-between">
           <Skeleton className="h-4 w-24" />
