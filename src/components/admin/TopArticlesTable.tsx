@@ -88,7 +88,7 @@ export function TopArticlesTable({ articles, isLoading }: TopArticlesTableProps)
   }
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle>Top Articles</CardTitle>
         <CardDescription>Most viewed articles in selected period</CardDescription>

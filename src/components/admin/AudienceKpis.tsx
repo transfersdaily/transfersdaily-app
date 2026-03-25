@@ -40,9 +40,9 @@ const KPI_DEFINITIONS: KpiDef[] = [
 ]
 
 function bounceRateColor(rate: number): string {
-  if (rate < 40) return 'text-green-600'
-  if (rate < 60) return 'text-yellow-600'
-  return 'text-red-600'
+  if (rate < 40) return 'text-green-400'
+  if (rate < 60) return 'text-yellow-400'
+  return 'text-red-400'
 }
 
 function ChangeIndicator({ change, invertChange }: { change: number; invertChange?: boolean }) {
@@ -56,7 +56,7 @@ function ChangeIndicator({ change, invertChange }: { change: number; invertChang
   // For bounce rate, negative change (decrease) is good (green)
   const isGood = invertChange ? !isPositive : isPositive
 
-  const colorClass = isGood ? 'text-green-600' : 'text-red-600'
+  const colorClass = isGood ? 'text-green-400' : 'text-red-400'
   const Icon = isPositive ? TrendingUp : TrendingDown
   const sign = isPositive ? '+' : ''
 
@@ -70,7 +70,7 @@ function ChangeIndicator({ change, invertChange }: { change: number; invertChang
 
 function AudienceKpiSkeleton() {
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardContent className="p-5">
         <div className="flex items-center justify-between">
           <Skeleton className="h-4 w-20" />
@@ -107,7 +107,7 @@ export function AudienceKpis({ kpis, isLoading }: AudienceKpisProps) {
         const isBounceRate = def.key === 'bounceRate'
 
         return (
-          <Card key={def.key} className="bg-white border border-gray-200 shadow-sm">
+          <Card key={def.key} className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{def.label}</span>

@@ -21,7 +21,7 @@ export function TrafficChart({ timeSeries, isLoading, dateRange }: TrafficChartP
   const hasData = timeSeries && timeSeries.length > 0
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle>Traffic Overview</CardTitle>
         <CardDescription>{dateRange || 'Select a date range'}</CardDescription>
@@ -36,7 +36,7 @@ export function TrafficChart({ timeSeries, isLoading, dateRange }: TrafficChartP
         ) : (
           <ChartContainer config={chartConfig} className="h-[350px] w-full">
             <AreaChart data={timeSeries} margin={{ left: 12, right: 12, top: 12, bottom: 12 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" />
               <XAxis
                 dataKey="label"
                 tickLine={false}
