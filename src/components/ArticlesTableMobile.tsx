@@ -48,6 +48,7 @@ import { useIsMobile, adminMobileClasses, formatForMobile } from "@/lib/mobile-u
 interface Article {
   id: string
   title: string
+  slug?: string
   category: string
   subcategory: string
   league: string
@@ -94,6 +95,7 @@ interface ArticlesTableMobileProps {
   onSort?: (column: string) => void
   itemsPerPage?: number
   onItemsPerPageChange?: (items: number) => void
+  articleViews?: Record<string, number>
 }
 
 export function ArticlesTableMobile({
@@ -125,6 +127,7 @@ export function ArticlesTableMobile({
   onSort,
   itemsPerPage = 20,
   onItemsPerPageChange,
+  articleViews,
 }: ArticlesTableMobileProps) {
   const isMobile = useIsMobile()
   const totalPages = Math.ceil(totalArticles / itemsPerPage)
@@ -342,10 +345,11 @@ export function ArticlesTableMobile({
             </TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Translations</TableHead>
+            <TableHead className="text-right">Views</TableHead>
             <TableHead>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 className="h-8 p-0"
                 onClick={() => onSort?.(pageType === 'published' ? 'published_at' : 'created_at')}
               >
@@ -390,6 +394,11 @@ export function ArticlesTableMobile({
                   <Languages className="h-3 w-3" />
                   <span className="text-sm">{getTranslationCount(article)}</span>
                 </div>
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
+                {article.slug && articleViews?.[article.slug] !== undefined
+                  ? articleViews[article.slug].toLocaleString()
+                  : '-'}
               </TableCell>
               <TableCell>
                 {(() => {

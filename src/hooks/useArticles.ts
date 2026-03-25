@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { adminApi } from '@/lib/api'
+import { useArticleViews } from '@/hooks/use-content-analytics'
 
 // Generate real stats from articles data
 function generateStatsFromArticles(articles: any[], status: string = 'draft') {
@@ -131,6 +132,14 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
   const [itemsPerPage, setItemsPerPage] = useState(parseInt(searchParams.get('limit') || '20'))
   const [isLoading, setIsLoading] = useState(true)
   const [statsData, setStatsData] = useState<any>(null)
+
+  // Fetch GA4 article views for loaded articles
+  const slugs = useMemo(
+    () => articles.filter((a: any) => a.slug).map((a: any) => a.slug as string),
+    [articles]
+  )
+  const { data: articleViewsData } = useArticleViews(slugs)
+  const articleViews: Record<string, number> = articleViewsData?.views ?? {}
 
   // Update URL when state changes
   const updateURL = (params: Record<string, string | number>) => {
@@ -334,7 +343,8 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
     itemsPerPage,
     isLoading,
     statsData,
-    
+    articleViews,
+
     // Setters
     setSelectedArticles,
     setCurrentPage: handlePageChange,

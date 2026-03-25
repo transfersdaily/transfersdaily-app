@@ -45,6 +45,7 @@ export function ArticlesPageLayout({
     itemsPerPage,
     isLoading,
     statsData,
+    articleViews,
     setSelectedArticles: setInternalSelectedArticles,
     setCurrentPage,
     setSearchInput,
@@ -182,6 +183,7 @@ export function ArticlesPageLayout({
           onResetFilters={handleResetFilters}
           onBulkTranslate={onBulkTranslate}
           onBulkPublish={onBulkPublish}
+          articleViews={articleViews}
         />
       </div>
     </AdminPageLayout>
