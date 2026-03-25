@@ -29,8 +29,8 @@
 - [ ] **PIPE-04**: Admin sees source health heatmap — 10 sources x 7 days grid, color-coded by status
 
 ### Social Media Results (SOCL)
-- [ ] **SOCL-01**: Admin sees social media posting results — success/failure per platform (Twitter, Bluesky, Facebook, Threads) per article
-- [ ] **SOCL-02**: Admin sees aggregate social posting stats — posts attempted, succeeded, failed by platform over last 7/30 days
+- [x] **SOCL-01**: Admin sees social media posting results — success/failure per platform (Twitter, Bluesky, Facebook, Threads) per article
+- [x] **SOCL-02**: Admin sees aggregate social posting stats — posts attempted, succeeded, failed by platform over last 7/30 days
 
 ### UI/UX Premium Redesign (UXUI)
 - [ ] **UXUI-01**: Admin dashboard uses UI/UX Pro Max design system — premium editorial aesthetic, not a basic template
@@ -84,8 +84,8 @@
 | PIPE-02 | Phase 4: Pipeline & Error Monitoring | Pending |
 | PIPE-03 | Phase 4: Pipeline & Error Monitoring | Pending |
 | PIPE-04 | Phase 4: Pipeline & Error Monitoring | Pending |
-| SOCL-01 | Phase 5: Social Media Results | Pending |
-| SOCL-02 | Phase 5: Social Media Results | Pending |
+| SOCL-01 | Phase 5: Social Media Results | Complete |
+| SOCL-02 | Phase 5: Social Media Results | Complete |
 | UXUI-02 | Phase 6: UI Polish & Responsive | Pending |
 | UXUI-03 | Phase 6: UI Polish & Responsive | Pending |
 | UXUI-05 | Phase 6: UI Polish & Responsive | Pending |

@@ -1,12 +1,22 @@
 "use client"
 
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Activity,
   FileText,
   Radio,
   TrendingUp,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Search,
+  ChevronDown,
 } from "lucide-react"
 import type { PipelineStatsResponse } from "@/types/pipeline"
 
@@ -26,12 +36,67 @@ function formatRelativeTime(dateString: string): string {
   return date.toLocaleDateString()
 }
 
+type SortKey = 'sourceName' | 'articlesTotal' | 'articles24h' | 'articles7d' | 'published24h' | 'drafts24h' | 'lastArticleAt'
+type SortDir = 'asc' | 'desc'
+
+function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
+  if (column !== sortKey) return <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
+  return sortDir === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />
+}
+
 interface PipelineMonitorProps {
   stats: PipelineStatsResponse | null
   isLoading: boolean
 }
 
 export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
+  const [sortKey, setSortKey] = useState<SortKey>('articles24h')
+  const [sortDir, setSortDir] = useState<SortDir>('desc')
+  const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [perPage, setPerPage] = useState(10)
+
+  const filtered = useMemo(() => {
+    if (!stats || stats.sources.length === 0) return []
+    let result = [...stats.sources]
+    if (search.trim()) {
+      const q = search.toLowerCase()
+      result = result.filter(s => s.sourceName.toLowerCase().includes(q))
+    }
+    result.sort((a, b) => {
+      let cmp = 0
+      switch (sortKey) {
+        case 'sourceName': cmp = a.sourceName.localeCompare(b.sourceName); break
+        case 'articlesTotal': cmp = a.articlesTotal - b.articlesTotal; break
+        case 'articles24h': cmp = a.articles24h - b.articles24h; break
+        case 'articles7d': cmp = a.articles7d - b.articles7d; break
+        case 'published24h': cmp = a.published24h - b.published24h; break
+        case 'drafts24h': cmp = a.drafts24h - b.drafts24h; break
+        case 'lastArticleAt': {
+          const aTime = a.lastArticleAt ? new Date(a.lastArticleAt).getTime() : 0
+          const bTime = b.lastArticleAt ? new Date(b.lastArticleAt).getTime() : 0
+          cmp = aTime - bTime
+          break
+        }
+      }
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+    return result
+  }, [stats, search, sortKey, sortDir])
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage))
+  const paged = filtered.slice((page - 1) * perPage, page * perPage)
+
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('desc')
+    }
+    setPage(1)
+  }
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -106,10 +171,6 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
     },
   ]
 
-  const sortedSources = [...stats.sources].sort(
-    (a, b) => b.articles24h - a.articles24h
-  )
-
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
@@ -141,59 +202,138 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b text-left text-muted-foreground">
-                  <th className="pb-2 pr-4">Source</th>
-                  <th className="pb-2 pr-4 text-right">Total</th>
-                  <th className="pb-2 pr-4 text-right">24h</th>
-                  <th className="pb-2 pr-4 text-right">7d</th>
-                  <th className="pb-2 pr-4 text-right">Published (24h)</th>
-                  <th className="pb-2 pr-4 text-right">Drafts (24h)</th>
-                  <th className="pb-2">Last Article</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedSources.map((source) => {
-                  const hasDraftImbalance =
-                    source.drafts24h > source.published24h
-                  return (
-                    <tr
-                      key={source.sourceName}
-                      className={`border-b last:border-0 ${
-                        hasDraftImbalance ? "bg-amber-50" : ""
-                      }`}
-                    >
-                      <td className="py-2 pr-4 font-medium">
-                        {source.sourceName}
-                      </td>
-                      <td className="py-2 pr-4 text-right tabular-nums">
-                        {source.articlesTotal}
-                      </td>
-                      <td className="py-2 pr-4 text-right tabular-nums">
-                        {source.articles24h}
-                      </td>
-                      <td className="py-2 pr-4 text-right tabular-nums">
-                        {source.articles7d}
-                      </td>
-                      <td className="py-2 pr-4 text-right tabular-nums">
-                        {source.published24h}
-                      </td>
-                      <td className="py-2 pr-4 text-right tabular-nums">
-                        {source.drafts24h}
-                      </td>
-                      <td className="py-2 whitespace-nowrap text-muted-foreground">
-                        {source.lastArticleAt
-                          ? formatRelativeTime(source.lastArticleAt)
-                          : "Never"}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+          {/* Search */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Filter sources..."
+                value={search}
+                onChange={e => { setSearch(e.target.value); setPage(1) }}
+                className="pl-8"
+              />
+            </div>
           </div>
+
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('sourceName')}>
+                      Source<SortIcon column="sourceName" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('articlesTotal')}>
+                      Total<SortIcon column="articlesTotal" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('articles24h')}>
+                      24h<SortIcon column="articles24h" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('articles7d')}>
+                      7d<SortIcon column="articles7d" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('published24h')}>
+                      Published (24h)<SortIcon column="published24h" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                  <TableHead className="text-right">
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('drafts24h')}>
+                      Drafts (24h)<SortIcon column="drafts24h" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                  <TableHead>
+                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('lastArticleAt')}>
+                      Last Article<SortIcon column="lastArticleAt" sortKey={sortKey} sortDir={sortDir} />
+                    </Button>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {paged.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
+                      No matching sources
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  paged.map((source) => {
+                    const hasDraftImbalance = source.drafts24h > source.published24h
+                    return (
+                      <TableRow
+                        key={source.sourceName}
+                        className={hasDraftImbalance ? "bg-amber-50" : ""}
+                      >
+                        <TableCell className="font-medium">
+                          {source.sourceName}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {source.articlesTotal}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {source.articles24h}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {source.articles7d}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {source.published24h}
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">
+                          {source.drafts24h}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap text-muted-foreground">
+                          {source.lastArticleAt
+                            ? formatRelativeTime(source.lastArticleAt)
+                            : "Never"}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Pagination */}
+          {filtered.length > 0 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
+              <span className="text-sm text-muted-foreground">
+                {filtered.length} source{filtered.length !== 1 ? 's' : ''}
+              </span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm">Rows</span>
+                  <Select value={perPage.toString()} onValueChange={v => { setPerPage(Number(v)); setPage(1) }}>
+                    <SelectTrigger className="h-8 w-[65px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent side="top">
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="25">25</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <span className="text-sm text-muted-foreground">
+                  Page {page} of {totalPages}
+                </span>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>
+                  <ChevronDown className="h-4 w-4 rotate-90" />
+                </Button>
+                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
+                  <ChevronDown className="h-4 w-4 -rotate-90" />
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

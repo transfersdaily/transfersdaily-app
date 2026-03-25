@@ -91,7 +91,9 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Admin sees per-article social media posting results showing success/failure for each platform (Twitter, Bluesky, Facebook, Threads)
   2. Admin sees aggregate social posting stats -- posts attempted, succeeded, and failed by platform over the last 7 and 30 days
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [x] 05-01 — Types, API route, TanStack hook, SocialStatsCard, SocialPostStatus, dashboard + editor integration
 **UI hint**: yes
 
 ### Phase 6: UI Polish & Responsive
@@ -117,5 +119,5 @@ Note: Phases 4 and 5 depend only on Phase 1 (not on 2/3), so they could theoreti
 | 2. Traffic & Audience Analytics | 0/2 | Planning complete | - |
 | 3. Content Analytics | 0/2 | Planning complete | - |
 | 4. Pipeline & Error Monitoring | 0/2 | Planning complete | - |
-| 5. Social Media Results | 0/0 | Not started | - |
+| 5. Social Media Results | 1/1 | Complete | 2026-03-25 |
 | 6. UI Polish & Responsive | 0/0 | Not started | - |
