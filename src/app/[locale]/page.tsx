@@ -155,9 +155,8 @@ export default async function HomePage({
       />
 
       <div className="container mx-auto">
-        {/* Hero + Latest + Sidebar */}
         <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-          {/* Main Content */}
+          {/* Main Content Column */}
           <div className="col-span-1 lg:col-span-7">
             <HeroSection
               featuredTransfer={initialData.featuredTransfer}
@@ -172,26 +171,10 @@ export default async function HomePage({
               dict={dict}
               t={t}
             />
-          </div>
 
-          {/* Sidebar */}
-          <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-            <div className="space-y-6 pt-6">
-              <AdSlot placement="homepage.sidebar-top" />
-              <Suspense fallback={<SidebarSkeleton />}>
-                <Sidebar locale={locale} dict={dict} />
-              </Suspense>
-              <AdSlot placement="homepage.sidebar-middle-1" />
-            </div>
-          </aside>
-        </div>
+            <AdSlot placement="homepage.pre-latest" />
 
-        {/* Full-width ad between sections */}
-        <AdSlot placement="homepage.pre-latest" />
-
-        {/* League Sections -- full width, no sidebar */}
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6">
-          <div className="col-span-1 lg:col-span-7">
+            {/* League Sections */}
             {initialData.leagues.map((league) => (
               <LeagueSection
                 key={league.id}
@@ -204,6 +187,17 @@ export default async function HomePage({
               />
             ))}
           </div>
+
+          {/* Sidebar Column — sticky, spans full height */}
+          <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
+            <div className="sticky top-20 space-y-6 pt-6">
+              <AdSlot placement="homepage.sidebar-top" />
+              <Suspense fallback={<SidebarSkeleton />}>
+                <Sidebar locale={locale} dict={dict} />
+              </Suspense>
+              <AdSlot placement="homepage.sidebar-middle-1" />
+            </div>
+          </aside>
         </div>
       </div>
 
