@@ -47,7 +47,10 @@ Plans:
   2. Admin sees audience KPIs (users, sessions, page views, avg duration, bounce rate) that load within 2 seconds on repeat visits (TanStack Query cache)
   3. Admin sees top 10 most-viewed articles for the selected date range with view counts
   4. Changing the date range selector updates all analytics sections on the page simultaneously
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — Data layer: analytics types, traffic API (batchRunReports + unstable_cache), top-articles API (slug matching + Supabase titles), TanStack Query hooks, date range hook
+- [ ] 02-02-PLAN.md — UI: DateRangeSelector, AudienceKpis (5 cards with % change), TrafficChart (AreaChart dual y-axis), TopArticlesTable, analytics page rewrite
 **UI hint**: yes
 
 ### Phase 3: Content Analytics
@@ -105,7 +108,7 @@ Note: Phases 4 and 5 depend only on Phase 1 (not on 2/3), so they could theoreti
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Dashboard Foundation | 0/3 | Planning complete | - |
-| 2. Traffic & Audience Analytics | 0/0 | Not started | - |
+| 2. Traffic & Audience Analytics | 0/2 | Planning complete | - |
 | 3. Content Analytics | 0/0 | Not started | - |
 | 4. Pipeline & Error Monitoring | 0/0 | Not started | - |
 | 5. Social Media Results | 0/0 | Not started | - |
