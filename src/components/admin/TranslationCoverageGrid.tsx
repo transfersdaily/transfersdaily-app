@@ -10,14 +10,14 @@ interface TranslationCoverageGridProps {
 }
 
 function getCoverageTier(percent: number) {
-  if (percent >= 90) return { text: 'text-green-600', bg: 'bg-green-500' }
-  if (percent >= 50) return { text: 'text-amber-600', bg: 'bg-amber-500' }
-  return { text: 'text-red-600', bg: 'bg-red-500' }
+  if (percent >= 90) return { text: 'text-green-400', bg: 'bg-green-500' }
+  if (percent >= 50) return { text: 'text-amber-400', bg: 'bg-amber-500' }
+  return { text: 'text-red-400', bg: 'bg-red-500' }
 }
 
 export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverageGridProps) {
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle>Translation Coverage</CardTitle>
         <CardDescription>
@@ -42,7 +42,7 @@ export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverage
               return (
                 <div
                   key={lang.language}
-                  className="rounded-lg border border-gray-200 p-4 space-y-2"
+                  className="rounded-lg border border-[#2a2a2a] bg-[#222222] p-4 space-y-2"
                 >
                   <p className="font-semibold text-sm">{lang.label}</p>
                   <p className="text-xs text-muted-foreground">
@@ -51,7 +51,7 @@ export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverage
                   <p className={`text-lg font-bold tabular-nums ${tier.text}`}>
                     {lang.coveragePercent}%
                   </p>
-                  <div className="h-1.5 w-full rounded-full bg-gray-200">
+                  <div className="h-1.5 w-full rounded-full bg-[#2a2a2a]">
                     <div
                       className={`h-full rounded-full transition-all ${tier.bg}`}
                       style={{ width: `${Math.min(lang.coveragePercent, 100)}%` }}

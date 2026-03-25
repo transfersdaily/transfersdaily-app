@@ -20,7 +20,7 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
   const hasData = data && data.length > 0
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle>Articles Per Day</CardTitle>
         <CardDescription>Last 30 days</CardDescription>
@@ -35,7 +35,7 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
         ) : (
           <ChartContainer config={chartConfig} className="h-[300px] w-full">
             <AreaChart data={data} margin={{ left: 12, right: 12, top: 12, bottom: 12 }}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#374151" />
               <XAxis
                 dataKey="label"
                 tickLine={false}

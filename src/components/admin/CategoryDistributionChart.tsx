@@ -21,7 +21,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
   const chartHeight = hasData ? Math.max(150, data.length * 40) : 150
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle>Category Distribution</CardTitle>
         <CardDescription>Articles by type</CardDescription>
@@ -40,7 +40,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
               data={data}
               margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#374151" />
               <XAxis type="number" tickLine={false} axisLine={false} className="text-xs" />
               <YAxis
                 type="category"

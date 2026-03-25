@@ -21,7 +21,7 @@ export function LeagueDistributionChart({ data, isLoading }: LeagueDistributionC
   const chartHeight = hasData ? Math.max(200, data.length * 40) : 200
 
   return (
-    <Card className="bg-white border border-gray-200 shadow-sm">
+    <Card className="bg-[#1a1a1a] border border-[#2a2a2a] shadow-sm">
       <CardHeader>
         <CardTitle>League Distribution</CardTitle>
         <CardDescription>Articles by league</CardDescription>
@@ -40,7 +40,7 @@ export function LeagueDistributionChart({ data, isLoading }: LeagueDistributionC
               data={data}
               margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#374151" />
               <XAxis type="number" tickLine={false} axisLine={false} className="text-xs" />
               <YAxis
                 type="category"
