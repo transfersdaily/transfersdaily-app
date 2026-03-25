@@ -63,7 +63,10 @@ Plans:
   3. Admin sees a 30-day time-series chart of articles published per day
   4. Article list table shows per-article view count sourced from GA4 page path matching
   5. Admin sees a translation coverage grid showing article counts per language with untranslated articles highlighted
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 03-01-PLAN.md — Data layer: content analytics types, distribution API (league/category/daily from Supabase), article-views API (GA4 slug matching), translations API, TanStack Query hooks
+- [ ] 03-02-PLAN.md — UI: LeagueDistributionChart, CategoryDistributionChart, ArticlesPerDayChart, TranslationCoverageGrid, content page, articles table views column
 **UI hint**: yes
 
 ### Phase 4: Pipeline & Error Monitoring
@@ -109,7 +112,7 @@ Note: Phases 4 and 5 depend only on Phase 1 (not on 2/3), so they could theoreti
 |-------|----------------|--------|-----------|
 | 1. Dashboard Foundation | 0/3 | Planning complete | - |
 | 2. Traffic & Audience Analytics | 0/2 | Planning complete | - |
-| 3. Content Analytics | 0/0 | Not started | - |
+| 3. Content Analytics | 0/2 | Planning complete | - |
 | 4. Pipeline & Error Monitoring | 0/0 | Not started | - |
 | 5. Social Media Results | 0/0 | Not started | - |
 | 6. UI Polish & Responsive | 0/0 | Not started | - |
