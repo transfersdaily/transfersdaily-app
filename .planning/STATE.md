@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-03-25)
 
 **Core value:** Give the site administrator complete visibility and control over their news platform
-**Current focus:** Phase 3 - Content Analytics
+**Current focus:** Phase 4 - Pipeline & Error Monitoring
 
 ## Current Position
 
-Phase: 3 of 6 (Content Analytics)
-Plan: 2 of 2 in current phase (PHASE COMPLETE)
-Status: Phase 3 Complete
-Last activity: 2026-03-25 — Completed 03-02-PLAN.md
+Phase: 4 of 6 (Pipeline & Error Monitoring)
+Plan: 1 of 2 in current phase
+Status: Executing
+Last activity: 2026-03-25 — Completed 04-01-PLAN.md
 
-Progress: [██████████] 100%
+Progress: [██████████████░░░░░░] 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 3 min
-- Total execution time: 17 min
+- Total plans completed: 6
+- Average duration: 4 min
+- Total execution time: 21 min
 
 **By Phase:**
 
@@ -29,6 +29,7 @@ Progress: [██████████] 100%
 |-------|-------|-------|----------|
 | Phase 1 | 3 | 10 min | 3.3 min |
 | Phase 3 | 2 | 7 min | 3.5 min |
+| Phase 4 | 1 | 4 min | 4 min |
 
 **Recent Trend:**
 - Last 5 plans: -
@@ -62,6 +63,9 @@ Recent decisions affecting current work:
 - [03-02]: Horizontal bar charts use layout=vertical with recharts BarChart
 - [03-02]: Translation coverage tiers: green >=90%, amber >=50%, red <50%
 - [03-02]: Views column shows dash for articles without GA4 data
+- [04-01]: Direct Supabase queries for all pipeline data (no Lambda proxy)
+- [04-01]: Stale drafts (>2h) as failure proxy when pipeline_events table absent
+- [04-01]: Pipeline health embedded in dashboard response for single-request loading
 
 ### Pending Todos
 
@@ -76,5 +80,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-03-25
-Stopped at: Completed 03-02-PLAN.md (Phase 3 complete)
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None
