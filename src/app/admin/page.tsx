@@ -5,6 +5,7 @@ import { KpiCard } from "@/components/admin/KpiCard"
 import { KpiCardSkeleton } from "@/components/admin/KpiCardSkeleton"
 import { DashboardGrid } from "@/components/admin/DashboardGrid"
 import { PipelineHealthCard } from "@/components/admin/PipelineHealthCard"
+import { SocialStatsCard, SocialStatsCardSkeleton } from "@/components/admin/SocialStatsCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent } from "@/components/ui/card"
 import { FileText, TrendingUp, Calendar, Inbox } from "lucide-react"
@@ -62,24 +63,30 @@ export default function AdminDashboard() {
         ) : null}
       </DashboardGrid>
 
-      {/* Pipeline Health */}
+      {/* Pipeline Health & Social Media */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {isLoading ? (
-          <Card className="h-[140px] bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-5 h-full flex flex-col">
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="h-4 w-4" />
-              </div>
-              <Skeleton className="h-8 w-16 mt-1" />
-              <div className="mt-auto flex items-center justify-between">
-                <Skeleton className="h-3 w-24" />
-                <Skeleton className="h-4 w-16" />
-              </div>
-            </CardContent>
-          </Card>
+          <>
+            <Card className="h-[140px] bg-white border border-gray-200 shadow-sm">
+              <CardContent className="p-5 h-full flex flex-col">
+                <div className="flex items-center justify-between">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+                <Skeleton className="h-8 w-16 mt-1" />
+                <div className="mt-auto flex items-center justify-between">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </CardContent>
+            </Card>
+            <SocialStatsCardSkeleton />
+          </>
         ) : data ? (
-          <PipelineHealthCard health={data.pipelineHealth ?? null} />
+          <>
+            <PipelineHealthCard health={data.pipelineHealth ?? null} />
+            <SocialStatsCard />
+          </>
         ) : null}
       </div>
 

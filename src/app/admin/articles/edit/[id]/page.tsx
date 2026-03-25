@@ -45,6 +45,7 @@ import { API_CONFIG, getApiUrl } from "@/lib/config"
 import { useIsMobile } from "@/lib/mobile-utils"
 import { useTranslation } from "@/hooks/useTranslation"
 import { TranslationProgress } from "@/components/ui/translation-progress"
+import { SocialPostStatus } from "@/components/admin/SocialPostStatus"
 
 interface Article {
   uuid: string
@@ -64,6 +65,7 @@ interface Article {
   featured: boolean
   created_at: string
   published_at: string
+  social_media_data?: Record<string, unknown> | null
   translations?: {
     [key: string]: {
       title: string
@@ -743,6 +745,15 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
                     <span>{getTranslationCount()}/5</span>
                   </div>
                 </div>
+                {article.status === "published" && (
+                  <>
+                    <Separator />
+                    <div>
+                      <span className="text-sm text-muted-foreground block mb-1.5">Social Media:</span>
+                      <SocialPostStatus socialMediaData={article.social_media_data} />
+                    </div>
+                  </>
+                )}
                 <Separator />
                 <div className="space-y-3">
                   <div className="text-sm text-muted-foreground">
