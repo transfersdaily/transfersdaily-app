@@ -10,8 +10,10 @@ import { useTrafficData, useTopArticles } from '@/hooks/use-analytics'
 
 function AnalyticsContent() {
   const { days, daysParam, setDays } = useDateRange()
-  const { data: traffic, isLoading: trafficLoading } = useTrafficData(days)
-  const { data: topArticles, isLoading: articlesLoading } = useTopArticles(days)
+  const { data: traffic, isLoading: trafficLoading, error: trafficError } = useTrafficData(days)
+  const { data: topArticles, isLoading: articlesLoading, error: articlesError } = useTopArticles(days)
+
+  const hasError = trafficError || articlesError
 
   return (
     <div className="space-y-6">
@@ -21,24 +23,37 @@ function AnalyticsContent() {
           <h1 className="text-xl md:text-2xl font-bold tracking-tight">Analytics</h1>
           <p className="text-sm text-muted-foreground">Site traffic and audience insights</p>
         </div>
-        <DateRangeSelector days={daysParam} onDaysChange={setDays} />
+        {!hasError && <DateRangeSelector days={daysParam} onDaysChange={setDays} />}
       </div>
 
-      {/* Audience KPIs */}
-      <AudienceKpis kpis={traffic?.kpis} isLoading={trafficLoading} />
+      {hasError ? (
+        <div className="rounded-lg border border-border bg-card p-8 text-center">
+          <h2 className="text-lg font-semibold mb-2">Analytics Not Available</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Google Analytics 4 service account credentials are not configured.
+            Add <code className="text-xs bg-muted px-1 py-0.5 rounded">GOOGLE_SERVICE_ACCOUNT_CREDENTIALS</code> to
+            your Vercel environment variables to enable analytics.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Audience KPIs */}
+          <AudienceKpis kpis={traffic?.kpis} isLoading={trafficLoading} />
 
-      {/* Traffic chart */}
-      <TrafficChart
-        timeSeries={traffic?.timeSeries}
-        isLoading={trafficLoading}
-        dateRange={traffic?.dateRange ?? ''}
-      />
+          {/* Traffic chart */}
+          <TrafficChart
+            timeSeries={traffic?.timeSeries}
+            isLoading={trafficLoading}
+            dateRange={traffic?.dateRange ?? ''}
+          />
 
-      {/* Top articles */}
-      <TopArticlesTable
-        articles={topArticles?.articles}
-        isLoading={articlesLoading}
-      />
+          {/* Top articles */}
+          <TopArticlesTable
+            articles={topArticles?.articles}
+            isLoading={articlesLoading}
+          />
+        </>
+      )}
     </div>
   )
 }

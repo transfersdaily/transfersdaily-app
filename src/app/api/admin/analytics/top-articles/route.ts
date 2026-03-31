@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'ga4_not_configured',
         message: 'GA4 analytics requires Google Service Account credentials.',
-      })
+      }, { status: 503 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -131,7 +131,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'ga4_not_configured',
         message: 'GA4 analytics requires Google Service Account credentials.',
-      })
+      }, { status: 503 })
     }
 
     return NextResponse.json(

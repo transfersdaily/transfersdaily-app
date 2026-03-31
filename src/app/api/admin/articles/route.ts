@@ -35,10 +35,16 @@ export async function GET(request: NextRequest) {
     // Transform Lambda response to frontend expected format
     // Lambda returns: { items: [...], total: 123, page: 1, limit: 20, pages: 7 }
     // Frontend expects: { success: true, data: { articles: [...], pagination: { page, limit, total, totalPages } } }
+    // Map uuid -> id for frontend compatibility
+    const articles = (raw.items || []).map((item: Record<string, unknown>) => ({
+      ...item,
+      id: item.uuid || item.id,
+    }));
+
     return NextResponse.json({
       success: true,
       data: {
-        articles: raw.items || [],
+        articles,
         pagination: {
           page: raw.page || 1,
           limit: raw.limit || 20,
