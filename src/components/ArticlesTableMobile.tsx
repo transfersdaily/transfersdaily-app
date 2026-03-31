@@ -56,6 +56,7 @@ interface Article {
   transfer_status: string
   created_at: string
   published_at?: string
+  publish_error?: string | null
   tags: string[]
   translations?: {
     [key: string]: {
@@ -278,6 +279,9 @@ export function ArticlesTableMobile({
               { label: "Fee", value: formatTransferFee(article.transfer_fee) },
               { label: "Translations", value: `${getTranslationCount(article)}/5` },
               { label: "Date", value: formatMobileDate(dateToShow) },
+              ...(pageType === 'draft' && article.publish_error
+                ? [{ label: "Error", value: article.publish_error }]
+                : []),
             ]}
             actions={getArticleActions(article)}
             badge={{
@@ -389,6 +393,11 @@ export function ArticlesTableMobile({
                 >
                   {article.title}
                 </Link>
+                {pageType === 'draft' && article.publish_error && (
+                  <span className="text-xs text-red-400 mt-0.5 block truncate max-w-[300px]" title={article.publish_error}>
+                    Failed: {article.publish_error}
+                  </span>
+                )}
               </TableCell>
               <TableCell>
                 <Badge variant="outline">{article.category}</Badge>

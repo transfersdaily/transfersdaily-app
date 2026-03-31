@@ -34,6 +34,11 @@ export async function GET(
     }
 
     const data = await response.json();
+    // Wrap raw backend row in the envelope the edit page expects
+    // Edit page checks: data.success && data.data?.article
+    if (data && !data.success && !data.error) {
+      return NextResponse.json({ success: true, data: { article: data } });
+    }
     return NextResponse.json(data);
   } catch (error) {
     console.error('Article GET proxy error:', error);
@@ -75,6 +80,10 @@ export async function PUT(
     }
 
     const data = await response.json();
+    // Wrap raw backend row — edit page checks data.success
+    if (data && !data.success && !data.error) {
+      return NextResponse.json({ success: true, data: { article: data } });
+    }
     return NextResponse.json(data);
   } catch (error) {
     console.error('Article PUT proxy error:', error);
