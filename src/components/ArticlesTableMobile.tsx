@@ -151,17 +151,17 @@ export function ArticlesTableMobile({
   }
 
   const getTranslationCount = (article: Article) => {
-    if (!article.translations) return 1
-
-    let completed = 0
-    const languages = ['en', 'es', 'fr', 'de', 'it']
-
-    if (article.title) {
-      completed = 1
+    // Backend returns translation_count (1 = English only, 5 = all languages)
+    if ((article as Record<string, unknown>).translation_count != null) {
+      return (article as Record<string, unknown>).translation_count as number
     }
 
+    // Fallback: check translations object if available (e.g. edit page)
+    if (!article.translations) return 1
+
+    let completed = 1 // English
+    const languages = ['es', 'fr', 'de', 'it']
     languages.forEach(langCode => {
-      if (langCode === 'en') return
       const translation = article.translations?.[langCode]
       if (translation && translation.title && translation.content) {
         completed++

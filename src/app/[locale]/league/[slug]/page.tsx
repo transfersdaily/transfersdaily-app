@@ -8,24 +8,24 @@ import { API_CONFIG } from '@/lib/config';
 import { SITE_URL, generateSlug } from '@/lib/constants';
 
 // Server-side data fetching for league articles
-async function getLeagueData(leagueSlug: string, language = 'en') {
+async function getLeagueData(leagueSlug: string, language = 'en', page = 1) {
   // Convert slug to proper league name
   const leagueNames: Record<string, string> = {
     'premier-league': 'Premier League',
-    'la-liga': 'La Liga', 
+    'la-liga': 'La Liga',
     'serie-a': 'Serie A',
     'bundesliga': 'Bundesliga',
     'ligue-1': 'Ligue 1'
   }
-  
+
   const leagueName = leagueNames[leagueSlug] || leagueSlug
-  
+
   try {
     // Direct API call to backend (same as homepage)
     const apiUrl = `${API_CONFIG.baseUrl}/public/articles`
     const params = new URLSearchParams({
       limit: '12',
-      page: '1',
+      page: page.toString(),
       status: 'published',
       league: leagueName,
       language: language
@@ -65,22 +65,28 @@ async function getLeagueData(leagueSlug: string, language = 'en') {
         
         return {
           transfers: transformedArticles,
-          leagueName
+          leagueName,
+          pagination: data.data.pagination || {
+            page, limit: 12, total: transformedArticles.length,
+            totalPages: 1, hasNext: false, hasPrev: false
+          }
         }
       }
     } else {
       console.error('❌ SERVER: API request failed:', response.status, response.statusText)
     }
-    
+
     return {
       transfers: [],
-      leagueName
+      leagueName,
+      pagination: { page: 1, limit: 12, total: 0, totalPages: 0, hasNext: false, hasPrev: false }
     }
   } catch (error) {
     console.error('❌ SERVER: Error loading league transfers:', error)
     return {
       transfers: [],
-      leagueName: leagueNames[leagueSlug] || leagueSlug
+      leagueName: leagueNames[leagueSlug] || leagueSlug,
+      pagination: { page: 1, limit: 12, total: 0, totalPages: 0, hasNext: false, hasPrev: false }
     }
   }
 }
@@ -333,24 +339,29 @@ export async function generateMetadata({
 }
 
 // Main component - Server-side rendered like homepage
-export default async function LeaguePage({ 
-  params 
-}: { 
-  params: Promise<{ locale: Locale; slug: string }> 
+export default async function LeaguePage({
+  params,
+  searchParams
+}: {
+  params: Promise<{ locale: Locale; slug: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const { locale, slug } = await params
-  
+  const resolvedSearchParams = await searchParams
+
   // Validate locale
   if (!locales.includes(locale)) {
     notFound()
   }
-  
+
+  const currentPage = parseInt(resolvedSearchParams.page as string) || 1
+
   // Get translations server-side
   const dict = await getDictionary(locale)
   const t = createTranslator(dict)
-  
+
   // Get league data server-side (same pattern as homepage)
-  const { transfers, leagueName } = await getLeagueData(slug, locale)
+  const { transfers, leagueName, pagination } = await getLeagueData(slug, locale, currentPage)
   
   // Generate comprehensive structured data
   const webPageStructuredData = {
@@ -489,13 +500,13 @@ export default async function LeaguePage({
       {/* Ad: Leaderboard at top */}
       
       {/* Client-side component with server-side data */}
-      <LeaguePageClient 
+      <LeaguePageClient
         locale={locale}
         dict={dict}
         initialData={{
           transfers,
-          pagination: {
-            page: 1,
+          pagination: pagination || {
+            page: currentPage,
             limit: 12,
             total: transfers.length,
             totalPages: 1,
@@ -503,7 +514,7 @@ export default async function LeaguePage({
             hasPrev: false
           }
         }}
-        initialPage={1}
+        initialPage={currentPage}
         leagueName={leagueName}
         leagueSlug={slug}
       />
