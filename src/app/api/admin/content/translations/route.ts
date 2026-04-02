@@ -24,7 +24,7 @@ const getCachedTranslations = unstable_cache(
         .eq('status', 'published'),
 
       supabase
-        .from('translations')
+        .from('article_translations')
         .select('language'),
     ])
 

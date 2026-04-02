@@ -64,18 +64,36 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
     }
   }, [currentLocale, pathname, mounted])
 
-  const handleLanguageChange = (languageCode: Locale) => {
+  const handleLanguageChange = async (languageCode: Locale) => {
     // Save to localStorage and cookie
     if (typeof window !== 'undefined') {
       localStorage.setItem('transfersdaily_language', languageCode)
       // Set cookie for middleware
       document.cookie = `locale=${languageCode}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
     }
-    
+
     // Navigate to the new locale
     const pathSegments = pathname.split('/')
     const currentLocale = pathSegments[1]
-    
+
+    // Check if we're on an article page — if so, fetch the translated slug
+    const articleIndex = pathSegments.indexOf('article')
+    if (articleIndex !== -1 && pathSegments[articleIndex + 1]) {
+      const currentSlug = pathSegments[articleIndex + 1]
+      try {
+        const res = await fetch(`/api/article/${encodeURIComponent(currentSlug)}?language=${languageCode}`)
+        if (res.ok) {
+          const data = await res.json()
+          const translatedSlug = data.data?.article?.slug || data.article?.slug
+          if (translatedSlug && translatedSlug !== currentSlug) {
+            pathSegments[articleIndex + 1] = translatedSlug
+          }
+        }
+      } catch {
+        // Fall through with original slug if fetch fails
+      }
+    }
+
     let newPath: string
     if (SUPPORTED_LANGUAGES.find(lang => lang.code === currentLocale)) {
       // Replace existing locale
@@ -92,7 +110,7 @@ export function LanguageSwitcher({ variant = 'default', currentLocale }: Languag
       // Add new locale
       newPath = languageCode === 'en' ? pathname : `/${languageCode}${pathname}`
     }
-    
+
     // Force a full page reload to ensure proper locale switching
     window.location.href = newPath
   }

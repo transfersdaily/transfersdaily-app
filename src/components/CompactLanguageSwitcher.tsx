@@ -32,7 +32,7 @@ export function CompactLanguageSwitcher({ currentLocale }: CompactLanguageSwitch
     }
   }, [currentLocale, pathname])
 
-  const handleLanguageChange = (newLocale: Locale) => {
+  const handleLanguageChange = async (newLocale: Locale) => {
     if (newLocale === locale) return
 
     // Set cookie to remember preference
@@ -42,16 +42,34 @@ export function CompactLanguageSwitcher({ currentLocale }: CompactLanguageSwitch
     preserveThemeOnLanguageChange()
 
     // Get the current path without locale
-    const pathWithoutLocale = removeLocaleFromPathname(pathname)
-    
+    let pathWithoutLocale = removeLocaleFromPathname(pathname)
+
+    // If on an article page, fetch the translated slug for the new locale
+    const articleMatch = pathWithoutLocale.match(/^\/article\/(.+)$/)
+    if (articleMatch) {
+      const currentSlug = articleMatch[1]
+      try {
+        const res = await fetch(`/api/article/${encodeURIComponent(currentSlug)}?language=${newLocale}`)
+        if (res.ok) {
+          const data = await res.json()
+          const translatedSlug = data.data?.article?.slug || data.article?.slug
+          if (translatedSlug && translatedSlug !== currentSlug) {
+            pathWithoutLocale = `/article/${translatedSlug}`
+          }
+        }
+      } catch {
+        // Fall through with original slug if fetch fails
+      }
+    }
+
     // Create new path with the selected locale
     const newPath = addLocaleToPathname(pathWithoutLocale, newLocale)
-    
+
     setLocale(newLocale)
-    
+
     // Navigate to the new path
     router.push(newPath)
-    
+
     // Preserve theme after navigation
     setTimeout(() => {
       preserveThemeOnLanguageChange()
