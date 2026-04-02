@@ -91,7 +91,6 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   // Listen for translation completion and reload article
   useEffect(() => {
     if (translationStatus?.isComplete) {
-      console.log('🎉 Translations completed, reloading article...')
       fetchArticle()
     }
   }, [translationStatus?.isComplete])
@@ -120,86 +119,44 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   })
   
   useEffect(() => {
-    console.log('🚀 Edit page useEffect triggered');
-    console.log('Article ID:', articleId);
     fetchArticle()
   }, [articleId])
 
   const fetchArticle = async () => {
     try {
       setIsLoading(true)
-      console.log('🚀 Edit page useEffect triggered');
-      console.log('Article ID:', articleId);
-      
-      // Check if we have a valid auth token
-      const authToken = localStorage.getItem('transfersdaily_id_token');
-      if (!authToken) {
-        console.error('❌ No auth token found');
-        setError("Authentication required. Please log in again.");
-        router.push('/login');
-        return;
-      }
-      
+
       const fullUrl = getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`);
-      console.log('🌐 Full URL:', fullUrl);
-      
-      console.log('📡 Making fetch request...');
-      const startTime = Date.now();
-      
+
       const response = await fetch(fullUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${authToken}`
         }
       });
       
-      const endTime = Date.now();
-      console.log(`⏱️ Request took ${endTime - startTime}ms`);
-      console.log('📊 Response status:', response.status);
-      console.log('📊 Response ok:', response.ok);
-      
       if (!response.ok) {
-        console.error('❌ Response not ok');
         if (response.status === 401) {
-          console.error('401 - Unauthorized');
           setError("Session expired. Please log in again.");
-          localStorage.clear();
           router.push('/login');
           return;
         }
         if (response.status === 404) {
-          console.error('404 - Article not found');
           setError("Article not found")
           return
         }
-        
-        let errorText;
-        try {
-          errorText = await response.text();
-          console.error('Error response body:', errorText);
-        } catch (_e) {
-          console.error('Could not read error response body');
-        }
-        
         throw new Error(`Failed to fetch article: ${response.status} ${response.statusText}`)
       }
-      
-      console.log('📥 Reading response data...');
-      const data = await response.json()
-      console.log('✅ Response data received:', JSON.stringify(data, null, 2));
+
+      const data = await response.json();
       
       if (!data.success || !data.data?.article) {
-        console.error('❌ Invalid response structure');
         setError("Article not found")
         return
       }
-      
+
       const fetchedArticle = data.data.article
       setArticle(fetchedArticle)
-      console.log('✅ Article set successfully:', fetchedArticle.title);
-      console.log('🌍 Article translations:', fetchedArticle.translations);
       
       setFormData({
         title: fetchedArticle.title || "",
@@ -221,13 +178,10 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
         featured: fetchedArticle.featured || false
       })
       
-      console.log('✅ Form data initialized successfully');
-      
     } catch (err) {
-      console.error('💥 Error in fetchArticle:', err)
+      console.error('Error in fetchArticle:', err)
       setError(`Failed to fetch article: ${err instanceof Error ? err.message : 'Unknown error'}`)
     } finally {
-      console.log('🏁 fetchArticle completed, setting loading to false');
       setIsLoading(false)
     }
   }
@@ -235,27 +189,20 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   const handleSave = async () => {
     try {
       setIsSaving(true)
-      console.log('Saving article with data:', formData)
-      
+
       const response = await fetch(getApiUrl(`${API_CONFIG.endpoints.admin.articles}/${articleId}`), {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('transfersdaily_id_token')}`
         },
         body: JSON.stringify(formData),
       })
-      
-      console.log('Save response status:', response.status)
-      
+
       if (!response.ok) {
-        const errorData = await response.text()
-        console.error('Save error response:', errorData)
         throw new Error(`Failed to save article: ${response.status}`)
       }
-      
+
       const data = await response.json()
-      console.log('Save response data:', data)
       
       if (data.success) {
         setError("")
@@ -322,48 +269,24 @@ export default function EditArticlePage({ params }: { params: Promise<{ id: stri
   
   const getTranslationCount = () => {
     if (!article) return 0
-    
+
     let completed = 0
     const languages = ['en', 'es', 'fr', 'de', 'it']
-    
-    console.log('🔍 [getTranslationCount] Article data:', {
-      hasTitle: !!article.title,
-      hasContent: !!article.content,
-      hasTranslations: !!article.translations,
-      translationsType: typeof article.translations,
-      translationKeys: article.translations ? Object.keys(article.translations) : []
-    })
-    
-    // Always count English if title and content exist
+
     if (article.title && article.content) {
       completed = 1
-      console.log('✅ [getTranslationCount] English counted: 1')
     }
-    
-    // Check if article has translations field from database
+
     if (article.translations && typeof article.translations === 'object') {
-      console.log('🌍 [getTranslationCount] Checking translations:', article.translations)
-      
       languages.forEach(langCode => {
-        if (langCode === 'en') return // Already counted English above
-        
+        if (langCode === 'en') return
         const translation = article.translations?.[langCode]
-        console.log(`🔍 [getTranslationCount] ${langCode}:`, {
-          exists: !!translation,
-          hasTitle: translation?.title,
-          hasContent: translation?.content
-        })
-        
         if (translation && translation.title && translation.content) {
           completed++
-          console.log(`✅ [getTranslationCount] ${langCode} counted, total now: ${completed}`)
         }
       })
-    } else {
-      console.log('❌ [getTranslationCount] No translations object found')
     }
-    
-    console.log(`🎯 [getTranslationCount] Final count: ${completed}/5`)
+
     return completed
   }
 
