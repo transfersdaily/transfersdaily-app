@@ -110,7 +110,7 @@ const getCachedSocialStats = unstable_cache(
     return aggregateFromRows(rows ?? [], period)
   },
   ['admin-social-stats'],
-  { revalidate: 300 }
+  { revalidate: 3600 }
 )
 
 export async function GET(request: NextRequest) {

@@ -104,7 +104,7 @@ const getCachedPipelineStats = unstable_cache(
     }
   },
   ['admin-pipeline-stats'],
-  { revalidate: 60 }
+  { revalidate: 3600 }
 )
 
 export async function GET() {

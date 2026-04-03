@@ -100,7 +100,7 @@ const getCachedPipelineErrors = unstable_cache(
     }
   },
   ['admin-pipeline-errors'],
-  { revalidate: 60 }
+  { revalidate: 3600 }
 )
 
 export async function GET() {

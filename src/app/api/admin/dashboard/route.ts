@@ -134,7 +134,7 @@ const getCachedDashboard = unstable_cache(
     }
   },
   ['admin-dashboard-v3'],
-  { revalidate: 300 }
+  { revalidate: 3600 }
 )
 
 export async function GET() {

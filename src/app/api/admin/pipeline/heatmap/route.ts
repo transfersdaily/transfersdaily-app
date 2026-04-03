@@ -152,7 +152,7 @@ const getCachedPipelineHeatmap = unstable_cache(
     }
   },
   ['admin-pipeline-heatmap'],
-  { revalidate: 60 }
+  { revalidate: 3600 }
 )
 
 export async function GET() {

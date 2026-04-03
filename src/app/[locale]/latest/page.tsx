@@ -197,7 +197,7 @@ async function getLatestData(language = 'en', page = 1, league = 'all') {
     }
     
     const response = await fetch(`${apiUrl}?${params}`, {
-      next: { revalidate: 300 }, // Revalidate every 5 minutes
+      next: { revalidate: 900 },
       headers: {
         'Content-Type': 'application/json',
       }

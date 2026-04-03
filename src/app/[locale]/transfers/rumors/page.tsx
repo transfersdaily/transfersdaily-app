@@ -50,7 +50,7 @@ async function getTransferRumorsData(language = 'en', page = 1, league = 'all') 
       const leagueNames: Record<string, string> = { 'premier-league': 'Premier League', 'la-liga': 'La Liga', 'serie-a': 'Serie A', 'bundesliga': 'Bundesliga', 'ligue-1': 'Ligue 1' }
       params.append('league', leagueNames[league] || league)
     }
-    const response = await fetch(`${apiUrl}?${params}`, { next: { revalidate: 180 }, headers: { 'Content-Type': 'application/json' } })
+    const response = await fetch(`${apiUrl}?${params}`, { next: { revalidate: 900 }, headers: { 'Content-Type': 'application/json' } })
     if (!response.ok) throw new Error(`API request failed: ${response.status}`)
     const data = await response.json()
     if (!data.success || !data.data?.articles) return { transfers: [], pagination: { page: 1, limit: 15, total: 0, totalPages: 0, hasNext: false, hasPrev: false } }

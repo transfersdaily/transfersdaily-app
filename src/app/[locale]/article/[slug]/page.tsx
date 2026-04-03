@@ -130,7 +130,7 @@ async function getRelatedArticles(league: string | undefined, currentSlug: strin
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
-      next: { revalidate: 300 },
+      next: { revalidate: 1800 },
       signal: AbortSignal.timeout(10000),
     })
 

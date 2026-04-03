@@ -112,7 +112,7 @@ const getCachedDistribution = unstable_cache(
     }
   },
   ['content-distribution'],
-  { revalidate: 300 }
+  { revalidate: 3600 }
 )
 
 export async function GET() {

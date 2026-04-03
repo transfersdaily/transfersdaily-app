@@ -14,7 +14,7 @@ import { API_CONFIG } from '@/lib/config';
 import { AdSlot } from '@/components/ads';
 import { SITE_URL, generateSlug } from '@/lib/constants';
 
-export const revalidate = 300;
+export const revalidate = 900;
 
 export async function generateMetadata({
   params,

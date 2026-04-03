@@ -63,7 +63,7 @@ const getCachedTranslations = unstable_cache(
     }
   },
   ['content-translations'],
-  { revalidate: 300 }
+  { revalidate: 3600 }
 )
 
 export async function GET() {

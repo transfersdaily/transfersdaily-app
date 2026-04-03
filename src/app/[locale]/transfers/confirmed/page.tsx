@@ -134,7 +134,7 @@ async function getConfirmedTransfersData(language = 'en', page = 1, league = 'al
     }
     
     const response = await fetch(`${apiUrl}?${params}`, {
-      next: { revalidate: 300 }, headers: { 'Content-Type': 'application/json' }
+      next: { revalidate: 900 }, headers: { 'Content-Type': 'application/json' }
     })
     
     if (!response.ok) throw new Error(`API request failed: ${response.status}`)
