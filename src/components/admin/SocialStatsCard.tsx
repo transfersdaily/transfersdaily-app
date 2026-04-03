@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Share2 } from "lucide-react"
 import { motion } from "framer-motion"
@@ -74,30 +74,32 @@ export function SocialStatsCard({ delay = 0 }: SocialStatsCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-colors duration-300">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
-                <Share2 className="h-4 w-4 text-white/30" />
-              </div>
-              <span className="text-xs font-medium text-white/40 uppercase tracking-wider">Social Media</span>
+      <GlassCard
+        accentColor="#1DA1F2"
+        hoverable
+        icon={
+          <div className="flex gap-1 p-0.5 rounded-lg bg-white/[0.04]">
+            {(["7d", "30d"] as const).map(p => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`text-[10px] px-2.5 py-1 rounded-md font-medium transition-all ${
+                  period === p
+                    ? "bg-white/[0.1] text-white shadow-sm"
+                    : "text-white/30 hover:text-white/50"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        }
+      >
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+              <Share2 className="h-4 w-4 text-white/30" />
             </div>
-            <div className="flex gap-1 p-0.5 rounded-lg bg-white/[0.04]">
-              {(["7d", "30d"] as const).map(p => (
-                <button
-                  key={p}
-                  onClick={() => setPeriod(p)}
-                  className={`text-[10px] px-2.5 py-1 rounded-md font-medium transition-all ${
-                    period === p
-                      ? "bg-white/[0.1] text-white shadow-sm"
-                      : "text-white/30 hover:text-white/50"
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
+            <span className="text-xs font-medium text-white/40 uppercase tracking-wider">Social Media</span>
           </div>
 
           {isLoading ? (
@@ -135,20 +137,14 @@ export function SocialStatsCard({ delay = 0 }: SocialStatsCardProps) {
               )}
             </>
           ) : null}
-        </CardContent>
-        <div
-          className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
-          style={{ background: "linear-gradient(90deg, transparent, #1DA1F2, transparent)" }}
-        />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }
 
 export function SocialStatsCardSkeleton() {
   return (
-    <Card className="bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-      <CardContent className="p-5">
+    <GlassCard accentColor="#1DA1F2">
         <div className="flex items-center gap-2 mb-4">
           <Skeleton className="h-8 w-8 rounded-lg bg-white/[0.06]" />
           <Skeleton className="h-3 w-24 bg-white/[0.06]" />
@@ -164,7 +160,6 @@ export function SocialStatsCardSkeleton() {
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+    </GlassCard>
   )
 }

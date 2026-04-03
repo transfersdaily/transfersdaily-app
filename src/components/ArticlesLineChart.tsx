@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { TrendingUp, Calendar } from "lucide-react"
@@ -57,30 +57,30 @@ export function ArticlesLineChart({
 
   if (isLoading) {
     return (
-      <Card className={`relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md ${className}`}>
-        <CardContent className="p-5">
+      <GlassCard accentColor="#22c55e" className={className}>
           <Skeleton className="h-5 w-48 bg-white/[0.06]" />
           <Skeleton className="h-3 w-64 mt-2 bg-white/[0.06]" />
           <Skeleton className="h-64 w-full mt-4 bg-white/[0.06]" />
-        </CardContent>
-      </Card>
+      </GlassCard>
     )
   }
 
   return (
-    <Card className={`relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md ${className}`}>
-      <CardContent className="p-5">
+    <GlassCard
+      accentColor="#22c55e"
+      className={className}
+      icon={
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+          <TrendingUp className="h-4 w-4 text-white/30" />
+        </div>
+      }
+    >
         <div className="mb-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
-              <TrendingUp className="h-4 w-4 text-white/30" />
-            </div>
-            <h3 className="text-sm font-medium text-white/70">{title}</h3>
-          </div>
-          <p className="text-[11px] text-white/30 mt-1 ml-10">{description}</p>
+          <h3 className="text-sm font-medium text-white/70">{title}</h3>
+          <p className="text-[11px] text-white/30 mt-1">{description}</p>
 
           {/* Quick Stats */}
-          <div className="flex items-center gap-5 text-[11px] text-white/30 mt-3 ml-10">
+          <div className="flex items-center gap-5 text-[11px] text-white/30 mt-3">
             <div className="flex items-center gap-1">
               <Calendar className="h-3 w-3" />
               <span>Total: {totalArticles}</span>
@@ -158,11 +158,6 @@ export function ArticlesLineChart({
             No articles created this week
           </div>
         )}
-      </CardContent>
-      <div
-        className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
-        style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }}
-      />
-    </Card>
+    </GlassCard>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, ResponsiveContainer, Tooltip } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import type { LeagueDistribution } from '@/types/content-analytics'
@@ -21,13 +21,11 @@ export function LeagueDistributionChart({ data, isLoading }: LeagueDistributionC
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="mb-4">
-            <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">League Distribution</h3>
-            <p className="text-[11px] text-white/20 mt-0.5">Articles by league</p>
-          </div>
-
+      <GlassCard
+        title="League Distribution"
+        subtitle="Articles by league"
+        accentColor="#37003c"
+      >
           {isLoading ? (
             <Skeleton className="h-[200px] w-full bg-white/[0.04]" />
           ) : !hasData ? (
@@ -49,9 +47,7 @@ export function LeagueDistributionChart({ data, isLoading }: LeagueDistributionC
               </BarChart>
             </ResponsiveContainer>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #37003c, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

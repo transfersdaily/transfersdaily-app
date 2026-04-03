@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { motion } from "framer-motion"
@@ -32,23 +32,21 @@ export function SourceHeatmap({ heatmap, isLoading }: SourceHeatmapProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Source Health</h3>
-              <p className="text-[11px] text-white/20 mt-0.5">Last 7 days</p>
-            </div>
-            <div className="flex items-center gap-3">
-              {LEGEND_ITEMS.map((item) => (
-                <div key={item.status} className="flex items-center gap-1.5">
-                  <div className={`h-2.5 w-2.5 rounded-sm ${STATUS_COLORS[item.status]}`} />
-                  <span className="text-[10px] text-white/25">{item.label}</span>
-                </div>
-              ))}
-            </div>
+      <GlassCard
+        title="Source Health"
+        subtitle="Last 7 days"
+        accentColor="#22c55e"
+        icon={
+          <div className="flex items-center gap-3">
+            {LEGEND_ITEMS.map((item) => (
+              <div key={item.status} className="flex items-center gap-1.5">
+                <div className={`h-2.5 w-2.5 rounded-sm ${STATUS_COLORS[item.status]}`} />
+                <span className="text-[10px] text-white/25">{item.label}</span>
+              </div>
+            ))}
           </div>
-
+        }
+      >
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -109,9 +107,7 @@ export function SourceHeatmap({ heatmap, isLoading }: SourceHeatmapProps) {
               </div>
             </TooltipProvider>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

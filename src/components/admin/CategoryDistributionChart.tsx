@@ -1,7 +1,7 @@
 'use client'
 
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import type { CategoryDistribution } from '@/types/content-analytics'
@@ -21,13 +21,11 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.15 }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="mb-4">
-            <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Category Distribution</h3>
-            <p className="text-[11px] text-white/20 mt-0.5">Articles by type</p>
-          </div>
-
+      <GlassCard
+        title="Category Distribution"
+        subtitle="Articles by type"
+        accentColor="#3b82f6"
+      >
           {isLoading ? (
             <Skeleton className="h-[150px] w-full bg-white/[0.04]" />
           ) : !hasData ? (
@@ -45,9 +43,7 @@ export function CategoryDistributionChart({ data, isLoading }: CategoryDistribut
               </BarChart>
             </ResponsiveContainer>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #3b82f6, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

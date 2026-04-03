@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, Line, LineChart, Pie, PieChart, Cell, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { CalendarDays, FileText, TrendingUp, Clock } from "lucide-react"
@@ -43,19 +43,9 @@ const chartConfig = {
 
 function ChartCard({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-      <CardContent className="p-5">
-        <div className="mb-4">
-          <h3 className="text-sm font-medium text-white/70">{title}</h3>
-          <p className="text-[11px] text-white/30 mt-0.5">{subtitle}</p>
-        </div>
-        {children}
-      </CardContent>
-      <div
-        className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
-        style={{ background: "linear-gradient(90deg, transparent, #64748b, transparent)" }}
-      />
-    </Card>
+    <GlassCard title={title} subtitle={subtitle} accentColor="#64748b">
+      {children}
+    </GlassCard>
   )
 }
 

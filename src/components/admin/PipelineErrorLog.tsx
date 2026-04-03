@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
@@ -41,26 +41,22 @@ export function PipelineErrorLog({ errors: data, isLoading }: PipelineErrorLogPr
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Error Log</h3>
-              <p className="text-[11px] text-white/20 mt-0.5">
-                {data ? `${data.totalCount} issue${data.totalCount !== 1 ? 's' : ''} in last 7 days` : 'Loading...'}
-              </p>
-            </div>
-            <div className="relative w-48">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-white/20" />
-              <Input
-                placeholder="Filter errors..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-8 h-8 bg-white/[0.03] border-white/[0.06] text-white/60 placeholder:text-white/15 text-xs"
-              />
-            </div>
+      <GlassCard
+        title="Error Log"
+        subtitle={data ? `${data.totalCount} issue${data.totalCount !== 1 ? 's' : ''} in last 7 days` : 'Loading...'}
+        accentColor="#ef4444"
+        icon={
+          <div className="relative w-48">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-white/20" />
+            <Input
+              placeholder="Filter errors..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="pl-8 h-8 bg-white/[0.03] border-white/[0.06] text-white/60 placeholder:text-white/15 text-xs"
+            />
           </div>
-
+        }
+      >
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 4 }).map((_, i) => (
@@ -115,9 +111,7 @@ export function PipelineErrorLog({ errors: data, isLoading }: PipelineErrorLogPr
               ))}
             </div>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #ef4444, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

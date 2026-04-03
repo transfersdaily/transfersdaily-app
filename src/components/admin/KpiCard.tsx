@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
 import { motion } from "framer-motion"
 import type { LucideIcon } from "lucide-react"
@@ -72,14 +72,17 @@ export function KpiCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] shadow-sm backdrop-blur-md hover:bg-white/[0.05] transition-colors duration-300 group">
-        <CardContent className="p-5 h-[150px] flex flex-col">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-white/40 uppercase tracking-wider">{label}</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors">
-              <Icon className="h-4 w-4 text-white/30" />
-            </div>
+      <GlassCard
+        title={label}
+        accentColor={color}
+        hoverable
+        className="shadow-sm group"
+        icon={
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors">
+            <Icon className="h-4 w-4 text-white/30" />
           </div>
+        }
+      >
           <div className="text-3xl font-bold tracking-tight mt-2 text-white">
             {new Intl.NumberFormat("en-US").format(value)}
           </div>
@@ -91,13 +94,7 @@ export function KpiCard({
               <SparklineChart data={sparklineData} color={color} />
             )}
           </div>
-        </CardContent>
-        {/* Subtle gradient accent at top */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[1px] opacity-60"
-          style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
-        />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

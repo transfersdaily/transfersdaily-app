@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
 import type { PipelineSourceStats } from "@/types/pipeline"
@@ -33,17 +33,16 @@ export function DashboardSourcesOverview({ sources, isLoading }: DashboardSource
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.45, ease: "easeOut" }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md h-full">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">
-              Sources (24h)
-            </h3>
-            <span className="text-[10px] text-white/20">
-              {sortedSources.filter(s => s.articles24h > 0).length} active
-            </span>
-          </div>
-
+      <GlassCard
+        title="Sources (24h)"
+        accentColor="#3b82f6"
+        className="h-full"
+        icon={
+          <span className="text-[10px] text-white/20">
+            {sortedSources.filter(s => s.articles24h > 0).length} active
+          </span>
+        }
+      >
           {isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -95,12 +94,7 @@ export function DashboardSourcesOverview({ sources, isLoading }: DashboardSource
               })}
             </div>
           )}
-        </CardContent>
-        <div
-          className="absolute top-0 left-0 right-0 h-[1px] opacity-30"
-          style={{ background: "linear-gradient(90deg, transparent, #3b82f6, transparent)" }}
-        />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

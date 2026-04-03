@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
@@ -89,15 +89,11 @@ export function TopArticlesTable({ articles, isLoading }: TopArticlesTableProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.4 }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Top Articles</h3>
-              <p className="text-[11px] text-white/20 mt-0.5">Most viewed in selected period</p>
-            </div>
-          </div>
-
+      <GlassCard
+        title="Top Articles"
+        subtitle="Most viewed in selected period"
+        accentColor="#8b5cf6"
+      >
           {!isLoading && !hasData ? (
             <div className="flex items-center justify-center py-12 text-sm text-white/20">
               No article data available
@@ -201,12 +197,7 @@ export function TopArticlesTable({ articles, isLoading }: TopArticlesTableProps)
               )}
             </>
           )}
-        </CardContent>
-        <div
-          className="absolute top-0 left-0 right-0 h-[1px] opacity-30"
-          style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, transparent)" }}
-        />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
         success: false,
         error: 'ga4_not_configured',
         message: 'GA4 analytics requires Google Service Account credentials.',
-      })
+      }, { status: 503 })
     }
 
     const { getGA4Client, GA4_PROPERTY_ID } = await import('@/lib/ga4-client')

@@ -1,7 +1,7 @@
 'use client'
 
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import type { DailyArticleCount } from '@/types/content-analytics'
@@ -20,25 +20,23 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Articles Per Day</h3>
-              <p className="text-[11px] text-white/20 mt-0.5">Last 30 days</p>
+      <GlassCard
+        title="Articles Per Day"
+        subtitle="Last 30 days"
+        accentColor="#22c55e"
+        icon={
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <div className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="text-[10px] text-white/30">Published</span>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-emerald-400" />
-                <span className="text-[10px] text-white/30">Published</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="h-2 w-2 rounded-full bg-amber-400" />
-                <span className="text-[10px] text-white/30">Drafts</span>
-              </div>
+            <div className="flex items-center gap-1.5">
+              <div className="h-2 w-2 rounded-full bg-amber-400" />
+              <span className="text-[10px] text-white/30">Drafts</span>
             </div>
           </div>
-
+        }
+      >
           {isLoading ? (
             <Skeleton className="h-[280px] w-full bg-white/[0.04]" />
           ) : !hasData ? (
@@ -86,9 +84,7 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
               </AreaChart>
             </ResponsiveContainer>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

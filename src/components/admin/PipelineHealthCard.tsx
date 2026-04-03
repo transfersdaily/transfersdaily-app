@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { Activity, CheckCircle, AlertTriangle, XCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import type { PipelineHealthSummary } from "@/types/pipeline"
@@ -49,15 +49,16 @@ export function PipelineHealthCard({ health, delay = 0 }: PipelineHealthCardProp
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay, ease: "easeOut" }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-colors duration-300">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-xs font-medium text-white/40 uppercase tracking-wider">Pipeline Health</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
-              <StatusIcon className="h-4 w-4" style={{ color: statusColor }} />
-            </div>
+      <GlassCard
+        title="Pipeline Health"
+        accentColor={statusColor}
+        hoverable
+        icon={
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+            <StatusIcon className="h-4 w-4" style={{ color: statusColor }} />
           </div>
-
+        }
+      >
           {!health ? (
             <div className="flex items-center gap-2 py-4">
               <Activity className="h-4 w-4 text-white/20" />
@@ -94,12 +95,7 @@ export function PipelineHealthCard({ health, delay = 0 }: PipelineHealthCardProp
               </div>
             </>
           )}
-        </CardContent>
-        <div
-          className="absolute top-0 left-0 right-0 h-[1px] opacity-60"
-          style={{ background: `linear-gradient(90deg, transparent, ${statusColor}, transparent)` }}
-        />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

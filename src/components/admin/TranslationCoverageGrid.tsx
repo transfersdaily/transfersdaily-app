@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import type { TranslationCoverageResponse } from '@/types/content-analytics'
@@ -24,17 +24,11 @@ export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverage
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.2 }}
     >
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Translation Coverage</h3>
-              <p className="text-[11px] text-white/20 mt-0.5">
-                {data ? `${data.totalArticles} total articles` : 'Loading...'}
-              </p>
-            </div>
-          </div>
-
+      <GlassCard
+        title="Translation Coverage"
+        subtitle={data ? `${data.totalArticles} total articles` : 'Loading...'}
+        accentColor="#8b5cf6"
+      >
           {isLoading ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -78,9 +72,7 @@ export function TranslationCoverageGrid({ data, isLoading }: TranslationCoverage
               })}
             </div>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }

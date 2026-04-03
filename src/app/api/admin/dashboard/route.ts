@@ -48,15 +48,15 @@ const getCachedDashboard = unstable_cache(
       unreadRes,
       recentArticles24h,
     ] = await Promise.all([
-      supabase.from('articles').select('id', { count: 'exact', head: true })
+      supabase.from('articles').select('uuid', { count: 'exact', head: true })
         .eq('status', 'published').gte('published_at', today),
-      supabase.from('articles').select('id', { count: 'exact', head: true })
+      supabase.from('articles').select('uuid', { count: 'exact', head: true })
         .eq('status', 'published').gte('published_at', weekAgo),
-      supabase.from('articles').select('id', { count: 'exact', head: true })
+      supabase.from('articles').select('uuid', { count: 'exact', head: true })
         .eq('status', 'published').gte('published_at', monthAgo),
-      supabase.from('articles').select('id', { count: 'exact', head: true })
+      supabase.from('articles').select('uuid', { count: 'exact', head: true })
         .eq('status', 'draft'),
-      supabase.from('articles').select('id', { count: 'exact', head: true }),
+      supabase.from('articles').select('uuid', { count: 'exact', head: true }),
       supabase.from('articles').select('published_at')
         .eq('status', 'published').gte('published_at', sevenDaysAgo),
       supabase.from('articles').select('created_at')

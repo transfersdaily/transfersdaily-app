@@ -1,6 +1,6 @@
 'use client'
 
-import { Card, CardContent } from '@/components/ui/card'
+import { GlassCard } from '@/components/ui/glass-card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { motion } from 'framer-motion'
 import { Eye, MousePointerClick, Users, Clock, ArrowDownUp, TrendingUp, TrendingDown } from 'lucide-react'
@@ -63,13 +63,11 @@ export function AudienceKpis({ kpis, isLoading }: AudienceKpisProps) {
     return (
       <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-5 gap-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Card key={i} className="bg-white/[0.03] border border-white/[0.06]">
-            <CardContent className="p-5">
+          <GlassCard key={i}>
               <Skeleton className="h-3 w-20 bg-white/[0.06]" />
               <Skeleton className="h-7 w-24 mt-3 bg-white/[0.06]" />
               <Skeleton className="h-3 w-16 mt-2 bg-white/[0.06]" />
-            </CardContent>
-          </Card>
+          </GlassCard>
         ))}
       </div>
     )
@@ -88,26 +86,23 @@ export function AudienceKpis({ kpis, isLoading }: AudienceKpisProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.05 }}
           >
-            <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md hover:bg-white/[0.05] transition-colors">
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">{def.label}</span>
-                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04]">
-                    <Icon className="h-3.5 w-3.5 text-white/30" />
-                  </div>
+            <GlassCard
+              title={def.label}
+              accentColor={def.accentColor}
+              hoverable
+              icon={
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04]">
+                  <Icon className="h-3.5 w-3.5 text-white/30" />
                 </div>
+              }
+            >
                 <div className="text-2xl font-bold tracking-tight mt-2 text-white">
                   {def.format(metric.value)}
                 </div>
                 <div className="mt-1.5">
                   <ChangeIndicator change={metric.change} invertChange={def.invertChange} />
                 </div>
-              </CardContent>
-              <div
-                className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
-                style={{ background: `linear-gradient(90deg, transparent, ${def.accentColor}, transparent)` }}
-              />
-            </Card>
+            </GlassCard>
           </motion.div>
         )
       })}

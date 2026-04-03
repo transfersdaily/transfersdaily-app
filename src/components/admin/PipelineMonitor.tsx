@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { GlassCard } from "@/components/ui/glass-card"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { motion } from "framer-motion"
@@ -77,28 +77,22 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
-      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
-        <CardContent className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Per-Source Stats</h3>
-              {stats?.summary && (
-                <p className="text-[11px] text-white/20 mt-0.5">
-                  {stats.summary.activeSources24h}/{stats.summary.totalSources} active, {stats.summary.totalArticles24h} articles (24h)
-                </p>
-              )}
-            </div>
-            <div className="relative w-48">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-white/20" />
-              <Input
-                placeholder="Filter sources..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="pl-8 h-8 bg-white/[0.03] border-white/[0.06] text-white/60 placeholder:text-white/15 text-xs"
-              />
-            </div>
+      <GlassCard
+        title="Per-Source Stats"
+        subtitle={stats?.summary ? `${stats.summary.activeSources24h}/${stats.summary.totalSources} active, ${stats.summary.totalArticles24h} articles (24h)` : undefined}
+        accentColor="#3b82f6"
+        icon={
+          <div className="relative w-48">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-white/20" />
+            <Input
+              placeholder="Filter sources..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="pl-8 h-8 bg-white/[0.03] border-white/[0.06] text-white/60 placeholder:text-white/15 text-xs"
+            />
           </div>
-
+        }
+      >
           {isLoading ? (
             <div className="space-y-2">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -152,9 +146,7 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
               </div>
             </div>
           )}
-        </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #3b82f6, transparent)" }} />
-      </Card>
+      </GlassCard>
     </motion.div>
   )
 }
