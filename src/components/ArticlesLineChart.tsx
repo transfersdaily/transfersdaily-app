@@ -1,6 +1,6 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { TrendingUp, Calendar } from "lucide-react"
@@ -21,125 +21,94 @@ interface ArticlesLineChartProps {
   className?: string
 }
 
-export function ArticlesLineChart({ 
-  data = [], 
-  isLoading = false, 
+export function ArticlesLineChart({
+  data = [],
+  isLoading = false,
   title = "Articles Created This Week",
-  description = "Daily article creation from Sunday to Monday",
+  description = "Daily article creation from Sunday to Saturday",
   className = ""
 }: ArticlesLineChartProps) {
-  
-  // Generate default data for the last 7 days (Sunday to Monday)
+
   const generateDefaultData = (): DailyData[] => {
     const days = []
     const today = new Date()
-    
-    // Find the most recent Sunday
-    const dayOfWeek = today.getDay() // 0 = Sunday, 1 = Monday, etc.
+    const dayOfWeek = today.getDay()
     const mostRecentSunday = new Date(today)
     mostRecentSunday.setDate(today.getDate() - dayOfWeek)
-    
-    // Generate 7 days from Sunday to Saturday (next Monday would be day 8)
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(mostRecentSunday)
       date.setDate(mostRecentSunday.getDate() + i)
-      
       const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-      
       days.push({
-        date: date.toISOString().split('T')[0], // YYYY-MM-DD
+        date: date.toISOString().split('T')[0],
         count: 0,
         dayName: dayNames[date.getDay()],
-        fullDate: date.toLocaleDateString('en-US', { 
-          weekday: 'long', 
-          month: 'short', 
-          day: 'numeric' 
-        })
+        fullDate: date.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
       })
     }
-    
     return days
   }
 
   const chartData = data.length > 0 ? data : generateDefaultData()
-  
-  // Calculate some stats
   const totalArticles = chartData.reduce((sum, day) => sum + day.count, 0)
   const averagePerDay = totalArticles > 0 ? (totalArticles / chartData.length).toFixed(1) : '0'
   const peakDay = chartData.reduce((max, day) => day.count > max.count ? day : max, chartData[0])
 
   if (isLoading) {
     return (
-      <Card className={className}>
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-2">
-            <Skeleton className="h-5 w-5" />
-            <Skeleton className="h-6 w-48" />
-          </div>
-          <Skeleton className="h-4 w-64" />
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <Skeleton className="h-4 w-32" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-            <Skeleton className="h-64 w-full" />
-          </div>
+      <Card className={`relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md ${className}`}>
+        <CardContent className="p-5">
+          <Skeleton className="h-5 w-48 bg-white/[0.06]" />
+          <Skeleton className="h-3 w-64 mt-2 bg-white/[0.06]" />
+          <Skeleton className="h-64 w-full mt-4 bg-white/[0.06]" />
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <Card className={className}>
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5" />
-          {title}
-        </CardTitle>
-        <CardDescription>{description}</CardDescription>
-        
-        {/* Quick Stats */}
-        <div className="flex items-center gap-6 text-sm text-muted-foreground pt-2">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4" />
-            <span>Total: {totalArticles}</span>
-          </div>
-          <div>
-            <span>Avg: {averagePerDay}/day</span>
-          </div>
-          {peakDay && peakDay.count > 0 && (
-            <div>
-              <span>Peak: {peakDay.dayName} ({peakDay.count})</span>
+    <Card className={`relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md ${className}`}>
+      <CardContent className="p-5">
+        <div className="mb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04]">
+              <TrendingUp className="h-4 w-4 text-white/30" />
             </div>
-          )}
+            <h3 className="text-sm font-medium text-white/70">{title}</h3>
+          </div>
+          <p className="text-[11px] text-white/30 mt-1 ml-10">{description}</p>
+
+          {/* Quick Stats */}
+          <div className="flex items-center gap-5 text-[11px] text-white/30 mt-3 ml-10">
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              <span>Total: {totalArticles}</span>
+            </div>
+            <span>Avg: {averagePerDay}/day</span>
+            {peakDay && peakDay.count > 0 && (
+              <span>Peak: {peakDay.dayName} ({peakDay.count})</span>
+            )}
+          </div>
         </div>
-      </CardHeader>
-      
-      <CardContent>
+
         <div className="h-64 w-full">
           <ChartContainer
             config={{
               count: {
                 label: "Articles Created",
-                color: "hsl(var(--primary))",
+                color: "#22c55e",
               },
             }}
             className="h-full w-full"
           >
             <LineChart
               data={chartData}
-              margin={{
-                left: 12,
-                right: 12,
-                top: 12,
-                bottom: 12,
-              }}
+              margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
             >
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                className="stroke-muted" 
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="rgba(255,255,255,0.04)"
                 vertical={false}
               />
               <XAxis
@@ -147,23 +116,23 @@ export function ArticlesLineChart({
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                className="text-xs"
+                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.4)" }}
               />
               <YAxis
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                className="text-xs"
+                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.3)" }}
                 allowDecimals={false}
               />
               <ChartTooltip
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
-                    const data = payload[0].payload as DailyData
+                    const d = payload[0].payload as DailyData
                     return (
-                      <div className="rounded-lg border bg-background p-3 shadow-md">
-                        <div className="font-medium">{data.fullDate}</div>
-                        <div className="text-sm text-muted-foreground">
+                      <div className="rounded-lg border border-white/[0.1] bg-black/80 backdrop-blur-sm p-3 shadow-lg">
+                        <div className="text-sm font-medium text-white/80">{d.fullDate}</div>
+                        <div className="text-xs text-white/50 mt-0.5">
                           {payload[0].value} articles created
                         </div>
                       </div>
@@ -175,30 +144,25 @@ export function ArticlesLineChart({
               <Line
                 type="monotone"
                 dataKey="count"
-                stroke="hsl(var(--primary))"
+                stroke="#22c55e"
                 strokeWidth={2}
-                dot={{
-                  fill: "hsl(var(--primary))",
-                  strokeWidth: 2,
-                  r: 4,
-                }}
-                activeDot={{
-                  r: 6,
-                  fill: "hsl(var(--primary))",
-                  strokeWidth: 2,
-                  stroke: "hsl(var(--background))",
-                }}
+                dot={{ fill: "#22c55e", strokeWidth: 0, r: 4 }}
+                activeDot={{ r: 6, fill: "#22c55e", strokeWidth: 2, stroke: "rgba(0,0,0,0.5)" }}
               />
             </LineChart>
           </ChartContainer>
         </div>
-        
+
         {totalArticles === 0 && (
-          <div className="text-center text-muted-foreground text-sm mt-4">
+          <div className="text-center text-white/30 text-xs mt-4">
             No articles created this week
           </div>
         )}
       </CardContent>
+      <div
+        className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
+        style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }}
+      />
     </Card>
   )
 }

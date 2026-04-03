@@ -1,11 +1,11 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { DashboardCard } from "@/components/ui/dashboard-card"
+import { Card, CardContent } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, Line, LineChart, Pie, PieChart, Cell, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { CalendarDays, FileText, TrendingUp, Clock } from "lucide-react"
 import { ArticlesLineChart } from "@/components/ArticlesLineChart"
+import { DashboardCard } from "@/components/ui/dashboard-card"
 
 interface StatsData {
   totalArticles: number
@@ -23,43 +23,43 @@ interface ArticleStatsOverviewProps {
   pageType: "draft" | "published" | "scheduled"
 }
 
+const CHART_COLORS = [
+  "#22c55e",
+  "#3b82f6",
+  "#a855f7",
+  "#f59e0b",
+]
+
 const chartConfig = {
-  articles: {
-    label: "Articles",
-    color: "hsl(330 81% 60%)",
-  },
-  transfer: {
-    label: "Transfer",
-    color: "hsl(330 81% 60%)",
-  },
-  loan: {
-    label: "Loan", 
-    color: "hsl(346 77% 49%)",
-  },
-  contract: {
-    label: "Contract",
-    color: "hsl(351 83% 74%)",
-  },
-  rumour: {
-    label: "Rumour",
-    color: "hsl(330 81% 60%)",
-  },
-  confirmed: {
-    label: "Confirmed",
-    color: "hsl(346 77% 49%)",
-  },
-  completed: {
-    label: "Completed",
-    color: "hsl(351 83% 74%)",
-  },
-  failed: {
-    label: "Failed",
-    color: "hsl(338 71% 37%)",
-  },
+  articles: { label: "Articles", color: "#22c55e" },
+  transfer: { label: "Transfer", color: "#22c55e" },
+  loan: { label: "Loan", color: "#3b82f6" },
+  contract: { label: "Contract", color: "#a855f7" },
+  rumour: { label: "Rumour", color: "#f59e0b" },
+  confirmed: { label: "Confirmed", color: "#22c55e" },
+  completed: { label: "Completed", color: "#3b82f6" },
+  failed: { label: "Failed", color: "#ef4444" },
 } satisfies ChartConfig
 
+function ChartCard({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+  return (
+    <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
+      <CardContent className="p-5">
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-white/70">{title}</h3>
+          <p className="text-[11px] text-white/30 mt-0.5">{subtitle}</p>
+        </div>
+        {children}
+      </CardContent>
+      <div
+        className="absolute top-0 left-0 right-0 h-[1px] opacity-40"
+        style={{ background: "linear-gradient(90deg, transparent, #64748b, transparent)" }}
+      />
+    </Card>
+  )
+}
+
 export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewProps) {
-  // Ensure all arrays have default values to prevent map errors
   const safeData = {
     ...data,
     byCategory: data.byCategory || [],
@@ -70,178 +70,146 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
 
   const getPageTitle = () => {
     switch (pageType) {
-      case "draft": return "Draft Articles"
-      case "published": return "Published Articles"
-      case "scheduled": return "Scheduled Articles"
+      case "draft": return "Draft"
+      case "published": return "Published"
+      case "scheduled": return "Scheduled"
     }
   }
 
   return (
     <div className="space-y-6">
-      {/* Stats Cards */}
+      {/* KPI Cards */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <DashboardCard
           title={`Total ${getPageTitle()}`}
           value={safeData.totalArticles || 0}
           icon={FileText}
-          description={pageType === "draft" ? "Awaiting publication" : pageType === "published" ? "Live articles" : "Scheduled for publication"}
+          description={pageType === "draft" ? "Awaiting publication" : pageType === "published" ? "Live articles" : "Scheduled"}
+          delay={0}
         />
-        
         <DashboardCard
           title={pageType === "published" ? "Published Today" : "Created Today"}
           value={safeData.createdToday || 0}
-          change={safeData.totalArticles ? `+${Math.round(((safeData.createdToday || 0) / safeData.totalArticles) * 100)}% of total` : ""}
+          change={safeData.totalArticles ? `${Math.round(((safeData.createdToday || 0) / safeData.totalArticles) * 100)}% of total` : undefined}
           trend="up"
           icon={CalendarDays}
+          delay={0.05}
         />
-        
         <DashboardCard
           title={pageType === "published" ? "Published This Week" : "This Week"}
           value={safeData.createdThisWeek || 0}
-          change={(safeData.createdThisWeek || 0) > (safeData.createdToday || 0) * 7 ? "↗ vs last week" : "↘ vs last week"}
+          change={(safeData.createdThisWeek || 0) > (safeData.createdToday || 0) * 7 ? "Up vs last week" : "Down vs last week"}
           trend={(safeData.createdThisWeek || 0) > (safeData.createdToday || 0) * 7 ? "up" : "down"}
           icon={TrendingUp}
+          delay={0.1}
         />
-        
         <DashboardCard
           title={pageType === "published" ? "Published This Month" : "This Month"}
           value={safeData.createdThisMonth || 0}
           icon={Clock}
           description={`Avg ${Math.round((safeData.createdThisMonth || 0) / 30)} per day`}
+          delay={0.15}
         />
       </div>
 
       {/* Weekly Articles Line Chart */}
-      <ArticlesLineChart 
+      <ArticlesLineChart
         data={safeData.dailyCreation?.map(item => ({
           date: item.date,
           count: item.count,
           dayName: item.dayName || item.date,
           fullDate: item.fullDate || item.date
         })) || []}
-        title={`${getPageTitle()} Created This Week`}
-        description={`Daily ${pageType} article creation from Sunday to Saturday`}
+        title={`${getPageTitle()} Articles This Week`}
+        description={`Daily ${pageType} article creation`}
         className="col-span-full"
       />
 
       {/* Charts Row */}
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
         {/* Category Distribution */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>By Category</CardTitle>
-            <CardDescription>Distribution of articles by category</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            <ChartContainer config={chartConfig} className="h-[280px] w-full">
+        <ChartCard title="By Category" subtitle="Distribution of articles by category">
+          <ChartContainer config={chartConfig} className="h-[260px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={safeData.byCategory}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  strokeWidth={0}
+                  label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                >
+                  {safeData.byCategory.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                  ))}
+                </Pie>
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </ChartCard>
+
+        {/* League Distribution */}
+        <ChartCard title="By League" subtitle="Articles per league">
+          <ChartContainer config={chartConfig} className="h-[260px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={safeData.byLeague} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
+                <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <ChartTooltip content={<ChartTooltipContent />} />
+              </BarChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </ChartCard>
+
+        {/* Status Distribution or Daily Trend */}
+        {pageType === "draft" ? (
+          <ChartCard title="By Status" subtitle="Transfer status breakdown">
+            <ChartContainer config={chartConfig} className="h-[260px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={safeData.byCategory}
+                    data={safeData.byStatus}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
                     cy="50%"
-                    outerRadius={120}
-                    fill="hsl(330 81% 60%)"
-                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
+                    innerRadius={40}
+                    outerRadius={100}
+                    strokeWidth={0}
                   >
-                    {safeData.byCategory.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={[
-                        "hsl(330 81% 60%)",
-                        "hsl(346 77% 49%)", 
-                        "hsl(351 83% 74%)"
-                      ][index % 3]} />
+                    {safeData.byStatus.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
               </ResponsiveContainer>
             </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* League Distribution */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>By League</CardTitle>
-            <CardDescription>Articles per league</CardDescription>
-          </CardHeader>
-          <CardContent className="p-4">
-            <ChartContainer config={chartConfig} className="h-[280px] w-full">
+          </ChartCard>
+        ) : (
+          <ChartCard title="Daily Trend" subtitle="Articles created over time">
+            <ChartContainer config={chartConfig} className="h-[260px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={safeData.byLeague} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                  <YAxis />
-                  <Bar dataKey="value" fill="hsl(330 81% 60%)" radius={4} />
+                <LineChart data={safeData.dailyCreation} margin={{ top: 10, right: 10, left: 10, bottom: 10 }}>
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "rgba(255,255,255,0.4)" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.3)" }} axisLine={false} tickLine={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="count"
+                    stroke="#22c55e"
+                    strokeWidth={2}
+                    dot={{ r: 4, fill: "#22c55e", strokeWidth: 0 }}
+                  />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                </BarChart>
+                </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Status Distribution (for drafts) or Daily Trend */}
-        {pageType === "draft" ? (
-          <Card className="col-span-1 lg:col-span-2 xl:col-span-1">
-            <CardHeader>
-              <CardTitle>By Status</CardTitle>
-              <CardDescription>Transfer status breakdown</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <ChartContainer config={chartConfig} className="h-[280px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={safeData.byStatus}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={50}
-                      outerRadius={120}
-                      fill="hsl(330 81% 60%)"
-                    >
-                      {safeData.byStatus.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={[
-                          "hsl(330 81% 60%)",
-                          "hsl(346 77% 49%)",
-                          "hsl(351 83% 74%)",
-                          "hsl(338 71% 37%)"
-                        ][index % 4]} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        ) : (
-          <Card className="col-span-1 lg:col-span-2 xl:col-span-1">
-            <CardHeader>
-              <CardTitle>Daily Trend</CardTitle>
-              <CardDescription>Articles created over time</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <ChartContainer config={chartConfig} className="h-[280px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={safeData.dailyCreation} margin={{ top: 20, right: 20, left: 20, bottom: 20 }}>
-                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                    <YAxis />
-                    <Line 
-                      type="monotone" 
-                      dataKey="count" 
-                      stroke="hsl(330 81% 60%)" 
-                      strokeWidth={3}
-                      dot={{ r: 5, fill: "hsl(330 81% 60%)" }}
-                    />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </CardContent>
-          </Card>
+          </ChartCard>
         )}
       </div>
     </div>
