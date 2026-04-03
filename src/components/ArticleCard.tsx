@@ -62,6 +62,8 @@ function LeagueBadge({ league }: { league: string }) {
 
 function isValidImageUrl(url?: string): boolean {
   if (!url) return false
+  // Allow CloudFront-hosted placeholder images (real images, not client-side SVGs)
+  if (url.includes('cloudfront.net')) return true
   if (url.includes('default-transfer')) return false
   if (url.includes('placeholder')) return false
   return true
