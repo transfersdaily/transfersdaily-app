@@ -1,47 +1,39 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Activity,
-  FileText,
-  Radio,
-  TrendingUp,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Search,
-  ChevronDown,
-} from "lucide-react"
-import type { PipelineStatsResponse } from "@/types/pipeline"
+import { motion } from "framer-motion"
+import { Search, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react"
+import type { PipelineStatsResponse, PipelineSourceStats } from "@/types/pipeline"
 
 function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString)
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffMinutes = Math.floor(diffMs / (1000 * 60))
-
   if (diffMinutes < 1) return "Just now"
   if (diffMinutes < 60) return `${diffMinutes}m ago`
   const diffHours = Math.floor(diffMinutes / 60)
   if (diffHours < 24) return `${diffHours}h ago`
   const diffDays = Math.floor(diffHours / 24)
-  if (diffDays === 1) return "1d ago"
-  if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString()
+  return `${diffDays}d ago`
 }
 
-type SortKey = 'sourceName' | 'articlesTotal' | 'articles24h' | 'articles7d' | 'published24h' | 'drafts24h' | 'lastArticleAt'
+type SortKey = 'sourceName' | 'articles24h' | 'articles7d' | 'published24h' | 'drafts24h' | 'lastArticleAt'
 type SortDir = 'asc' | 'desc'
 
-function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
-  if (column !== sortKey) return <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
-  return sortDir === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />
+function SortButton({ column, current, dir, label, onClick }: {
+  column: SortKey; current: SortKey; dir: SortDir; label: string; onClick: () => void
+}) {
+  const isActive = column === current
+  const Icon = !isActive ? ArrowUpDown : dir === 'asc' ? ArrowUp : ArrowDown
+  return (
+    <button onClick={onClick} className={`inline-flex items-center gap-0.5 text-[10px] font-medium uppercase tracking-wider transition-colors ${isActive ? 'text-white/50' : 'text-white/25 hover:text-white/40'}`}>
+      {label}<Icon className="h-2.5 w-2.5" />
+    </button>
+  )
 }
 
 interface PipelineMonitorProps {
@@ -53,11 +45,9 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
   const [sortKey, setSortKey] = useState<SortKey>('articles24h')
   const [sortDir, setSortDir] = useState<SortDir>('desc')
   const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
 
-  const filtered = useMemo(() => {
-    if (!stats || stats.sources.length === 0) return []
+  const sorted = useMemo(() => {
+    if (!stats?.sources) return []
     let result = [...stats.sources]
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -67,275 +57,104 @@ export function PipelineMonitor({ stats, isLoading }: PipelineMonitorProps) {
       let cmp = 0
       switch (sortKey) {
         case 'sourceName': cmp = a.sourceName.localeCompare(b.sourceName); break
-        case 'articlesTotal': cmp = a.articlesTotal - b.articlesTotal; break
         case 'articles24h': cmp = a.articles24h - b.articles24h; break
         case 'articles7d': cmp = a.articles7d - b.articles7d; break
         case 'published24h': cmp = a.published24h - b.published24h; break
         case 'drafts24h': cmp = a.drafts24h - b.drafts24h; break
-        case 'lastArticleAt': {
-          const aTime = a.lastArticleAt ? new Date(a.lastArticleAt).getTime() : 0
-          const bTime = b.lastArticleAt ? new Date(b.lastArticleAt).getTime() : 0
-          cmp = aTime - bTime
+        case 'lastArticleAt':
+          cmp = (a.lastArticleAt || '').localeCompare(b.lastArticleAt || '')
           break
-        }
       }
       return sortDir === 'asc' ? cmp : -cmp
     })
     return result
-  }, [stats, search, sortKey, sortDir])
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage))
-  const paged = filtered.slice((page - 1) * perPage, page * perPage)
+  }, [stats?.sources, search, sortKey, sortDir])
 
   function toggleSort(key: SortKey) {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortKey(key)
-      setSortDir('desc')
-    }
-    setPage(1)
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    else { setSortKey(key); setSortDir('desc') }
   }
-
-  if (isLoading) {
-    return (
-      <div className="space-y-6">
-        {/* Skeleton summary cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <Card key={index} className="bg-card border border-border shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-4" />
-                </div>
-                <Skeleton className="h-8 w-16 mb-1" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Skeleton table */}
-        <Card className="bg-card border border-border shadow-sm">
-          <CardHeader>
-            <Skeleton className="h-6 w-48" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-10 w-full" />
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  if (!stats || stats.sources.length === 0) {
-    return (
-      <div className="space-y-6">
-        <Card className="bg-card border border-border shadow-sm">
-          <CardContent className="py-12">
-            <div className="text-center text-muted-foreground">
-              <Activity className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p>No pipeline data available yet</p>
-              <p className="text-xs mt-1">Stats will appear after the first pipeline run</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  const summaryCards = [
-    {
-      title: "Total Sources",
-      value: stats.summary.totalSources,
-      icon: Radio,
-    },
-    {
-      title: "Active Sources (24h)",
-      value: stats.summary.activeSources24h,
-      icon: Activity,
-    },
-    {
-      title: "Articles (24h)",
-      value: stats.summary.totalArticles24h,
-      icon: FileText,
-    },
-    {
-      title: "Published (24h)",
-      value: stats.summary.totalPublished24h,
-      icon: TrendingUp,
-    },
-  ]
 
   return (
-    <div className="space-y-6">
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {summaryCards.map((card) => {
-          const Icon = card.icon
-          return (
-            <Card key={card.title} className="bg-card border border-border shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-muted-foreground">
-                    {card.title}
-                  </span>
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                </div>
-                <div className="text-2xl font-bold">{card.value}</div>
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* Per-Source Stats Table */}
-      <Card className="bg-card border border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Per-Source Statistics
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Search */}
-          <div className="flex items-center gap-2 mb-4">
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1 }}>
+      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Per-Source Stats</h3>
+              {stats?.summary && (
+                <p className="text-[11px] text-white/20 mt-0.5">
+                  {stats.summary.activeSources24h}/{stats.summary.totalSources} active, {stats.summary.totalArticles24h} articles (24h)
+                </p>
+              )}
+            </div>
+            <div className="relative w-48">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-white/20" />
               <Input
                 placeholder="Filter sources..."
                 value={search}
-                onChange={e => { setSearch(e.target.value); setPage(1) }}
-                className="pl-8"
+                onChange={e => setSearch(e.target.value)}
+                className="pl-8 h-8 bg-white/[0.03] border-white/[0.06] text-white/60 placeholder:text-white/15 text-xs"
               />
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('sourceName')}>
-                      Source<SortIcon column="sourceName" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('articlesTotal')}>
-                      Total<SortIcon column="articlesTotal" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('articles24h')}>
-                      24h<SortIcon column="articles24h" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('articles7d')}>
-                      7d<SortIcon column="articles7d" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('published24h')}>
-                      Published (24h)<SortIcon column="published24h" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                  <TableHead className="text-right">
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('drafts24h')}>
-                      Drafts (24h)<SortIcon column="drafts24h" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                  <TableHead>
-                    <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('lastArticleAt')}>
-                      Last Article<SortIcon column="lastArticleAt" sortKey={sortKey} sortDir={sortDir} />
-                    </Button>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paged.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground py-8">
-                      No matching sources
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  paged.map((source) => {
-                    const hasDraftImbalance = source.drafts24h > source.published24h
-                    return (
-                      <TableRow
-                        key={source.sourceName}
-                        className={hasDraftImbalance ? "bg-amber-500/10" : ""}
-                      >
-                        <TableCell className="font-medium">
-                          {source.sourceName}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {source.articlesTotal}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {source.articles24h}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {source.articles7d}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {source.published24h}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {source.drafts24h}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap text-muted-foreground">
-                          {source.lastArticleAt
-                            ? formatRelativeTime(source.lastArticleAt)
-                            : "Never"}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+          {isLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full bg-white/[0.04]" />
+              ))}
+            </div>
+          ) : sorted.length === 0 ? (
+            <div className="py-8 text-center text-sm text-white/20">
+              {search ? 'No matching sources' : 'No source data available'}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              {/* Header */}
+              <div className="grid grid-cols-[1fr_70px_70px_70px_70px_90px] gap-2 px-2 pb-2 border-b border-white/[0.06]">
+                <SortButton column="sourceName" current={sortKey} dir={sortDir} label="Source" onClick={() => toggleSort('sourceName')} />
+                <div className="text-right"><SortButton column="articles24h" current={sortKey} dir={sortDir} label="24h" onClick={() => toggleSort('articles24h')} /></div>
+                <div className="text-right"><SortButton column="articles7d" current={sortKey} dir={sortDir} label="7d" onClick={() => toggleSort('articles7d')} /></div>
+                <div className="text-right"><SortButton column="published24h" current={sortKey} dir={sortDir} label="Pub 24h" onClick={() => toggleSort('published24h')} /></div>
+                <div className="text-right"><SortButton column="drafts24h" current={sortKey} dir={sortDir} label="Drafts" onClick={() => toggleSort('drafts24h')} /></div>
+                <div className="text-right"><SortButton column="lastArticleAt" current={sortKey} dir={sortDir} label="Last" onClick={() => toggleSort('lastArticleAt')} /></div>
+              </div>
 
-          {/* Pagination */}
-          {filtered.length > 0 && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-              <span className="text-sm text-muted-foreground">
-                {filtered.length} source{filtered.length !== 1 ? 's' : ''}
-              </span>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm">Rows</span>
-                  <Select value={perPage.toString()} onValueChange={v => { setPerPage(Number(v)); setPage(1) }}>
-                    <SelectTrigger className="h-8 w-[65px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent side="top">
-                      <SelectItem value="10">10</SelectItem>
-                      <SelectItem value="25">25</SelectItem>
-                      <SelectItem value="50">50</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
-                </span>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>
-                  <ChevronDown className="h-4 w-4 rotate-90" />
-                </Button>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
-                  <ChevronDown className="h-4 w-4 -rotate-90" />
-                </Button>
+              {/* Rows */}
+              <div className="divide-y divide-white/[0.03]">
+                {sorted.map((source) => {
+                  const isActive = source.articles24h > 0
+                  return (
+                    <div key={source.sourceName} className="grid grid-cols-[1fr_70px_70px_70px_70px_90px] gap-2 px-2 py-2.5 hover:bg-white/[0.02] transition-colors">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-1.5 w-1.5 rounded-full shrink-0 ${isActive ? 'bg-emerald-400' : 'bg-white/10'}`} />
+                        <span className={`text-xs truncate ${isActive ? 'text-white/60' : 'text-white/25'}`}>{source.sourceName}</span>
+                      </div>
+                      <span className={`text-xs text-right tabular-nums ${source.articles24h > 0 ? 'text-white/60' : 'text-white/15'}`}>
+                        {source.articles24h || '-'}
+                      </span>
+                      <span className={`text-xs text-right tabular-nums ${source.articles7d > 0 ? 'text-white/50' : 'text-white/15'}`}>
+                        {source.articles7d || '-'}
+                      </span>
+                      <span className={`text-xs text-right tabular-nums ${source.published24h > 0 ? 'text-emerald-400/60' : 'text-white/15'}`}>
+                        {source.published24h || '-'}
+                      </span>
+                      <span className={`text-xs text-right tabular-nums ${source.drafts24h > 0 ? 'text-amber-400/60' : 'text-white/15'}`}>
+                        {source.drafts24h || '-'}
+                      </span>
+                      <span className="text-[10px] text-right text-white/20">
+                        {source.lastArticleAt ? formatRelativeTime(source.lastArticleAt) : '-'}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}
         </CardContent>
+        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #3b82f6, transparent)" }} />
       </Card>
-    </div>
+    </motion.div>
   )
 }

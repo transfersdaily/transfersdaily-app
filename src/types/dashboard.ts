@@ -5,6 +5,7 @@ export interface DashboardResponse {
   publishedThisWeek: number
   publishedThisMonth: number
   draftBacklog: number
+  totalArticles: number
   processingRate: number
   trends: { publishedDaily: number[]; draftsDaily: number[] }
   unreadMessages: number

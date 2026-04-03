@@ -1,14 +1,10 @@
 'use client'
 
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent, type ChartConfig } from '@/components/ui/chart'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts'
+import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
+import { motion } from 'framer-motion'
 import type { CategoryDistribution } from '@/types/content-analytics'
-
-const chartConfig = {
-  count: { label: 'Articles', color: 'hsl(var(--primary))' },
-} satisfies ChartConfig
 
 interface CategoryDistributionChartProps {
   data: CategoryDistribution[] | undefined
@@ -17,51 +13,41 @@ interface CategoryDistributionChartProps {
 
 export function CategoryDistributionChart({ data, isLoading }: CategoryDistributionChartProps) {
   const hasData = data && data.length > 0
-
-  const chartHeight = hasData ? Math.max(150, data.length * 40) : 150
+  const chartHeight = hasData ? Math.min(400, Math.max(150, data.length * 40)) : 150
 
   return (
-    <Card className="bg-card border border-border shadow-sm">
-      <CardHeader>
-        <CardTitle>Category Distribution</CardTitle>
-        <CardDescription>Articles by type</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-[150px] w-full" />
-        ) : !hasData ? (
-          <div className="flex items-center justify-center h-[150px] text-muted-foreground">
-            No data available
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.15 }}
+    >
+      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
+        <CardContent className="p-5">
+          <div className="mb-4">
+            <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Category Distribution</h3>
+            <p className="text-[11px] text-white/20 mt-0.5">Articles by type</p>
           </div>
-        ) : (
-          <ChartContainer config={chartConfig} className="w-full" style={{ height: `${chartHeight}px` }}>
-            <BarChart
-              layout="vertical"
-              data={data}
-              margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#374151" />
-              <XAxis type="number" tickLine={false} axisLine={false} className="text-xs" />
-              <YAxis
-                type="category"
-                dataKey="category"
-                width={100}
-                tickLine={false}
-                axisLine={false}
-                className="text-xs"
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <ChartLegend content={<ChartLegendContent />} />
-              <Bar
-                dataKey="count"
-                fill="var(--color-count)"
-                radius={[0, 4, 4, 0]}
-                isAnimationActive={false}
-              />
-            </BarChart>
-          </ChartContainer>
-        )}
-      </CardContent>
-    </Card>
+
+          {isLoading ? (
+            <Skeleton className="h-[150px] w-full bg-white/[0.04]" />
+          ) : !hasData ? (
+            <div className="flex items-center justify-center h-[150px] text-sm text-white/20">No data available</div>
+          ) : (
+            <ResponsiveContainer width="100%" height={chartHeight}>
+              <BarChart layout="vertical" data={data} margin={{ left: 0, right: 12, top: 4, bottom: 4 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(255,255,255,0.04)" />
+                <XAxis type="number" tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="category" width={100} tick={{ fill: "rgba(255,255,255,0.4)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "rgba(14,14,20,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", fontSize: "12px", color: "rgba(255,255,255,0.7)" }}
+                />
+                <Bar dataKey="count" fill="#3b82f6" fillOpacity={0.6} radius={[0, 6, 6, 0]} isAnimationActive={false} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </CardContent>
+        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #3b82f6, transparent)" }} />
+      </Card>
+    </motion.div>
   )
 }

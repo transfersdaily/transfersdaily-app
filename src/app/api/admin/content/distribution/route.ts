@@ -75,15 +75,18 @@ const getCachedDistribution = unstable_cache(
     }
 
     for (const row of dailyResult.data || []) {
-      const dateStr = row.created_at
-      if (!dateStr) continue
-      const key = new Date(dateStr).toISOString().split('T')[0]
-      if (!(key in dayMap)) continue
-
       if (row.status === 'published') {
-        dayMap[key].published++
+        // Use published_at for published articles
+        const pubDate = row.published_at || row.created_at
+        if (!pubDate) continue
+        const key = new Date(pubDate).toISOString().split('T')[0]
+        if (key in dayMap) dayMap[key].published++
       } else if (row.status === 'draft') {
-        dayMap[key].drafts++
+        // Use created_at for draft articles
+        const dateStr = row.created_at
+        if (!dateStr) continue
+        const key = new Date(dateStr).toISOString().split('T')[0]
+        if (key in dayMap) dayMap[key].drafts++
       }
     }
 

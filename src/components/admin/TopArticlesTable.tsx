@@ -1,13 +1,11 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ArrowUpDown, ArrowUp, ArrowDown, Search, ChevronDown } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { ArrowUpDown, ArrowUp, ArrowDown, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import type { TopArticlesResponse } from '@/types/analytics'
 
 function formatDuration(seconds: number): string {
@@ -25,24 +23,22 @@ interface TopArticlesTableProps {
   isLoading: boolean
 }
 
-function TableSkeleton() {
+function SortButton({ column, sortKey, sortDir, label, onClick }: {
+  column: SortKey; sortKey: SortKey; sortDir: SortDir; label: string; onClick: () => void
+}) {
+  const isActive = column === sortKey
+  const Icon = !isActive ? ArrowUpDown : sortDir === 'asc' ? ArrowUp : ArrowDown
   return (
-    <>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <TableRow key={i}>
-          <TableCell><Skeleton className="h-4 w-6" /></TableCell>
-          <TableCell><Skeleton className="h-4 w-48" /></TableCell>
-          <TableCell><Skeleton className="h-4 w-12" /></TableCell>
-          <TableCell><Skeleton className="h-4 w-14" /></TableCell>
-        </TableRow>
-      ))}
-    </>
+    <button
+      onClick={onClick}
+      className={`inline-flex items-center gap-1 text-[11px] font-medium uppercase tracking-wider transition-colors ${
+        isActive ? 'text-white/60' : 'text-white/30 hover:text-white/50'
+      }`}
+    >
+      {label}
+      <Icon className="h-3 w-3" />
+    </button>
   )
-}
-
-function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
-  if (column !== sortKey) return <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
-  return sortDir === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />
 }
 
 export function TopArticlesTable({ articles, isLoading }: TopArticlesTableProps) {
@@ -50,7 +46,7 @@ export function TopArticlesTable({ articles, isLoading }: TopArticlesTableProps)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
+  const perPage = 10
 
   const hasData = articles && articles.length > 0
 
@@ -88,141 +84,129 @@ export function TopArticlesTable({ articles, isLoading }: TopArticlesTableProps)
   }
 
   return (
-    <Card className="bg-card border border-border shadow-sm">
-      <CardHeader>
-        <CardTitle>Top Articles</CardTitle>
-        <CardDescription>Most viewed articles in selected period</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {!isLoading && !hasData ? (
-          <div className="flex items-center justify-center py-12 text-muted-foreground">
-            No article data available
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.4 }}
+    >
+      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Top Articles</h3>
+              <p className="text-[11px] text-white/20 mt-0.5">Most viewed in selected period</p>
+            </div>
           </div>
-        ) : (
-          <>
-            {/* Search */}
-            {hasData && (
-              <div className="flex items-center gap-2 mb-4">
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+
+          {!isLoading && !hasData ? (
+            <div className="flex items-center justify-center py-12 text-sm text-white/20">
+              No article data available
+            </div>
+          ) : (
+            <>
+              {hasData && (
+                <div className="relative mb-4">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-white/20" />
                   <Input
                     placeholder="Filter articles..."
                     value={search}
                     onChange={e => { setSearch(e.target.value); setPage(1) }}
-                    className="pl-8"
+                    className="pl-9 bg-white/[0.03] border-white/[0.06] text-white/70 placeholder:text-white/20 h-9 text-sm"
                   />
                 </div>
-              </div>
-            )}
+              )}
 
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('rank')}>
-                        #<SortIcon column="rank" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('title')}>
-                        Title<SortIcon column="title" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="text-right">
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('pageViews')}>
-                        Views<SortIcon column="pageViews" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                    <TableHead className="text-right">
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('avgDuration')}>
-                        Avg. Time<SortIcon column="avgDuration" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    <TableSkeleton />
-                  ) : paged.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                        No matching articles
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    paged.map((article) => (
-                      <TableRow key={article.rank}>
-                        <TableCell className="font-medium text-muted-foreground">
-                          {article.rank}
-                        </TableCell>
-                        <TableCell>
-                          {article.title ? (
-                            <a
-                              href={article.url}
-                              className="hover:underline font-medium"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              {article.title}
-                            </a>
-                          ) : (
-                            <span>
-                              <code className="text-xs font-mono bg-muted px-1.5 py-0.5 rounded">
-                                {article.slug}
-                              </code>
-                              <span className="text-muted-foreground ml-2 text-sm">(no title)</span>
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {new Intl.NumberFormat('en-US').format(article.pageViews)}
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">
-                          {formatDuration(article.avgDuration)}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            {hasData && filtered.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-                <span className="text-sm text-muted-foreground">
-                  {filtered.length} article{filtered.length !== 1 ? 's' : ''}
-                </span>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm">Rows</span>
-                    <Select value={perPage.toString()} onValueChange={v => { setPerPage(Number(v)); setPage(1) }}>
-                      <SelectTrigger className="h-8 w-[65px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent side="top">
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="25">25</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    Page {page} of {totalPages}
-                  </span>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>
-                    <ChevronDown className="h-4 w-4 rotate-90" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
-                    <ChevronDown className="h-4 w-4 -rotate-90" />
-                  </Button>
+              {/* Table header */}
+              <div className="grid grid-cols-[40px_1fr_80px_80px] gap-2 px-2 pb-2 border-b border-white/[0.06]">
+                <SortButton column="rank" sortKey={sortKey} sortDir={sortDir} label="#" onClick={() => toggleSort('rank')} />
+                <SortButton column="title" sortKey={sortKey} sortDir={sortDir} label="Title" onClick={() => toggleSort('title')} />
+                <div className="text-right">
+                  <SortButton column="pageViews" sortKey={sortKey} sortDir={sortDir} label="Views" onClick={() => toggleSort('pageViews')} />
+                </div>
+                <div className="text-right">
+                  <SortButton column="avgDuration" sortKey={sortKey} sortDir={sortDir} label="Time" onClick={() => toggleSort('avgDuration')} />
                 </div>
               </div>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
+
+              {/* Table body */}
+              <div className="divide-y divide-white/[0.03]">
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <div key={i} className="grid grid-cols-[40px_1fr_80px_80px] gap-2 px-2 py-3">
+                      <Skeleton className="h-4 w-6 bg-white/[0.06]" />
+                      <Skeleton className="h-4 w-48 bg-white/[0.06]" />
+                      <Skeleton className="h-4 w-12 ml-auto bg-white/[0.06]" />
+                      <Skeleton className="h-4 w-14 ml-auto bg-white/[0.06]" />
+                    </div>
+                  ))
+                ) : paged.length === 0 ? (
+                  <div className="py-8 text-center text-sm text-white/20">
+                    No matching articles
+                  </div>
+                ) : (
+                  paged.map((article) => (
+                    <div key={article.rank} className="grid grid-cols-[40px_1fr_80px_80px] gap-2 px-2 py-3 hover:bg-white/[0.02] transition-colors">
+                      <span className="text-xs text-white/25 tabular-nums">{article.rank}</span>
+                      <div className="min-w-0">
+                        {article.title ? (
+                          <a
+                            href={article.url}
+                            className="text-sm text-white/70 hover:text-white truncate block transition-colors"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {article.title}
+                          </a>
+                        ) : (
+                          <span className="text-xs text-white/30 font-mono">{article.slug}</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-white/50 text-right tabular-nums">
+                        {new Intl.NumberFormat('en-US').format(article.pageViews)}
+                      </span>
+                      <span className="text-xs text-white/30 text-right tabular-nums">
+                        {formatDuration(article.avgDuration)}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Pagination */}
+              {hasData && filtered.length > perPage && (
+                <div className="flex items-center justify-between pt-4 mt-2 border-t border-white/[0.06]">
+                  <span className="text-[11px] text-white/20">
+                    {filtered.length} article{filtered.length !== 1 ? 's' : ''}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-white/20">
+                      {page}/{totalPages}
+                    </span>
+                    <button
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      disabled={page <= 1}
+                      className="h-7 w-7 flex items-center justify-center rounded-lg bg-white/[0.04] text-white/30 hover:text-white/50 disabled:opacity-30 transition-colors"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      disabled={page >= totalPages}
+                      className="h-7 w-7 flex items-center justify-center rounded-lg bg-white/[0.04] text-white/30 hover:text-white/50 disabled:opacity-30 transition-colors"
+                    >
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+        <div
+          className="absolute top-0 left-0 right-0 h-[1px] opacity-30"
+          style={{ background: "linear-gradient(90deg, transparent, #8b5cf6, transparent)" }}
+        />
+      </Card>
+    </motion.div>
   )
 }

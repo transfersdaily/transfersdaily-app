@@ -2,18 +2,20 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { LineChart, Line, ResponsiveContainer } from "recharts"
+import { motion } from "framer-motion"
 import type { LucideIcon } from "lucide-react"
 
 function SparklineChart({ data, color }: { data: number[]; color: string }) {
+  if (data.length === 0) return null
   const chartData = data.map((value) => ({ v: value }))
   return (
-    <ResponsiveContainer width="100%" height={24}>
+    <ResponsiveContainer width="100%" height={32}>
       <LineChart data={chartData}>
         <Line
           type="monotone"
           dataKey="v"
           stroke={color}
-          strokeWidth={1.5}
+          strokeWidth={2}
           dot={false}
           isAnimationActive={false}
         />
@@ -23,49 +25,79 @@ function SparklineChart({ data, color }: { data: number[]; color: string }) {
 }
 
 function getTrend(data: number[]): "up" | "down" | "flat" {
-  if (data.length < 7) return "flat"
-  const recent = (data[4] + data[5] + data[6]) / 3
-  const older = (data[0] + data[1] + data[2] + data[3]) / 4
-  if (recent > older * 1.1) return "up"
-  if (recent < older * 0.9) return "down"
+  if (data.length < 4) return "flat"
+  const midpoint = Math.floor(data.length / 2)
+  const recent = data.slice(midpoint)
+  const older = data.slice(0, midpoint)
+  const recentAvg = recent.reduce((s, v) => s + v, 0) / recent.length
+  const olderAvg = older.reduce((s, v) => s + v, 0) / older.length
+  if (olderAvg === 0 && recentAvg === 0) return "flat"
+  if (olderAvg === 0) return "up"
+  if (recentAvg > olderAvg * 1.1) return "up"
+  if (recentAvg < olderAvg * 0.9) return "down"
   return "flat"
 }
 
 interface KpiCardProps {
   label: string
   value: number
-  sparklineData: number[]
+  sparklineData?: number[]
   icon: LucideIcon
   subtitle?: string
+  accentColor?: string
+  delay?: number
 }
 
-const trendColors = {
-  up: "#22c55e",
-  down: "#ef4444",
-  flat: "#94a3b8",
+const trendConfig = {
+  up: { color: "#22c55e", label: "Trending up" },
+  down: { color: "#ef4444", label: "Trending down" },
+  flat: { color: "#64748b", label: "Stable" },
 } as const
 
-export function KpiCard({ label, value, sparklineData, icon: Icon, subtitle }: KpiCardProps) {
+export function KpiCard({
+  label,
+  value,
+  sparklineData = [],
+  icon: Icon,
+  subtitle,
+  accentColor,
+  delay = 0,
+}: KpiCardProps) {
   const trend = getTrend(sparklineData)
-  const color = trendColors[trend]
+  const color = accentColor || trendConfig[trend].color
 
   return (
-    <Card className="h-[140px] bg-card border border-border shadow-sm">
-      <CardContent className="p-5 h-full flex flex-col">
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">{label}</span>
-          <Icon className="h-4 w-4 text-muted-foreground" />
-        </div>
-        <div className="text-3xl font-bold tracking-tight mt-1">
-          {new Intl.NumberFormat("en-US").format(value)}
-        </div>
-        {subtitle && (
-          <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
-        )}
-        <div className="mt-auto h-6">
-          <SparklineChart data={sparklineData} color={color} />
-        </div>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay, ease: "easeOut" }}
+    >
+      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] shadow-sm backdrop-blur-md hover:bg-white/[0.05] transition-colors duration-300 group">
+        <CardContent className="p-5 h-[150px] flex flex-col">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-white/40 uppercase tracking-wider">{label}</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] group-hover:bg-white/[0.08] transition-colors">
+              <Icon className="h-4 w-4 text-white/30" />
+            </div>
+          </div>
+          <div className="text-3xl font-bold tracking-tight mt-2 text-white">
+            {new Intl.NumberFormat("en-US").format(value)}
+          </div>
+          {subtitle && (
+            <p className="text-[11px] text-white/30 mt-1">{subtitle}</p>
+          )}
+          <div className="mt-auto">
+            {sparklineData.length > 0 && (
+              <SparklineChart data={sparklineData} color={color} />
+            )}
+          </div>
+        </CardContent>
+        {/* Subtle gradient accent at top */}
+        <div
+          className="absolute top-0 left-0 right-0 h-[1px] opacity-60"
+          style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+        />
+      </Card>
+    </motion.div>
   )
 }

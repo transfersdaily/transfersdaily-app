@@ -1,12 +1,12 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import { AdminPageLayout } from "@/components/admin/AdminPageLayout"
 import { PipelineMonitor } from "@/components/admin/PipelineMonitor"
 import { PipelineErrorLog } from "@/components/admin/PipelineErrorLog"
 import { SourceHeatmap } from "@/components/admin/SourceHeatmap"
 import { usePipelineStats, usePipelineErrors, usePipelineHeatmap } from "@/hooks/use-pipeline"
-import { Activity, RefreshCw } from "lucide-react"
+import { RefreshCw, AlertCircle } from "lucide-react"
+import { motion } from "framer-motion"
 
 export default function PipelinePage() {
   const queryClient = useQueryClient()
@@ -21,69 +21,60 @@ export default function PipelinePage() {
     queryClient.invalidateQueries({ queryKey: ["admin", "pipeline"] })
   }
 
+  const errors = [
+    statsQuery.isError && "pipeline stats",
+    errorsQuery.isError && "error log",
+    heatmapQuery.isError && "heatmap data",
+  ].filter(Boolean)
+
   return (
-    <AdminPageLayout
-      title="Pipeline Monitor"
-      actions={
+    <div className="space-y-6">
+      {/* Action bar */}
+      <div className="flex items-center justify-between">
+        <div />
         <button
           onClick={handleRefresh}
           disabled={isRefreshing}
-          className="inline-flex items-center gap-2 rounded-md border border-border px-3 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary transition-colors disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3.5 py-2 text-xs font-medium text-white/50 hover:text-white/70 hover:bg-white/[0.06] transition-all disabled:opacity-30"
         >
-          <RefreshCw
-            className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
-          />
+          <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
           Refresh
         </button>
-      }
-    >
-      <div className="space-y-6">
-        {/* Per-query error banners */}
-        {statsQuery.isError && (
-          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <div className="flex items-center gap-2 text-destructive">
-              <Activity className="h-4 w-4" />
-              <span className="font-medium">Failed to load pipeline stats</span>
-            </div>
-          </div>
-        )}
-
-        {errorsQuery.isError && (
-          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <div className="flex items-center gap-2 text-destructive">
-              <Activity className="h-4 w-4" />
-              <span className="font-medium">Failed to load error log</span>
-            </div>
-          </div>
-        )}
-
-        {heatmapQuery.isError && (
-          <div className="p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <div className="flex items-center gap-2 text-destructive">
-              <Activity className="h-4 w-4" />
-              <span className="font-medium">Failed to load heatmap data</span>
-            </div>
-          </div>
-        )}
-
-        {/* Heatmap - visual overview at top */}
-        <SourceHeatmap
-          heatmap={heatmapQuery.data ?? null}
-          isLoading={heatmapQuery.isLoading}
-        />
-
-        {/* Per-source stats */}
-        <PipelineMonitor
-          stats={statsQuery.data ?? null}
-          isLoading={statsQuery.isLoading}
-        />
-
-        {/* Error log at bottom */}
-        <PipelineErrorLog
-          errors={errorsQuery.data ?? null}
-          isLoading={errorsQuery.isLoading}
-        />
       </div>
-    </AdminPageLayout>
+
+      {/* Error banners */}
+      {errors.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 rounded-xl border border-red-500/20 bg-red-500/5"
+        >
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-red-400/70" />
+            <span className="text-sm text-red-400/70">
+              Failed to load: {errors.join(", ")}
+            </span>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Heatmap */}
+      <SourceHeatmap
+        heatmap={heatmapQuery.data ?? null}
+        isLoading={heatmapQuery.isLoading}
+      />
+
+      {/* Per-source stats */}
+      <PipelineMonitor
+        stats={statsQuery.data ?? null}
+        isLoading={statsQuery.isLoading}
+      />
+
+      {/* Error log */}
+      <PipelineErrorLog
+        errors={errorsQuery.data ?? null}
+        isLoading={errorsQuery.isLoading}
+      />
+    </div>
   )
 }

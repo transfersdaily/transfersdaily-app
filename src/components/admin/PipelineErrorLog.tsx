@@ -1,23 +1,12 @@
 "use client"
 
-import { useState, useMemo } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  AlertCircle,
-  CheckCircle,
-  ChevronDown,
-  ChevronRight,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Search,
-} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion"
+import { Search, AlertCircle, CheckCircle } from "lucide-react"
 import type { PipelineErrorsResponse } from "@/types/pipeline"
 
 function formatRelativeTime(dateString: string): string {
@@ -25,28 +14,11 @@ function formatRelativeTime(dateString: string): string {
   const now = new Date()
   const diffMs = now.getTime() - date.getTime()
   const diffMinutes = Math.floor(diffMs / (1000 * 60))
-
   if (diffMinutes < 1) return "Just now"
   if (diffMinutes < 60) return `${diffMinutes}m ago`
   const diffHours = Math.floor(diffMinutes / 60)
   if (diffHours < 24) return `${diffHours}h ago`
-  const diffDays = Math.floor(diffHours / 24)
-  if (diffDays === 1) return "1d ago"
-  if (diffDays < 7) return `${diffDays}d ago`
-  return date.toLocaleDateString()
-}
-
-function truncateMessage(message: string, maxLen: number): string {
-  if (message.length <= maxLen) return message
-  return message.slice(0, maxLen) + "..."
-}
-
-type SortKey = 'occurredAt' | 'sourceName' | 'errorStep' | 'resolved'
-type SortDir = 'asc' | 'desc'
-
-function SortIcon({ column, sortKey, sortDir }: { column: SortKey; sortKey: SortKey; sortDir: SortDir }) {
-  if (column !== sortKey) return <ArrowUpDown className="ml-1 h-3.5 w-3.5" />
-  return sortDir === 'asc' ? <ArrowUp className="ml-1 h-3.5 w-3.5" /> : <ArrowDown className="ml-1 h-3.5 w-3.5" />
+  return `${Math.floor(diffHours / 24)}d ago`
 }
 
 interface PipelineErrorLogProps {
@@ -54,263 +26,98 @@ interface PipelineErrorLogProps {
   isLoading: boolean
 }
 
-export function PipelineErrorLog({ errors, isLoading }: PipelineErrorLogProps) {
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set())
-  const [sortKey, setSortKey] = useState<SortKey>('occurredAt')
-  const [sortDir, setSortDir] = useState<SortDir>('desc')
+export function PipelineErrorLog({ errors: data, isLoading }: PipelineErrorLogProps) {
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'all' | 'resolved' | 'unresolved'>('all')
-  const [page, setPage] = useState(1)
-  const [perPage, setPerPage] = useState(10)
 
-  function toggleRow(id: string) {
-    setExpandedRows((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) {
-        next.delete(id)
-      } else {
-        next.add(id)
-      }
-      return next
-    })
-  }
-
-  const hasErrors = errors && errors.errors.length > 0
-
-  const filtered = useMemo(() => {
-    if (!hasErrors) return []
-    let result = [...errors.errors]
-
-    if (search.trim()) {
-      const q = search.toLowerCase()
-      result = result.filter(e =>
-        e.sourceName.toLowerCase().includes(q) ||
-        e.errorStep.toLowerCase().includes(q) ||
-        e.errorMessage.toLowerCase().includes(q)
-      )
-    }
-
-    if (statusFilter === 'resolved') {
-      result = result.filter(e => e.resolved)
-    } else if (statusFilter === 'unresolved') {
-      result = result.filter(e => !e.resolved)
-    }
-
-    result.sort((a, b) => {
-      let cmp = 0
-      switch (sortKey) {
-        case 'occurredAt': cmp = new Date(a.occurredAt).getTime() - new Date(b.occurredAt).getTime(); break
-        case 'sourceName': cmp = a.sourceName.localeCompare(b.sourceName); break
-        case 'errorStep': cmp = a.errorStep.localeCompare(b.errorStep); break
-        case 'resolved': cmp = (a.resolved ? 1 : 0) - (b.resolved ? 1 : 0); break
-      }
-      return sortDir === 'asc' ? cmp : -cmp
-    })
-    return result
-  }, [errors, hasErrors, search, statusFilter, sortKey, sortDir])
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage))
-  const paged = filtered.slice((page - 1) * perPage, page * perPage)
-
-  function toggleSort(key: SortKey) {
-    if (sortKey === key) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortKey(key)
-      setSortDir(key === 'occurredAt' ? 'desc' : 'asc')
-    }
-    setPage(1)
-  }
-
-  if (isLoading) {
+  const filtered = (data?.errors || []).filter(e => {
+    if (!search.trim()) return true
+    const q = search.toLowerCase()
     return (
-      <Card className="bg-card border border-border shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5" />
-            Error Log
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Skeleton key={i} className="h-10 w-full" />
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      e.sourceName.toLowerCase().includes(q) ||
+      e.errorMessage.toLowerCase().includes(q) ||
+      (e.articleTitle || '').toLowerCase().includes(q)
     )
-  }
+  })
 
   return (
-    <Card className="bg-card border border-border shadow-sm">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5" />
-          Error Log
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {!hasErrors ? (
-          <div className="text-center py-8">
-            <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-500 opacity-70" />
-            <p className="text-sm text-muted-foreground">
-              No pipeline errors in the last 7 days
-            </p>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.2 }}>
+      <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Error Log</h3>
+              <p className="text-[11px] text-white/20 mt-0.5">
+                {data ? `${data.totalCount} issue${data.totalCount !== 1 ? 's' : ''} in last 7 days` : 'Loading...'}
+              </p>
+            </div>
+            <div className="relative w-48">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3 w-3 text-white/20" />
+              <Input
+                placeholder="Filter errors..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-8 h-8 bg-white/[0.03] border-white/[0.06] text-white/60 placeholder:text-white/15 text-xs"
+              />
+            </div>
           </div>
-        ) : (
-          <>
-            {/* Search + Status Filter */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-4">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Filter errors..."
-                  value={search}
-                  onChange={e => { setSearch(e.target.value); setPage(1) }}
-                  className="pl-8"
-                />
-              </div>
-              <Select value={statusFilter} onValueChange={(v: 'all' | 'resolved' | 'unresolved') => { setStatusFilter(v); setPage(1) }}>
-                <SelectTrigger className="w-full sm:w-[150px]">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="unresolved">Unresolved</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-6"></TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('occurredAt')}>
-                        Time<SortIcon column="occurredAt" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('sourceName')}>
-                        Source<SortIcon column="sourceName" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('errorStep')}>
-                        Step<SortIcon column="errorStep" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                    <TableHead>Error Message</TableHead>
-                    <TableHead>
-                      <Button variant="ghost" size="sm" className="h-8 p-0" onClick={() => toggleSort('resolved')}>
-                        Status<SortIcon column="resolved" sortKey={sortKey} sortDir={sortDir} />
-                      </Button>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paged.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                        No matching errors
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    paged.map((error) => {
-                      const isExpanded = expandedRows.has(error.id)
-                      const isLong = error.errorMessage.length > 80
-                      return (
-                        <TableRow key={error.id} className="align-top">
-                          <TableCell className="pr-2">
-                            {isLong && (
-                              <button
-                                onClick={() => toggleRow(error.id)}
-                                className="text-muted-foreground hover:text-foreground transition-colors"
-                                aria-label={isExpanded ? "Collapse" : "Expand"}
-                              >
-                                {isExpanded ? (
-                                  <ChevronDown className="h-4 w-4" />
-                                ) : (
-                                  <ChevronRight className="h-4 w-4" />
-                                )}
-                              </button>
-                            )}
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap text-muted-foreground">
-                            {formatRelativeTime(error.occurredAt)}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {error.sourceName}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {error.errorStep}
-                          </TableCell>
-                          <TableCell>
-                            <div>
-                              {isExpanded
-                                ? null
-                                : truncateMessage(error.errorMessage, 80)}
-                            </div>
-                            {isExpanded && (
-                              <pre className="mt-1 p-2 bg-secondary border border-border rounded text-xs whitespace-pre-wrap break-words max-w-lg text-secondary-foreground">
-                                {error.errorMessage}
-                              </pre>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {error.resolved ? (
-                              <Badge className="bg-green-500/20 text-green-400 border-green-500/30 hover:bg-green-500/20">
-                                Resolved
-                              </Badge>
-                            ) : (
-                              <Badge variant="destructive">Unresolved</Badge>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })
-                  )}
-                </TableBody>
-              </Table>
+          {isLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full bg-white/[0.04]" />
+              ))}
             </div>
-
-            {/* Pagination */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4">
-              <span className="text-sm text-muted-foreground">
-                {filtered.length} error{filtered.length !== 1 ? 's' : ''}
-                {errors.totalCount > errors.errors.length && ` (showing ${errors.errors.length} of ${errors.totalCount} total)`}
-              </span>
-              <div className="flex items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm">Rows</span>
-                  <Select value={perPage.toString()} onValueChange={v => { setPerPage(Number(v)); setPage(1) }}>
-                    <SelectTrigger className="h-8 w-[65px]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent side="top">
-                      <SelectItem value="10">10</SelectItem>
-                      <SelectItem value="25">25</SelectItem>
-                      <SelectItem value="50">50</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  Page {page} of {totalPages}
-                </span>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page <= 1}>
-                  <ChevronDown className="h-4 w-4 rotate-90" />
-                </Button>
-                <Button variant="outline" size="sm" className="h-8 w-8 p-0" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
-                  <ChevronDown className="h-4 w-4 -rotate-90" />
-                </Button>
-              </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-8 text-center">
+              <CheckCircle className="h-8 w-8 mx-auto mb-2 text-emerald-400/30" />
+              <p className="text-sm text-white/20">
+                {search ? 'No matching errors' : 'No errors detected'}
+              </p>
             </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          ) : (
+            <div className="space-y-2 max-h-[400px] overflow-y-auto">
+              {filtered.map((error, i) => (
+                <motion.div
+                  key={error.id}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.02 }}
+                  className="rounded-lg border border-white/[0.04] bg-white/[0.02] p-3 hover:bg-white/[0.03] transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-start gap-2 min-w-0">
+                      <AlertCircle className="h-3.5 w-3.5 text-red-400/50 mt-0.5 shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs text-white/50 line-clamp-2">{error.errorMessage}</p>
+                        <div className="flex items-center gap-2 mt-1.5">
+                          <span className="text-[10px] text-white/25">{error.sourceName}</span>
+                          <span className="text-[10px] text-white/15">|</span>
+                          <span className="text-[10px] text-white/25">{error.errorStep}</span>
+                          {error.articleTitle && (
+                            <>
+                              <span className="text-[10px] text-white/15">|</span>
+                              <span className="text-[10px] text-white/20 truncate max-w-[200px]">{error.articleTitle}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] text-white/15">{formatRelativeTime(error.occurredAt)}</span>
+                      {error.resolved && (
+                        <Badge className="text-[9px] px-1.5 py-0 bg-emerald-500/10 text-emerald-400/60 border-emerald-500/20">
+                          Resolved
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #ef4444, transparent)" }} />
+      </Card>
+    </motion.div>
   )
 }

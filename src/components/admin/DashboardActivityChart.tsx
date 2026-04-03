@@ -1,30 +1,38 @@
-'use client'
+"use client"
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts'
-import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import { motion } from 'framer-motion'
-import type { DailyArticleCount } from '@/types/content-analytics'
+import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { motion } from "framer-motion"
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts"
+import type { DailyArticleCount } from "@/types/content-analytics"
 
-interface ArticlesPerDayChartProps {
-  data: DailyArticleCount[] | undefined
+interface DashboardActivityChartProps {
+  data?: DailyArticleCount[]
   isLoading: boolean
 }
 
-export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProps) {
-  const hasData = data && data.length > 0
-
+export function DashboardActivityChart({ data, isLoading }: DashboardActivityChartProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
     >
       <Card className="relative overflow-hidden bg-white/[0.03] border border-white/[0.06] backdrop-blur-md">
         <CardContent className="p-5">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">Articles Per Day</h3>
+              <h3 className="text-xs font-medium text-white/40 uppercase tracking-wider">
+                Article Activity
+              </h3>
               <p className="text-[11px] text-white/20 mt-0.5">Last 30 days</p>
             </div>
             <div className="flex items-center gap-4">
@@ -40,20 +48,20 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
           </div>
 
           {isLoading ? (
-            <Skeleton className="h-[280px] w-full bg-white/[0.04]" />
-          ) : !hasData ? (
-            <div className="flex items-center justify-center h-[280px] text-sm text-white/20">
-              No data available
+            <Skeleton className="h-[220px] w-full bg-white/[0.04]" />
+          ) : !data || data.length === 0 ? (
+            <div className="h-[220px] flex items-center justify-center text-sm text-white/20">
+              No activity data available
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={220}>
               <AreaChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="contentPubGrad" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="pubGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#22c55e" stopOpacity={0.3} />
                     <stop offset="100%" stopColor="#22c55e" stopOpacity={0} />
                   </linearGradient>
-                  <linearGradient id="contentDraftGrad" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="draftGrad" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#eab308" stopOpacity={0.2} />
                     <stop offset="100%" stopColor="#eab308" stopOpacity={0} />
                   </linearGradient>
@@ -64,7 +72,7 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
                   tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 10 }}
                   axisLine={{ stroke: "rgba(255,255,255,0.06)" }}
                   tickLine={false}
-                  interval={Math.max(0, Math.floor((data.length / 7) - 1))}
+                  interval={Math.max(0, Math.floor(data.length / 7) - 1)}
                 />
                 <YAxis
                   tick={{ fill: "rgba(255,255,255,0.2)", fontSize: 10 }}
@@ -80,14 +88,35 @@ export function ArticlesPerDayChart({ data, isLoading }: ArticlesPerDayChartProp
                     fontSize: "12px",
                     color: "rgba(255,255,255,0.7)",
                   }}
+                  itemStyle={{ color: "rgba(255,255,255,0.7)" }}
+                  labelStyle={{ color: "rgba(255,255,255,0.4)" }}
                 />
-                <Area type="monotone" dataKey="published" stroke="#22c55e" strokeWidth={2} fill="url(#contentPubGrad)" dot={false} />
-                <Area type="monotone" dataKey="drafts" stroke="#eab308" strokeWidth={1.5} fill="url(#contentDraftGrad)" dot={false} />
+                <Area
+                  type="monotone"
+                  dataKey="published"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  fill="url(#pubGrad)"
+                  dot={false}
+                  activeDot={{ r: 3, fill: "#22c55e" }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="drafts"
+                  stroke="#eab308"
+                  strokeWidth={1.5}
+                  fill="url(#draftGrad)"
+                  dot={false}
+                  activeDot={{ r: 3, fill: "#eab308" }}
+                />
               </AreaChart>
             </ResponsiveContainer>
           )}
         </CardContent>
-        <div className="absolute top-0 left-0 right-0 h-[1px] opacity-30" style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }} />
+        <div
+          className="absolute top-0 left-0 right-0 h-[1px] opacity-30"
+          style={{ background: "linear-gradient(90deg, transparent, #22c55e, transparent)" }}
+        />
       </Card>
     </motion.div>
   )

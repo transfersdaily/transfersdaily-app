@@ -39,9 +39,9 @@ const getCachedTranslations = unstable_cache(
     }
 
     const languages = SUPPORTED_LANGUAGES.map(lang => {
-      // English is the original language — no translation needed
+      // English is the source language — all published articles are in English
       const isEnglish = lang === 'en'
-      const articleCount = isEnglish ? totalPublished : (langCounts[lang] || 0)
+      const articleCount = totalPublished
       const translatedCount = isEnglish ? totalPublished : (langCounts[lang] || 0)
       const coveragePercent = totalPublished > 0
         ? Math.round((translatedCount / totalPublished) * 100)
