@@ -11,6 +11,7 @@ import { ResultsInfo } from "@/components/ResultsInfo"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { PageHeader } from "@/components/PageHeader"
+import { AdSlot } from "@/components/ads"
 
 interface LatestPageClientProps {
   locale: Locale
@@ -162,7 +163,8 @@ export function LatestPageClient({
 
         {/* Sidebar */}
         <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-          <div className="space-y-6 pt-6">
+          <div className="sticky top-20 space-y-6 pt-6">
+            <AdSlot placement="league.sidebar-top" />
             {isLoading ? (
               <SidebarSkeleton />
             ) : (
@@ -171,6 +173,8 @@ export function LatestPageClient({
           </div>
         </aside>
       </div>
+
+      <AdSlot placement="league.mobile-sticky" sticky />
     </div>
   )
 }

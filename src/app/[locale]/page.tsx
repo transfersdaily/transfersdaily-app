@@ -172,19 +172,21 @@ export default async function HomePage({
               t={t}
             />
 
-            <AdSlot placement="homepage.pre-latest" />
+            <AdSlot placement="homepage.post-hero" />
 
-            {/* League Sections */}
-            {initialData.leagues.map((league) => (
-              <LeagueSection
-                key={league.id}
-                title={league.name}
-                slug={league.slug}
-                transfers={initialData.leagueTransfers[league.slug] || []}
-                locale={locale}
-                dict={dict}
-                t={t}
-              />
+            {/* League Sections with mid-content ad */}
+            {initialData.leagues.map((league, index) => (
+              <div key={league.id}>
+                <LeagueSection
+                  title={league.name}
+                  slug={league.slug}
+                  transfers={initialData.leagueTransfers[league.slug] || []}
+                  locale={locale}
+                  dict={dict}
+                  t={t}
+                />
+                {index === 2 && <AdSlot placement="homepage.post-league" />}
+              </div>
             ))}
           </div>
 

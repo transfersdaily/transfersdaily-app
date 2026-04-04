@@ -490,7 +490,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
 
             {/* Sidebar */}
             <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-              <div className="space-y-6 pt-6">
+              <div className="sticky top-20 space-y-6 pt-6">
+                <AdSlot placement="article.sidebar-top" />
                 <Suspense fallback={<SidebarSkeleton />}>
                   <Sidebar locale={locale} dict={dict} />
                 </Suspense>
@@ -520,6 +521,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
               </div>
             </section>
           )}
+
+          <AdSlot placement="article.mobile-sticky" sticky />
         </div>
       </main>
     )

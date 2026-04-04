@@ -68,11 +68,13 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
   useEffect(() => {
     if (!isVisible || collapsed || adFilled) return;
 
-    const t1 = setTimeout(checkFill, 500);
-    const t2 = setTimeout(checkFill, 1500);
-    const t3 = setTimeout(() => {
+    // Check at increasing intervals — AdSense can take 5-10s to fill
+    const t1 = setTimeout(checkFill, 1000);
+    const t2 = setTimeout(checkFill, 3000);
+    const t3 = setTimeout(checkFill, 6000);
+    const t4 = setTimeout(() => {
       if (!adFilled) setCollapsed(true);
-    }, 3000);
+    }, 10000);
 
     const ins = containerRef.current?.querySelector('ins.adsbygoogle');
     let obs: MutationObserver | null = null;
@@ -81,7 +83,7 @@ export function AdSlot({ placement, lazy, sticky, className }: AdSlotProps) {
       obs.observe(ins, { attributes: true, childList: true, subtree: true });
     }
 
-    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); obs?.disconnect(); };
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); obs?.disconnect(); };
   }, [isVisible, collapsed, adFilled, checkFill]);
 
   if (isAdFree) return null;

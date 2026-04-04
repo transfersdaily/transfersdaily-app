@@ -17,6 +17,7 @@ import { addRecentSearch } from "@/components/TrendingTopics"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { adminMobileClasses } from "@/lib/mobile-utils"
+import { AdSlot } from "@/components/ads"
 
 const trendingSearches = [
   "Kylian Mbappé", "Manchester United transfers", "Real Madrid", "Premier League", 
@@ -338,11 +339,14 @@ export function SearchPageClient({
 
         {/* Sidebar */}
         <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-          <div className="sticky top-8">
+          <div className="sticky top-20 space-y-6">
+            <AdSlot placement="search.sidebar-top" />
             <Sidebar locale={locale} dict={dict} />
           </div>
         </aside>
       </div>
+
+      <AdSlot placement="search.mobile-sticky" sticky />
     </div>
   )
 }

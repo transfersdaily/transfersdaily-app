@@ -13,6 +13,7 @@ import { ResultsInfo } from "@/components/ResultsInfo"
 import { type Locale } from "@/lib/i18n"
 import { createTranslator } from "@/lib/dictionary-server"
 import { typography, responsive } from "@/lib/typography"
+import { AdSlot } from "@/components/ads"
 import { PageHeader } from "@/components/PageHeader"
 
 // Helper function to get league logo
@@ -175,12 +176,8 @@ export function LeaguePageClient({
                   dict={dict}
                 />
                 
-                {/* Ad: Leaderboard mid-content */}
                 <div className="my-8">
-                </div>
-                
-                {/* Ad: Rectangle after transfer grid */}
-                <div className="mt-8 mb-8">
+                  <AdSlot placement="league.in-transfers" />
                 </div>
               </>
             ) : (
@@ -196,10 +193,6 @@ export function LeaguePageClient({
           {/* Pagination */}
           {!isLoading && pagination.totalPages > 1 && (
             <>
-              {/* Ad: Rectangle before pagination */}
-              <div className="mb-6">
-              </div>
-              
               <div className="pb-6">
                 <Pagination
                   currentPage={currentPage}
@@ -216,7 +209,8 @@ export function LeaguePageClient({
 
         {/* Sidebar */}
         <aside className="hidden lg:block lg:col-span-3" aria-label="Sidebar">
-          <div className="space-y-6 pt-6">
+          <div className="sticky top-20 space-y-6 pt-6">
+            <AdSlot placement="league.sidebar-top" />
             {isLoading ? (
               <SidebarSkeleton />
             ) : (
@@ -225,6 +219,8 @@ export function LeaguePageClient({
           </div>
         </aside>
       </div>
+
+      <AdSlot placement="league.mobile-sticky" sticky />
     </div>
   )
 }
