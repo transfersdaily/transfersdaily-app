@@ -171,9 +171,10 @@ export function ArticleStatsOverview({ data, pageType }: ArticleStatsOverviewPro
                     innerRadius={40}
                     outerRadius={100}
                     strokeWidth={0}
+                    label={({ name, percent }) => `${name} ${percent ? (percent * 100).toFixed(0) : 0}%`}
                   >
-                    {safeData.byStatus.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    {safeData.byStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color || CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Pie>
                   <ChartTooltip content={<ChartTooltipContent />} />

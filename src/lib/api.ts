@@ -592,7 +592,8 @@ export const adminApi = {
 
 
   // Get dashboard stats — proxy returns camelCase directly (no .data wrapper)
-  async getDashboardStats(): Promise<{
+  // Pass status to get stats filtered by article status (draft/published)
+  async getDashboardStats(status?: string): Promise<{
     totalArticles: number
     draftArticles: number
     publishedArticles: number
@@ -615,40 +616,36 @@ export const adminApi = {
       date: string
       count: number
     }>
+    byStatus: Array<{
+      name: string
+      value: number
+      color: string
+    }>
   }> {
+    const defaults = {
+      totalArticles: 0,
+      draftArticles: 0,
+      publishedArticles: 0,
+      totalClubs: 0,
+      totalPlayers: 0,
+      totalLeagues: 0,
+      createdToday: 0,
+      createdThisWeek: 0,
+      createdThisMonth: 0,
+      byCategory: [] as Array<{ name: string; value: number; color: string }>,
+      byLeague: [] as Array<{ name: string; value: number }>,
+      dailyActivity: [] as Array<{ date: string; count: number }>,
+      byStatus: [] as Array<{ name: string; value: number; color: string }>,
+    }
     try {
-      // Proxy at /api/admin/stats transforms snake_case Lambda response to camelCase
-      const response = await adminApiRequest<any>(API_CONFIG.endpoints.admin.stats)
-      return response || {
-        totalArticles: 0,
-        draftArticles: 0,
-        publishedArticles: 0,
-        totalClubs: 0,
-        totalPlayers: 0,
-        totalLeagues: 0,
-        createdToday: 0,
-        createdThisWeek: 0,
-        createdThisMonth: 0,
-        byCategory: [],
-        byLeague: [],
-        dailyActivity: []
-      }
+      const endpoint = status
+        ? `${API_CONFIG.endpoints.admin.stats}?status=${status}`
+        : API_CONFIG.endpoints.admin.stats
+      const response = await adminApiRequest<any>(endpoint)
+      return { ...defaults, ...response }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error)
-      return {
-        totalArticles: 0,
-        draftArticles: 0,
-        publishedArticles: 0,
-        totalClubs: 0,
-        totalPlayers: 0,
-        totalLeagues: 0,
-        createdToday: 0,
-        createdThisWeek: 0,
-        createdThisMonth: 0,
-        byCategory: [],
-        byLeague: [],
-        dailyActivity: []
-      }
+      return defaults
     }
   },
 

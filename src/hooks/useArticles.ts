@@ -62,7 +62,7 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
     try {
       setIsLoading(true)
 
-      // Fetch articles (paginated) and full stats in parallel
+      // Fetch articles (paginated) and status-filtered stats in parallel
       const [response, fullStats] = await Promise.all([
         adminApi.getArticles({
           page: currentPage,
@@ -75,13 +75,13 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
           sortBy: sortBy,
           sortOrder: sortOrder
         }),
-        adminApi.getDashboardStats().catch(() => null),
+        adminApi.getDashboardStats(status).catch(() => null),
       ])
 
       setArticles(response.articles)
       setTotalArticles(response.pagination.total)
 
-      // Use full stats from the dashboard endpoint (covers ALL articles, not just current page)
+      // Use full stats from the dashboard endpoint (now filtered by status)
       if (fullStats) {
         const total = status === 'published'
           ? fullStats.publishedArticles
@@ -97,7 +97,7 @@ export function useArticles({ status, initialSortBy = 'created_at', initialSortO
           byCategory: fullStats.byCategory || [],
           byLeague: fullStats.byLeague || [],
           dailyCreation: fullStats.dailyActivity || [],
-          byStatus: []
+          byStatus: fullStats.byStatus || []
         })
       } else {
         // Fallback: use pagination total as the main stat
