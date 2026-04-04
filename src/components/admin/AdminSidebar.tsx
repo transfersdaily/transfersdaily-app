@@ -12,7 +12,6 @@ import {
   BarChart3,
   Activity,
   MessageSquare,
-  Image,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -54,7 +53,6 @@ const navSections: NavSection[] = [
       { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
       { title: "Pipeline", url: "/admin/pipeline", icon: Activity },
       { title: "Messages", url: "/admin/messages", icon: MessageSquare, badge: "unread" },
-      { title: "Image Mappings", url: "/admin/image-mappings", icon: Image },
     ],
   },
 ]

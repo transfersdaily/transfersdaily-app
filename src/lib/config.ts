@@ -92,9 +92,6 @@ export const API_CONFIG = {
         all: '/admin/players',
         byId: '/admin/players',
       },
-      imageMappings: {
-        all: '/api/admin/image-mappings',
-      },
     },
   },
 };

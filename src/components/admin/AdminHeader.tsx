@@ -10,7 +10,6 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   "/admin/analytics": { title: "Analytics", subtitle: "Site traffic and audience insights" },
   "/admin/pipeline": { title: "Pipeline", subtitle: "Content pipeline monitoring" },
   "/admin/messages": { title: "Messages", subtitle: "Contact submissions and inquiries" },
-  "/admin/image-mappings": { title: "Image Mappings", subtitle: "Club and league image configuration" },
   "/admin/content": { title: "Content", subtitle: "Distribution and translation analytics" },
 }
 

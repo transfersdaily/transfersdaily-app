@@ -18,7 +18,6 @@ import {
   BarChart3,
   Activity,
   MessageSquare,
-  Image,
   Settings,
   LogOut,
   Menu,
@@ -72,7 +71,6 @@ const navSections: NavSection[] = [
         icon: MessageSquare,
         badge: "unread",
       },
-      { title: "Image Mappings", url: "/admin/image-mappings", icon: Image },
       {
         title: "Settings",
         url: "/admin/settings",
