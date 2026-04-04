@@ -68,16 +68,6 @@ export async function GET(request: NextRequest) {
     } satisfies ArticleViewsResponse)
   }
 
-  // Check GA4 credentials
-  const hasEnvCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS
-  if (!hasEnvCredentials) {
-    return NextResponse.json({
-      success: false,
-      error: 'ga4_not_configured',
-      message: 'GA4 analytics requires Google Service Account credentials.',
-    })
-  }
-
   try {
     const allViews = await getCachedArticleViews()
 

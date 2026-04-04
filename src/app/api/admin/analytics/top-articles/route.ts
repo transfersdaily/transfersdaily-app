@@ -107,16 +107,6 @@ export async function GET(request: NextRequest) {
     const { error: authError } = await validateAuth()
     if (authError) return authError
 
-    // Check if GA4 credentials are configured
-    const hasEnvCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS
-    if (!hasEnvCredentials) {
-      return NextResponse.json({
-        success: false,
-        error: 'ga4_not_configured',
-        message: 'GA4 analytics requires Google Service Account credentials.',
-      }, { status: 503 })
-    }
-
     const { searchParams } = new URL(request.url)
     const daysParam = parseInt(searchParams.get('days') || '30', 10)
     const days = VALID_DAYS.includes(daysParam) ? daysParam : 30

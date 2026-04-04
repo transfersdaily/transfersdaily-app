@@ -6,18 +6,6 @@ export async function GET(request: NextRequest) {
     const { user, error: authError } = await validateAuth()
     if (authError) return authError
 
-    // Check if GA4 credentials are configured before attempting to load client
-    const hasEnvCredentials = !!process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS
-    if (!hasEnvCredentials) {
-      // Check SSM availability would require an AWS call — just return not configured
-      // The ga4-client will also try SSM, but we short-circuit here for a clean UX
-      return NextResponse.json({
-        success: false,
-        error: 'ga4_not_configured',
-        message: 'GA4 analytics requires Google Service Account credentials.',
-      }, { status: 503 })
-    }
-
     const { getGA4Client, GA4_PROPERTY_ID } = await import('@/lib/ga4-client')
 
     const { searchParams } = new URL(request.url)
